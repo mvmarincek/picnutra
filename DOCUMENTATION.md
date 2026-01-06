@@ -537,3 +537,82 @@ Este projeto foi desenvolvido com assistência de IA. Para continuidade:
 ---
 
 *Última atualização: Janeiro 2025*
+
+---
+
+## Atualizações - Sessão Janeiro 2026
+
+### Sistema de Email (Resend)
+
+**Arquivo:** `backend/app/services/email_service.py`
+**Variável Render:** `RESEND_API_KEY`
+
+Funções disponíveis:
+- `send_welcome_email(user_email)` - Enviado no cadastro
+- `send_password_reset_email(user_email, reset_token)` - Recuperação de senha
+- `send_suggestion_email(user_email, user_id, mensagem)` - Sugestões (envia para mvmarincek@gmail.com)
+
+### Recuperação de Senha
+
+**Endpoints:**
+- `POST /auth/forgot-password` - Solicita recuperação
+- `POST /auth/reset-password` - Redefine senha
+
+**Tokens em memória:** `password_reset_tokens` dict em `backend/app/api/routes/auth.py`
+- Expiram em 1 hora
+- Formato: `{token: {user_id, email, expires}}`
+
+**Páginas Frontend:**
+- `frontend/app/(auth)/forgot-password/page.tsx` - Solicitar email
+- `frontend/app/reset-password/page.tsx` - Formulário nova senha (NA RAIZ, não em (auth))
+
+### Caixa de Sugestões
+
+**Frontend:** `frontend/app/(main)/profile/page.tsx` - Seção no final do perfil
+**Backend:** `backend/app/api/routes/feedback.py`
+**Destino:** mvmarincek@gmail.com
+
+### Dicas Durante Processamento
+
+**Arquivo:** `frontend/app/(main)/processing/page.tsx`
+- 20 frases motivacionais e dicas de culinária
+- Alternam a cada 4 segundos
+- Array `dicasEMotivacao` no início do arquivo
+
+### Imagem DALL-E
+
+**Arquivo:** `backend/app/agents/image_generator.py`
+- Modelo: DALL-E 2
+- Tamanho: 512x512 (quadrado)
+
+### JSON Parsing Robusto
+
+**Arquivo:** `backend/app/agents/json_utils.py`
+- Função `parse_json_safe(content)` - Remove trailing commas antes de parse
+- Usado em todos os agentes
+
+### Melhorias UI
+
+**Result page:** `frontend/app/(main)/result/page.tsx`
+- Imagem mostra completa sem cortes (`w-full h-auto`)
+- Seções "Alimentos e Porções" unificadas
+- Botão "Nova análise" no final com seta direita
+- Removidos badges de confiança
+
+**Login/Registro:** Adicionado ícone do app (Salad com gradient)
+
+### Paralelização
+
+**Arquivo:** `backend/app/agents/orchestrator.py`
+- HealthAdvisor e MealOptimizer rodam em paralelo (`asyncio.gather`)
+
+### PROBLEMA PENDENTE
+
+A página `/reset-password` retorna 404 no Vercel. O arquivo existe em:
+- `frontend/app/reset-password/page.tsx` (movido da pasta (auth) para raiz)
+
+Possíveis causas:
+1. Vercel não fez redeploy
+2. Build do Next.js falhou silenciosamente
+
+**Solução:** Verificar logs de build no dashboard do Vercel e forçar redeploy manual se necessário.
