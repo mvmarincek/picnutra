@@ -172,7 +172,13 @@ export const authApi = {
     api<TokenResponse>('/auth/register', { method: 'POST', body: { email, password } }),
   
   login: (email: string, password: string) =>
-    api<TokenResponse>('/auth/login', { method: 'POST', body: { email, password } })
+    api<TokenResponse>('/auth/login', { method: 'POST', body: { email, password } }),
+  
+  forgotPassword: (email: string) =>
+    api<{ message: string }>('/auth/forgot-password', { method: 'POST', body: { email } }),
+  
+  resetPassword: (token: string, new_password: string) =>
+    api<{ message: string }>('/auth/reset-password', { method: 'POST', body: { token, new_password } })
 };
 
 export const profileApi = {
@@ -232,10 +238,10 @@ export const creditsApi = {
 };
 
 export const feedbackApi = {
-  send: (token: string, tipo: string, mensagem: string) =>
+  send: (token: string, mensagem: string) =>
     api<{ success: boolean; message: string }>('/feedback', {
       method: 'POST',
       token,
-      body: { tipo, mensagem }
+      body: { mensagem }
     })
 };

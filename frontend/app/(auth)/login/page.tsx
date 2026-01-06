@@ -73,6 +73,11 @@ export default function LoginPage() {
               placeholder="Sua senha"
               required
             />
+            <div className="text-right mt-1">
+              <Link href="/forgot-password" className="text-sm text-green-600 hover:underline">
+                Esqueci minha senha
+              </Link>
+            </div>
           </div>
 
           <button

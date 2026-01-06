@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { profileApi, feedbackApi } from '@/lib/api';
-import { Save, User, ArrowRight, Salad, Send, MessageSquare, Lightbulb, Bug, Star } from 'lucide-react';
+import { Save, User, ArrowRight, Salad, Send, Lightbulb } from 'lucide-react';
 
 const objetivos = [
   { id: 'emagrecer', label: 'Emagrecer', emoji: '🏃' },
@@ -29,32 +29,25 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const [feedbackTipo, setFeedbackTipo] = useState('sugestao');
-  const [feedbackMensagem, setFeedbackMensagem] = useState('');
-  const [feedbackEnviando, setFeedbackEnviando] = useState(false);
-  const [feedbackSucesso, setFeedbackSucesso] = useState(false);
+  const [sugestao, setSugestao] = useState('');
+  const [enviandoSugestao, setEnviandoSugestao] = useState(false);
+  const [sugestaoEnviada, setSugestaoEnviada] = useState(false);
   const { token, user } = useAuth();
   const router = useRouter();
 
-  const tiposFeedback = [
-    { id: 'sugestao', label: 'Sugestão', icon: Lightbulb, color: 'text-amber-500' },
-    { id: 'bug', label: 'Problema', icon: Bug, color: 'text-red-500' },
-    { id: 'elogio', label: 'Elogio', icon: Star, color: 'text-yellow-500' },
-  ];
-
-  const handleEnviarFeedback = async () => {
-    if (!token || !feedbackMensagem.trim()) return;
-    setFeedbackEnviando(true);
+  const handleEnviarSugestao = async () => {
+    if (!token || !sugestao.trim()) return;
+    setEnviandoSugestao(true);
     
     try {
-      await feedbackApi.send(token, feedbackTipo, feedbackMensagem);
-      setFeedbackSucesso(true);
-      setFeedbackMensagem('');
-      setTimeout(() => setFeedbackSucesso(false), 3000);
+      await feedbackApi.send(token, sugestao);
+      setSugestaoEnviada(true);
+      setSugestao('');
+      setTimeout(() => setSugestaoEnviada(false), 3000);
     } catch (err) {
       console.error(err);
     } finally {
-      setFeedbackEnviando(false);
+      setEnviandoSugestao(false);
     }
   };
 
@@ -221,62 +214,39 @@ export default function ProfilePage() {
         Essas informações ajudam a personalizar suas análises nutricionais.
       </p>
 
-      <div className="bg-white rounded-3xl shadow-xl p-6 border border-purple-100">
+      <div className="bg-white rounded-3xl shadow-xl p-6 border border-amber-100">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
-            <MessageSquare className="w-6 h-6 text-purple-600" />
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-100 to-yellow-100 flex items-center justify-center">
+            <Lightbulb className="w-6 h-6 text-amber-600" />
           </div>
           <div>
-            <h3 className="font-bold text-gray-900">Sua opinião importa!</h3>
+            <h3 className="font-bold text-gray-900">Tem uma sugestão?</h3>
             <p className="text-sm text-gray-500">Ajude-nos a melhorar o Nutri-Vision</p>
           </div>
         </div>
 
-        <div className="flex gap-2 mb-4">
-          {tiposFeedback.map((tipo) => (
-            <button
-              key={tipo.id}
-              onClick={() => setFeedbackTipo(tipo.id)}
-              className={`flex-1 py-2 px-3 rounded-xl text-sm font-medium flex items-center justify-center gap-1 transition-all ${
-                feedbackTipo === tipo.id
-                  ? 'bg-purple-100 text-purple-700 border-2 border-purple-300'
-                  : 'bg-gray-50 text-gray-600 border-2 border-transparent hover:bg-gray-100'
-              }`}
-            >
-              <tipo.icon className={`w-4 h-4 ${feedbackTipo === tipo.id ? tipo.color : ''}`} />
-              {tipo.label}
-            </button>
-          ))}
-        </div>
-
         <textarea
-          value={feedbackMensagem}
-          onChange={(e) => setFeedbackMensagem(e.target.value)}
-          placeholder={
-            feedbackTipo === 'sugestao' 
-              ? 'Que funcionalidade você gostaria de ver? Como podemos melhorar sua experiência?' 
-              : feedbackTipo === 'bug'
-              ? 'Descreva o problema que encontrou. Quanto mais detalhes, melhor!'
-              : 'Conte o que você mais gosta no app!'
-          }
-          className="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-purple-400 transition-all resize-none h-24"
+          value={sugestao}
+          onChange={(e) => setSugestao(e.target.value)}
+          placeholder="Que funcionalidade você gostaria de ver? Como podemos melhorar sua experiência?"
+          className="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-amber-500 focus:border-amber-400 transition-all resize-none h-24"
         />
 
-        {feedbackSucesso ? (
+        {sugestaoEnviada ? (
           <div className="mt-4 py-3 rounded-2xl bg-green-50 text-green-700 text-center font-medium flex items-center justify-center gap-2">
-            <span className="text-xl">🎉</span> Obrigado pelo seu feedback!
+            <span className="text-xl">🎉</span> Obrigado pela sugestão!
           </div>
         ) : (
           <button
-            onClick={handleEnviarFeedback}
-            disabled={feedbackEnviando || !feedbackMensagem.trim()}
+            onClick={handleEnviarSugestao}
+            disabled={enviandoSugestao || !sugestao.trim()}
             className={`w-full mt-4 py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-all ${
-              feedbackEnviando || !feedbackMensagem.trim()
+              enviandoSugestao || !sugestao.trim()
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-lg'
+                : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:shadow-lg'
             }`}
           >
-            {feedbackEnviando ? (
+            {enviandoSugestao ? (
               <>
                 <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
                 Enviando...
@@ -284,7 +254,7 @@ export default function ProfilePage() {
             ) : (
               <>
                 <Send className="w-4 h-4" />
-                Enviar Feedback
+                Enviar Sugestão
               </>
             )}
           </button>
