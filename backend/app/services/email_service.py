@@ -12,7 +12,7 @@ def send_email(to: str, subject: str, html_content: str):
     
     try:
         resend.Emails.send({
-            "from": "Nutri-Vision <onboarding@resend.dev>",
+            "from": "Nutri-Vision <noreply@ai8hub.com>",
             "to": to,
             "subject": subject,
             "html": html_content
