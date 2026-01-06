@@ -17,10 +17,9 @@ white or wooden table background, top-down or 45-degree angle view,
 realistic and appetizing presentation."""
 
             response = await self.client.images.generate(
-                model="dall-e-3",
+                model="dall-e-2",
                 prompt=full_prompt,
-                size="1024x1024",
-                quality="standard",
+                size="512x512",
                 n=1
             )
             return response.data[0].url

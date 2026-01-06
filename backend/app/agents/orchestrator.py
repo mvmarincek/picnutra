@@ -9,6 +9,7 @@ from app.agents.health_advisor import HealthAdvisorAgent
 from app.agents.meal_optimizer import MealOptimizerAgent
 from app.agents.image_generator import ImageGenerationManager
 from app.core.config import settings
+import asyncio
 
 class NutriOrchestrator:
     def __init__(self, openai_api_key: str):
@@ -101,25 +102,23 @@ class NutriOrchestrator:
             job.etapa_atual = "Analisando impacto nutricional..."
             await db.commit()
             
-            health_result = await self.health_advisor.analyze(
-                nutrition_result["calorias"],
-                nutrition_result["macros"],
-                perfil
-            )
-            
             optimization_result = None
             image_url = None
             
             if mode == "full":
-                job.etapa_atual = "Gerando sugestão otimizada..."
-                await db.commit()
-                
-                optimization_result = await self.meal_optimizer.optimize(
-                    recognition_result.get("itens_identificados", []),
-                    portion_result.get("porcoes", []),
-                    nutrition_result["calorias"],
-                    nutrition_result["macros"],
-                    perfil
+                health_result, optimization_result = await asyncio.gather(
+                    self.health_advisor.analyze(
+                        nutrition_result["calorias"],
+                        nutrition_result["macros"],
+                        perfil
+                    ),
+                    self.meal_optimizer.optimize(
+                        recognition_result.get("itens_identificados", []),
+                        portion_result.get("porcoes", []),
+                        nutrition_result["calorias"],
+                        nutrition_result["macros"],
+                        perfil
+                    )
                 )
                 
                 if optimization_result.get("prompt_para_imagem"):
@@ -129,6 +128,12 @@ class NutriOrchestrator:
                     image_url = await self.image_generator.generate(
                         optimization_result["prompt_para_imagem"]
                     )
+            else:
+                health_result = await self.health_advisor.analyze(
+                    nutrition_result["calorias"],
+                    nutrition_result["macros"],
+                    perfil
+                )
             
             analysis = MealAnalysis(
                 meal_id=meal.id,
