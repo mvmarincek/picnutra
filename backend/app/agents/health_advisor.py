@@ -3,27 +3,43 @@ from typing import Dict, Any, Optional
 import json
 
 HEALTH_ADVISOR_INSTRUCTIONS = """
-Você é um consultor nutricional que analisa refeições e fornece orientações práticas.
+Você é um consultor nutricional amigável e motivador, como um personal trainer de alimentação. 
+Seu tom é sempre positivo, encorajador e prático.
 
-Sua função é:
-1. Analisar os valores nutricionais da refeição
-2. Identificar benefícios (proteína adequada, fibras, micronutrientes prováveis)
-3. Identificar pontos de atenção (açúcar alto, gordura alta, baixa fibra, etc.)
-4. Sugerir 3 ações pequenas e realistas para melhorar a refeição
+PRINCÍPIOS BASEADOS EM NUTRIÇÃO MODERNA:
+- Dieta Mediterrânea: priorize azeite, peixes, vegetais, grãos integrais
+- Alimentação anti-inflamatória: evite ultraprocessados, açúcares refinados
+- Densidade nutricional: valorize alimentos ricos em nutrientes por caloria
+- Equilíbrio de macros: proteína adequada (1.2-2g/kg), carbos complexos, gorduras boas
+- Fibras: mínimo 25g/dia para saúde intestinal e saciedade
+- Hidratação: fundamental para metabolismo e energia
 
-REGRAS IMPORTANTES:
-- NUNCA fornecer aconselhamento médico
-- NUNCA diagnosticar condições de saúde
-- Sempre incluir aviso de que não substitui profissional
-- Ser objetivo e prático
-- Considerar as restrições e objetivo do usuário
+REGRAS DE ANÁLISE:
+1. SEMPRE comece identificando algo positivo na refeição
+2. Use linguagem encorajadora, nunca crítica ou julgadora
+3. Dê dicas práticas e fáceis de implementar
+4. Considere o objetivo do usuário (emagrecer, ganhar massa, etc.)
+5. Mencione benefícios científicos quando relevante
+6. Sugira pequenas mudanças, não transformações radicais
+
+FORMATO DAS RECOMENDAÇÕES:
+- Seja específico e acionável
+- Use frases curtas e diretas
+- Inclua o "porquê" de cada sugestão
+- Máximo 3 recomendações focadas
+
+IMPORTANTE:
+- NUNCA forneça diagnósticos médicos
+- NUNCA prescreva dietas restritivas
+- Sempre inclua aviso de que não substitui profissional
+- Celebre as boas escolhas do usuário
 
 Retorne SEMPRE um JSON válido no formato:
 {
-  "beneficios": ["string"],
-  "pontos_de_atencao": ["string"],
-  "recomendacoes_praticas": ["string"],
-  "aviso": "string"
+  "beneficios": ["string - pontos positivos da refeição"],
+  "pontos_de_atencao": ["string - o que pode ser melhorado, sem ser crítico"],
+  "recomendacoes_praticas": ["string - dicas acionáveis com explicação do benefício"],
+  "aviso": "string - lembrete amigável sobre consultar profissional"
 }
 """
 
@@ -37,21 +53,45 @@ class HealthAdvisorAgent:
         macros: Dict[str, float],
         perfil: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-        perfil_str = json.dumps(perfil, ensure_ascii=False) if perfil else "Perfil não informado"
+        perfil_context = ""
+        if perfil:
+            if perfil.get("objetivo"):
+                objetivos_map = {
+                    "emagrecer": "quer emagrecer de forma saudável",
+                    "manter": "quer manter o peso atual",
+                    "ganhar_massa": "quer ganhar massa muscular",
+                    "saude_geral": "busca melhorar a saúde geral"
+                }
+                perfil_context += f"O usuário {objetivos_map.get(perfil['objetivo'], perfil['objetivo'])}. "
+            if perfil.get("restricoes"):
+                perfil_context += f"Restrições alimentares: {', '.join(perfil['restricoes'])}. "
+            if perfil.get("alergias"):
+                perfil_context += f"Alergias: {', '.join(perfil['alergias'])}. "
         
-        prompt = f"""Analise esta refeição e forneça orientações práticas.
+        if not perfil_context:
+            perfil_context = "Perfil não informado - forneça dicas gerais de alimentação saudável."
+        
+        proteina_por_caloria = (macros['proteina_g'] * 4 / calorias['central'] * 100) if calorias['central'] > 0 else 0
+        fibra = macros.get('fibra_g', 0)
+        
+        prompt = f"""Analise esta refeição e forneça orientações motivadoras e práticas.
 
 DADOS NUTRICIONAIS:
-- Calorias: {calorias['central']} kcal (faixa: {calorias['min']}-{calorias['max']} kcal)
-- Proteína: {macros['proteina_g']}g
-- Carboidratos: {macros['carbo_g']}g
-- Gordura: {macros['gordura_g']}g
-- Fibra: {macros.get('fibra_g', 0)}g
+- Calorias: {calorias['central']:.0f} kcal (faixa: {calorias['min']:.0f}-{calorias['max']:.0f} kcal)
+- Proteína: {macros['proteina_g']:.1f}g ({proteina_por_caloria:.1f}% das calorias)
+- Carboidratos: {macros['carbo_g']:.1f}g
+- Gordura: {macros['gordura_g']:.1f}g
+- Fibra: {fibra:.1f}g
 
 PERFIL DO USUÁRIO:
-{perfil_str}
+{perfil_context}
 
-Forneça benefícios, pontos de atenção e 3 recomendações práticas.
+INSTRUÇÕES:
+1. Identifique pelo menos 2 pontos positivos (sempre encontre algo bom!)
+2. Se houver pontos de atenção, apresente de forma construtiva
+3. Dê 3 dicas práticas e motivadoras, explicando o benefício de cada uma
+4. Use tom amigável como um personal trainer de alimentação
+
 Retorne APENAS o JSON, sem texto adicional."""
 
         try:
@@ -61,7 +101,7 @@ Retorne APENAS o JSON, sem texto adicional."""
                     {"role": "system", "content": HEALTH_ADVISOR_INSTRUCTIONS},
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=1000
+                max_tokens=1200
             )
             
             content = response.choices[0].message.content
@@ -71,13 +111,17 @@ Retorne APENAS o JSON, sem texto adicional."""
                 content = content.split("```")[1].split("```")[0]
             result = json.loads(content.strip())
             if "aviso" not in result:
-                result["aviso"] = "Esta análise é apenas informativa e não substitui orientação de nutricionista ou médico."
+                result["aviso"] = "Lembre-se: esta análise é informativa e complementar. Para orientações personalizadas, consulte um nutricionista."
             return result
         except Exception as e:
             return {
-                "beneficios": [],
+                "beneficios": ["Parabéns por registrar sua refeição! O autoconhecimento alimentar é o primeiro passo para uma vida mais saudável."],
                 "pontos_de_atencao": [],
-                "recomendacoes_praticas": [],
-                "aviso": "Esta análise é apenas informativa e não substitui orientação de nutricionista ou médico.",
+                "recomendacoes_praticas": [
+                    "Continue registrando suas refeições para entender melhor seus padrões alimentares",
+                    "Tente incluir vegetais coloridos em pelo menos duas refeições por dia",
+                    "Mantenha-se hidratado - a água é essencial para o metabolismo"
+                ],
+                "aviso": "Esta análise é informativa e não substitui orientação de nutricionista ou médico.",
                 "erro": str(e)
             }

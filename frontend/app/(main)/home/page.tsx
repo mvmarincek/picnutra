@@ -1,16 +1,31 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { mealsApi } from '@/lib/api';
-import { Upload, UtensilsCrossed, Cake, Coffee } from 'lucide-react';
+import { Upload, UtensilsCrossed, Cake, Coffee, Sparkles, Target, Zap, ArrowRight, Heart } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
 
 const mealTypes = [
-  { id: 'prato', label: 'Prato', icon: UtensilsCrossed },
-  { id: 'sobremesa', label: 'Sobremesa', icon: Cake },
-  { id: 'bebida', label: 'Bebida', icon: Coffee }
+  { id: 'prato', label: 'Prato', icon: UtensilsCrossed, color: 'from-green-400 to-teal-400' },
+  { id: 'sobremesa', label: 'Sobremesa', icon: Cake, color: 'from-pink-400 to-rose-400' },
+  { id: 'bebida', label: 'Bebida', icon: Coffee, color: 'from-amber-400 to-orange-400' }
+];
+
+const motivationalMessages = [
+  "Cada escolha conta! Vamos descobrir juntos os nutrientes do seu prato.",
+  "Conhecimento é poder! Entenda o que você está alimentando seu corpo.",
+  "Você está no caminho certo! Consciência alimentar é o primeiro passo.",
+  "Parabéns por cuidar da sua saúde! Vamos analisar sua refeição.",
+  "Sua jornada de bem-estar começa com pequenas escolhas diárias."
+];
+
+const tips = [
+  "Dica: Pratos coloridos geralmente são mais nutritivos!",
+  "Sabia? Mastigar devagar melhora a digestão e saciedade.",
+  "Lembre-se: Hidratação é fundamental para o metabolismo.",
+  "Fato: Proteínas ajudam a manter a saciedade por mais tempo."
 ];
 
 export default function HomePage() {
@@ -20,9 +35,16 @@ export default function HomePage() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [motivationalMessage, setMotivationalMessage] = useState('');
+  const [tip, setTip] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user, token } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    setMotivationalMessage(motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)]);
+    setTip(tips[Math.floor(Math.random() * tips.length)]);
+  }, []);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -40,6 +62,7 @@ export default function HomePage() {
       const reader = new FileReader();
       reader.onload = (e) => setPreview(e.target?.result as string);
       reader.readAsDataURL(compressedFile);
+      setError('');
     } catch (err) {
       setError('Erro ao processar imagem');
     }
@@ -50,7 +73,7 @@ export default function HomePage() {
 
     const cost = mode === 'full' ? 12 : 5;
     if (user && user.credit_balance < cost && user.pro_analyses_remaining <= 0) {
-      setError(`Créditos insuficientes. Necessário: ${cost}`);
+      setError(`Créditos insuficientes. Você precisa de ${cost} créditos.`);
       return;
     }
 
@@ -72,30 +95,52 @@ export default function HomePage() {
 
   return (
     <div className="max-w-lg mx-auto">
-      <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-        <h1 className="text-2xl font-bold mb-6">Nova Análise</h1>
+      <div className="text-center mb-6">
+        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-100 to-teal-100 px-4 py-2 rounded-full mb-4">
+          <Heart className="w-4 h-4 text-rose-500" />
+          <span className="text-sm font-medium text-green-700">{motivationalMessage}</span>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl shadow-xl p-6 mb-6 border border-green-100">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 rounded-2xl gradient-fresh flex items-center justify-center">
+            <Target className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">Nova Análise</h1>
+            <p className="text-sm text-gray-500">Descubra os nutrientes da sua refeição</p>
+          </div>
+        </div>
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
-            {error}
+          <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-2xl mb-6 text-sm flex items-start gap-3">
+            <span className="text-lg">😕</span>
+            <span>{error}</span>
           </div>
         )}
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Refeição</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-3">
+            O que você vai analisar?
+          </label>
           <div className="grid grid-cols-3 gap-3">
             {mealTypes.map((type) => (
               <button
                 key={type.id}
                 onClick={() => setMealType(type.id)}
-                className={`p-4 rounded-lg border-2 flex flex-col items-center gap-2 transition ${
+                className={`p-4 rounded-2xl border-2 flex flex-col items-center gap-2 transition-all ${
                   mealType === type.id
-                    ? 'border-primary-500 bg-primary-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-green-400 bg-green-50 shadow-md'
+                    : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
                 }`}
               >
-                <type.icon className={`w-6 h-6 ${mealType === type.id ? 'text-primary-600' : 'text-gray-400'}`} />
-                <span className={`text-sm ${mealType === type.id ? 'text-primary-600 font-medium' : 'text-gray-600'}`}>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                  mealType === type.id ? `bg-gradient-to-br ${type.color}` : 'bg-gray-100'
+                }`}>
+                  <type.icon className={`w-5 h-5 ${mealType === type.id ? 'text-white' : 'text-gray-400'}`} />
+                </div>
+                <span className={`text-sm font-medium ${mealType === type.id ? 'text-green-700' : 'text-gray-600'}`}>
                   {type.label}
                 </span>
               </button>
@@ -104,61 +149,85 @@ export default function HomePage() {
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Modo de Análise</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-3">
+            Tipo de análise
+          </label>
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => setMode('simple')}
-              className={`p-4 rounded-lg border-2 text-left transition ${
+              className={`p-4 rounded-2xl border-2 text-left transition-all ${
                 mode === 'simple'
-                  ? 'border-primary-500 bg-primary-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-green-400 bg-green-50'
+                  : 'border-gray-100 hover:border-gray-200'
               }`}
             >
-              <p className={`font-medium ${mode === 'simple' ? 'text-primary-600' : 'text-gray-700'}`}>
-                Simples
-              </p>
-              <p className="text-xs text-gray-500 mt-1">5 créditos</p>
+              <div className="flex items-center gap-2 mb-2">
+                <Zap className={`w-5 h-5 ${mode === 'simple' ? 'text-yellow-500' : 'text-gray-400'}`} />
+                <span className={`font-semibold ${mode === 'simple' ? 'text-green-700' : 'text-gray-700'}`}>
+                  Rápida
+                </span>
+              </div>
+              <p className="text-xs text-gray-500">Calorias e macros</p>
+              <div className="mt-2 inline-flex items-center gap-1 bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">
+                <Sparkles className="w-3 h-3" />
+                5 créditos
+              </div>
             </button>
             <button
               onClick={() => setMode('full')}
-              className={`p-4 rounded-lg border-2 text-left transition ${
+              className={`p-4 rounded-2xl border-2 text-left transition-all relative ${
                 mode === 'full'
-                  ? 'border-primary-500 bg-primary-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-purple-400 bg-purple-50'
+                  : 'border-gray-100 hover:border-gray-200'
               }`}
             >
-              <p className={`font-medium ${mode === 'full' ? 'text-primary-600' : 'text-gray-700'}`}>
-                Completa
-              </p>
-              <p className="text-xs text-gray-500 mt-1">12 créditos + imagem sugerida</p>
+              <div className="absolute -top-2 -right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                PRO
+              </div>
+              <div className="flex items-center gap-2 mb-2">
+                <Target className={`w-5 h-5 ${mode === 'full' ? 'text-purple-500' : 'text-gray-400'}`} />
+                <span className={`font-semibold ${mode === 'full' ? 'text-purple-700' : 'text-gray-700'}`}>
+                  Completa
+                </span>
+              </div>
+              <p className="text-xs text-gray-500">+ Sugestão visual</p>
+              <div className="mt-2 inline-flex items-center gap-1 bg-purple-100 text-purple-700 text-xs font-medium px-2 py-1 rounded-full">
+                <Sparkles className="w-3 h-3" />
+                12 créditos
+              </div>
             </button>
           </div>
         </div>
 
         {preview ? (
           <div className="mb-6">
-            <div className="relative">
-              <img src={preview} alt="Preview" className="w-full rounded-lg" />
+            <div className="relative rounded-2xl overflow-hidden shadow-lg">
+              <img src={preview} alt="Preview" className="w-full" />
               <button
                 onClick={() => { setPreview(null); setFile(null); }}
-                className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full"
+                className="absolute top-3 right-3 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center transition-colors"
               >
-                X
+                ✕
               </button>
             </div>
+            <p className="text-center text-sm text-gray-500 mt-3">
+              Imagem pronta para análise
+            </p>
           </div>
         ) : (
           <div className="mb-6">
-            <p className="text-sm text-gray-600 mb-3 text-center">
-              Tire uma foto do seu alimento e anexe aqui
-            </p>
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full p-8 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center gap-2 hover:border-primary-400 hover:bg-primary-50 transition"
-            >
-              <Upload className="w-10 h-10 text-gray-400" />
-              <span className="text-sm text-gray-600">Selecionar Imagem</span>
-            </button>
+            <div className="bg-gradient-to-br from-green-50 to-teal-50 border-2 border-dashed border-green-200 rounded-2xl p-8 text-center">
+              <p className="text-gray-600 mb-4">
+                📸 Tire uma foto do seu alimento e anexe aqui
+              </p>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex items-center gap-2 gradient-fresh text-white px-6 py-3 rounded-full font-medium hover:shadow-lg hover:shadow-green-200 transition-all"
+              >
+                <Upload className="w-5 h-5" />
+                Selecionar Imagem
+              </button>
+            </div>
             <input
               ref={fileInputRef}
               type="file"
@@ -172,14 +241,34 @@ export default function HomePage() {
         <button
           onClick={handleAnalyze}
           disabled={!file || loading}
-          className="w-full bg-primary-500 text-white py-4 rounded-xl font-semibold hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
+            file && !loading
+              ? 'gradient-fresh text-white hover:shadow-xl hover:shadow-green-200'
+              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+          }`}
         >
-          {loading ? 'Enviando...' : `Analisar (${cost} créditos)`}
+          {loading ? (
+            <>
+              <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
+              Analisando...
+            </>
+          ) : (
+            <>
+              Analisar Refeição
+              <ArrowRight className="w-5 h-5" />
+            </>
+          )}
         </button>
 
         <p className="text-center text-sm text-gray-500 mt-4">
-          Saldo atual: {user?.credit_balance} créditos
-          {user?.pro_analyses_remaining ? ` | ${user.pro_analyses_remaining} análises Pro` : ''}
+          Custo: {cost} créditos • Saldo: {user?.credit_balance} créditos
+        </p>
+      </div>
+
+      <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-100">
+        <p className="text-sm text-amber-800 flex items-start gap-2">
+          <span className="text-lg">💡</span>
+          <span>{tip}</span>
         </p>
       </div>
     </div>

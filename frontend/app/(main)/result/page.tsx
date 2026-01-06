@@ -4,17 +4,29 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { mealsApi, MealDetail } from '@/lib/api';
-import { CheckCircle, AlertTriangle, Lightbulb, ArrowLeft } from 'lucide-react';
+import { CheckCircle, AlertTriangle, Lightbulb, ArrowLeft, Sparkles, Trophy, Heart, Flame, Salad } from 'lucide-react';
 import Image from 'next/image';
+
+const celebrationMessages = [
+  "Excelente escolha! Continue assim!",
+  "Parabéns por cuidar da sua alimentação!",
+  "Você está no caminho certo!",
+  "Ótimo trabalho em conhecer seus alimentos!"
+];
 
 function ResultContent() {
   const [meal, setMeal] = useState<MealDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [celebration, setCelebration] = useState('');
   const { token } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const mealId = searchParams.get('mealId');
+
+  useEffect(() => {
+    setCelebration(celebrationMessages[Math.floor(Math.random() * celebrationMessages.length)]);
+  }, []);
 
   useEffect(() => {
     if (!token || !mealId) return;
@@ -35,8 +47,11 @@ function ResultContent() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="w-16 h-16 rounded-2xl gradient-fresh flex items-center justify-center animate-pulse mb-4">
+          <Salad className="w-8 h-8 text-white" />
+        </div>
+        <p className="text-gray-600">Carregando resultado...</p>
       </div>
     );
   }
@@ -44,9 +59,15 @@ function ResultContent() {
   if (error || !meal) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-500">{error || 'Refeição não encontrada'}</p>
-        <button onClick={() => router.push('/home')} className="mt-4 text-primary-600">
-          Voltar
+        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span className="text-3xl">😕</span>
+        </div>
+        <p className="text-red-500 mb-4">{error || 'Refeição não encontrada'}</p>
+        <button 
+          onClick={() => router.push('/home')} 
+          className="gradient-fresh text-white px-6 py-2 rounded-full"
+        >
+          Voltar ao início
         </button>
       </div>
     );
@@ -56,90 +77,127 @@ function ResultContent() {
   if (!analysis) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">Análise não disponível</p>
-        <button onClick={() => router.push('/home')} className="mt-4 text-primary-600">
-          Voltar
+        <p className="text-gray-600 mb-4">Análise não disponível</p>
+        <button 
+          onClick={() => router.push('/home')} 
+          className="gradient-fresh text-white px-6 py-2 rounded-full"
+        >
+          Voltar ao início
         </button>
       </div>
     );
   }
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://nutrivision-api-dcr0.onrender.com';
 
-  const getConfiancaColor = (confianca: string) => {
+  const getConfiancaInfo = (confianca: string) => {
     switch (confianca) {
-      case 'alto': return 'text-green-600 bg-green-100';
-      case 'medio': return 'text-yellow-600 bg-yellow-100';
-      default: return 'text-red-600 bg-red-100';
+      case 'alto': return { color: 'text-green-600 bg-green-100', label: 'Alta', emoji: '🎯' };
+      case 'medio': return { color: 'text-amber-600 bg-amber-100', label: 'Média', emoji: '📊' };
+      default: return { color: 'text-orange-600 bg-orange-100', label: 'Aproximada', emoji: '📐' };
     }
+  };
+
+  const confiancaInfo = getConfiancaInfo(analysis.confianca);
+
+  const getCalorieEmoji = (calorias: number) => {
+    if (calorias < 400) return '🥗';
+    if (calorias < 700) return '🍽️';
+    return '🍛';
   };
 
   return (
     <div className="max-w-2xl mx-auto pb-8">
       <button
         onClick={() => router.push('/home')}
-        className="flex items-center text-gray-600 mb-4 hover:text-primary-600"
+        className="flex items-center text-gray-500 mb-4 hover:text-green-600 transition-colors"
       >
         <ArrowLeft className="w-5 h-5 mr-1" /> Nova análise
       </button>
 
-      <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
-        <div className="relative h-48">
+      <div className="bg-gradient-to-r from-green-100 to-teal-100 rounded-2xl p-4 mb-6 flex items-center gap-3">
+        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+          <Trophy className="w-6 h-6 text-yellow-500" />
+        </div>
+        <div>
+          <p className="font-semibold text-green-800">{celebration}</p>
+          <p className="text-sm text-green-600">Análise concluída com sucesso</p>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl shadow-xl overflow-hidden mb-6 border border-green-100">
+        <div className="relative h-52">
           <Image
             src={`${apiUrl}${meal.image_url}`}
             alt="Refeição"
             fill
             className="object-cover"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+          <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+            <span className={`px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-1 ${confiancaInfo.color}`}>
+              {confiancaInfo.emoji} Confiança {confiancaInfo.label}
+            </span>
+          </div>
         </div>
 
         <div className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold">Resultado da Análise</h2>
-            <span className={`px-3 py-1 rounded-full text-sm ${getConfiancaColor(analysis.confianca)}`}>
-              Confiança: {analysis.confianca}
-            </span>
-          </div>
-
-          <div className="bg-primary-50 rounded-xl p-4 mb-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-primary-600">
+          <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-2xl p-6 mb-6 border border-green-100">
+            <div className="text-center mb-4">
+              <div className="inline-flex items-center gap-2 mb-2">
+                <span className="text-3xl">{getCalorieEmoji(analysis.calorias.central)}</span>
+              </div>
+              <p className="text-4xl font-bold bg-gradient-to-r from-green-600 to-teal-500 bg-clip-text text-transparent">
                 {analysis.calorias.central.toFixed(0)}
               </p>
-              <p className="text-sm text-gray-600">kcal (estimativa)</p>
-              <p className="text-xs text-gray-500 mt-1">
-                Faixa: {analysis.calorias.min.toFixed(0)} - {analysis.calorias.max.toFixed(0)} kcal
+              <p className="text-sm text-gray-600">quilocalorias</p>
+              <p className="text-xs text-gray-400 mt-1">
+                Faixa estimada: {analysis.calorias.min.toFixed(0)} - {analysis.calorias.max.toFixed(0)} kcal
               </p>
             </div>
 
-            <div className="grid grid-cols-4 gap-4 mt-4">
-              <div className="text-center">
-                <p className="font-bold text-lg">{analysis.macros.proteina_g.toFixed(1)}g</p>
-                <p className="text-xs text-gray-600">Proteína</p>
+            <div className="grid grid-cols-4 gap-3">
+              <div className="bg-white rounded-xl p-3 text-center shadow-sm">
+                <div className="w-8 h-8 bg-red-100 rounded-lg mx-auto mb-1 flex items-center justify-center">
+                  <span className="text-sm">🥩</span>
+                </div>
+                <p className="font-bold text-gray-900">{analysis.macros.proteina_g.toFixed(0)}g</p>
+                <p className="text-xs text-gray-500">Proteína</p>
               </div>
-              <div className="text-center">
-                <p className="font-bold text-lg">{analysis.macros.carbo_g.toFixed(1)}g</p>
-                <p className="text-xs text-gray-600">Carboidratos</p>
+              <div className="bg-white rounded-xl p-3 text-center shadow-sm">
+                <div className="w-8 h-8 bg-amber-100 rounded-lg mx-auto mb-1 flex items-center justify-center">
+                  <span className="text-sm">🍞</span>
+                </div>
+                <p className="font-bold text-gray-900">{analysis.macros.carbo_g.toFixed(0)}g</p>
+                <p className="text-xs text-gray-500">Carbos</p>
               </div>
-              <div className="text-center">
-                <p className="font-bold text-lg">{analysis.macros.gordura_g.toFixed(1)}g</p>
-                <p className="text-xs text-gray-600">Gordura</p>
+              <div className="bg-white rounded-xl p-3 text-center shadow-sm">
+                <div className="w-8 h-8 bg-yellow-100 rounded-lg mx-auto mb-1 flex items-center justify-center">
+                  <span className="text-sm">🧈</span>
+                </div>
+                <p className="font-bold text-gray-900">{analysis.macros.gordura_g.toFixed(0)}g</p>
+                <p className="text-xs text-gray-500">Gordura</p>
               </div>
-              <div className="text-center">
-                <p className="font-bold text-lg">{(analysis.macros.fibra_g || 0).toFixed(1)}g</p>
-                <p className="text-xs text-gray-600">Fibra</p>
+              <div className="bg-white rounded-xl p-3 text-center shadow-sm">
+                <div className="w-8 h-8 bg-green-100 rounded-lg mx-auto mb-1 flex items-center justify-center">
+                  <span className="text-sm">🥬</span>
+                </div>
+                <p className="font-bold text-gray-900">{(analysis.macros.fibra_g || 0).toFixed(0)}g</p>
+                <p className="text-xs text-gray-500">Fibra</p>
               </div>
             </div>
           </div>
 
           <div className="mb-6">
-            <h3 className="font-semibold mb-3">Alimentos Identificados</h3>
+            <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <span className="text-lg">🍽️</span> Alimentos Identificados
+            </h3>
             <div className="space-y-2">
               {analysis.itens_identificados.map((item, idx) => (
-                <div key={idx} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                  <span>{item.nome}</span>
-                  <span className={`text-xs px-2 py-1 rounded ${getConfiancaColor(item.confianca)}`}>
-                    {item.confianca}
+                <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                  <span className="font-medium">{item.nome}</span>
+                  <span className={`text-xs px-2 py-1 rounded-full ${getConfiancaInfo(item.confianca).color}`}>
+                    {getConfiancaInfo(item.confianca).label}
                   </span>
                 </div>
               ))}
@@ -147,13 +205,15 @@ function ResultContent() {
           </div>
 
           <div className="mb-6">
-            <h3 className="font-semibold mb-3">Porções Estimadas</h3>
+            <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <span className="text-lg">⚖️</span> Porções Estimadas
+            </h3>
             <div className="space-y-2">
               {analysis.porcoes_estimadas.map((porcao, idx) => (
-                <div key={idx} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
                   <span>{porcao.item}</span>
-                  <span className="text-sm text-gray-600">
-                    {porcao.peso_g_ml_central.toFixed(0)}g ({porcao.faixa_min.toFixed(0)}-{porcao.faixa_max.toFixed(0)}g)
+                  <span className="text-sm font-medium text-gray-600 bg-white px-3 py-1 rounded-full">
+                    ~{porcao.peso_g_ml_central.toFixed(0)}g
                   </span>
                 </div>
               ))}
@@ -161,15 +221,15 @@ function ResultContent() {
           </div>
 
           {analysis.beneficios.length > 0 && (
-            <div className="mb-6">
-              <h3 className="font-semibold mb-3 flex items-center">
-                <CheckCircle className="w-5 h-5 text-green-500 mr-2" /> Benefícios
+            <div className="mb-6 bg-green-50 rounded-2xl p-4 border border-green-100">
+              <h3 className="font-bold text-green-800 mb-3 flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-green-500" /> Pontos Positivos
               </h3>
               <ul className="space-y-2">
                 {analysis.beneficios.map((b, idx) => (
-                  <li key={idx} className="flex items-start">
-                    <span className="text-green-500 mr-2">+</span>
-                    <span className="text-gray-700">{b}</span>
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-green-500 mt-0.5">✓</span>
+                    <span className="text-green-800">{b}</span>
                   </li>
                 ))}
               </ul>
@@ -177,15 +237,15 @@ function ResultContent() {
           )}
 
           {analysis.pontos_de_atencao.length > 0 && (
-            <div className="mb-6">
-              <h3 className="font-semibold mb-3 flex items-center">
-                <AlertTriangle className="w-5 h-5 text-yellow-500 mr-2" /> Pontos de Atenção
+            <div className="mb-6 bg-amber-50 rounded-2xl p-4 border border-amber-100">
+              <h3 className="font-bold text-amber-800 mb-3 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-500" /> Fique Atento
               </h3>
               <ul className="space-y-2">
                 {analysis.pontos_de_atencao.map((p, idx) => (
-                  <li key={idx} className="flex items-start">
-                    <span className="text-yellow-500 mr-2">!</span>
-                    <span className="text-gray-700">{p}</span>
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-amber-500 mt-0.5">!</span>
+                    <span className="text-amber-800">{p}</span>
                   </li>
                 ))}
               </ul>
@@ -193,15 +253,17 @@ function ResultContent() {
           )}
 
           {analysis.recomendacoes_praticas.length > 0 && (
-            <div className="mb-6">
-              <h3 className="font-semibold mb-3 flex items-center">
-                <Lightbulb className="w-5 h-5 text-blue-500 mr-2" /> Recomendações
+            <div className="mb-6 bg-blue-50 rounded-2xl p-4 border border-blue-100">
+              <h3 className="font-bold text-blue-800 mb-3 flex items-center gap-2">
+                <Lightbulb className="w-5 h-5 text-blue-500" /> Dicas do Nutri-Vision
               </h3>
               <ul className="space-y-2">
                 {analysis.recomendacoes_praticas.map((r, idx) => (
-                  <li key={idx} className="flex items-start">
-                    <span className="text-blue-500 mr-2">{idx + 1}.</span>
-                    <span className="text-gray-700">{r}</span>
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="bg-blue-200 text-blue-700 text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      {idx + 1}
+                    </span>
+                    <span className="text-blue-800">{r}</span>
                   </li>
                 ))}
               </ul>
@@ -209,55 +271,69 @@ function ResultContent() {
           )}
 
           {analysis.incertezas.length > 0 && (
-            <div className="mb-6">
-              <h3 className="font-semibold mb-3 text-gray-600">Fontes de Incerteza</h3>
-              <ul className="text-sm text-gray-500">
+            <details className="mb-4">
+              <summary className="text-sm text-gray-500 cursor-pointer hover:text-gray-700">
+                Ver fontes de incerteza
+              </summary>
+              <ul className="mt-2 text-sm text-gray-500 pl-4">
                 {analysis.incertezas.map((i, idx) => (
-                  <li key={idx}>- {i}</li>
+                  <li key={idx} className="list-disc">{i}</li>
                 ))}
               </ul>
-            </div>
+            </details>
           )}
         </div>
       </div>
 
       {analysis.sugestao_melhorada_texto && (
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-          <h3 className="text-lg font-bold mb-4">Sugestão Melhorada</h3>
-          <p className="text-gray-700 mb-4">{analysis.sugestao_melhorada_texto}</p>
+        <div className="bg-white rounded-3xl shadow-xl p-6 mb-6 border border-purple-100">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-2xl gradient-vitality flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">Versão Turbinada</h3>
+              <p className="text-sm text-gray-500">Sugestão para melhorar seu prato</p>
+            </div>
+          </div>
+          
+          <p className="text-gray-700 mb-4 leading-relaxed">{analysis.sugestao_melhorada_texto}</p>
 
           {analysis.mudancas_sugeridas && analysis.mudancas_sugeridas.length > 0 && (
-            <div className="mb-4">
-              <p className="font-medium mb-2">Mudanças sugeridas:</p>
-              <ul className="list-disc list-inside text-gray-600">
+            <div className="mb-4 bg-purple-50 rounded-xl p-4">
+              <p className="font-medium text-purple-800 mb-2">Mudanças sugeridas:</p>
+              <ul className="space-y-1">
                 {analysis.mudancas_sugeridas.map((m, idx) => (
-                  <li key={idx}>{m}</li>
+                  <li key={idx} className="flex items-start gap-2 text-purple-700">
+                    <span>→</span>
+                    <span>{m}</span>
+                  </li>
                 ))}
               </ul>
             </div>
           )}
 
           {analysis.calorias_nova_versao && (
-            <div className="bg-green-50 rounded-lg p-4 mb-4">
-              <p className="font-medium text-green-700 mb-2">Valores da versão melhorada:</p>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-gray-600">Calorias: </span>
-                  <span className="font-medium">{analysis.calorias_nova_versao.central.toFixed(0)} kcal</span>
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 mb-4">
+              <p className="font-medium text-purple-800 mb-3">Novos valores nutricionais:</p>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="bg-white rounded-lg p-2 text-center">
+                  <p className="font-bold text-purple-600">{analysis.calorias_nova_versao.central.toFixed(0)} kcal</p>
+                  <p className="text-xs text-gray-500">Calorias</p>
                 </div>
                 {analysis.macros_nova_versao && (
                   <>
-                    <div>
-                      <span className="text-gray-600">Proteína: </span>
-                      <span className="font-medium">{analysis.macros_nova_versao.proteina_g.toFixed(1)}g</span>
+                    <div className="bg-white rounded-lg p-2 text-center">
+                      <p className="font-bold text-purple-600">{analysis.macros_nova_versao.proteina_g.toFixed(0)}g</p>
+                      <p className="text-xs text-gray-500">Proteína</p>
                     </div>
-                    <div>
-                      <span className="text-gray-600">Carboidratos: </span>
-                      <span className="font-medium">{analysis.macros_nova_versao.carbo_g.toFixed(1)}g</span>
+                    <div className="bg-white rounded-lg p-2 text-center">
+                      <p className="font-bold text-purple-600">{analysis.macros_nova_versao.carbo_g.toFixed(0)}g</p>
+                      <p className="text-xs text-gray-500">Carboidratos</p>
                     </div>
-                    <div>
-                      <span className="text-gray-600">Gordura: </span>
-                      <span className="font-medium">{analysis.macros_nova_versao.gordura_g.toFixed(1)}g</span>
+                    <div className="bg-white rounded-lg p-2 text-center">
+                      <p className="font-bold text-purple-600">{analysis.macros_nova_versao.gordura_g.toFixed(0)}g</p>
+                      <p className="text-xs text-gray-500">Gordura</p>
                     </div>
                   </>
                 )}
@@ -266,19 +342,30 @@ function ResultContent() {
           )}
 
           {analysis.sugestao_melhorada_imagem_url && (
-            <div className="relative h-64 rounded-lg overflow-hidden">
+            <div className="relative h-64 rounded-2xl overflow-hidden shadow-lg">
               <Image
                 src={analysis.sugestao_melhorada_imagem_url}
                 alt="Versão melhorada"
                 fill
                 className="object-cover"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-purple-900/30 to-transparent" />
+              <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-medium text-purple-700">
+                Gerado por IA
+              </div>
             </div>
           )}
         </div>
       )}
 
-      <p className="text-xs text-gray-500 text-center">
+      <div className="bg-gradient-to-r from-green-100 to-teal-100 rounded-2xl p-4 mb-4 text-center">
+        <p className="text-green-800 font-medium flex items-center justify-center gap-2">
+          <Heart className="w-5 h-5 text-rose-500" />
+          Continue cuidando da sua saúde! Cada refeição conta.
+        </p>
+      </div>
+
+      <p className="text-xs text-gray-400 text-center">
         Esta análise é informativa e não substitui orientação de nutricionista ou médico.
       </p>
     </div>
@@ -288,8 +375,11 @@ function ResultContent() {
 export default function ResultPage() {
   return (
     <Suspense fallback={
-      <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="w-16 h-16 rounded-2xl gradient-fresh flex items-center justify-center animate-pulse mb-4">
+          <Salad className="w-8 h-8 text-white" />
+        </div>
+        <p className="text-gray-600">Carregando...</p>
       </div>
     }>
       <ResultContent />
