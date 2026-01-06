@@ -204,6 +204,7 @@ async def list_meals(
     result = await db.execute(
         select(Meal)
         .where(Meal.user_id == current_user.id)
+        .where(Meal.status != MealStatus.PENDING.value)
         .order_by(Meal.created_at.desc())
     )
     meals = result.scalars().all()
