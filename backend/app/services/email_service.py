@@ -52,7 +52,7 @@ def send_welcome_email(user_email: str):
         </div>
         
         <div style="text-align: center; margin-bottom: 20px;">
-            <a href="https://nutrivision.vercel.app/home" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
+            <a href="https://nutrivision-drab.vercel.app/home" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
                 Comecar Agora
             </a>
         </div>
@@ -67,7 +67,7 @@ def send_welcome_email(user_email: str):
     return send_email(user_email, subject, html)
 
 def send_password_reset_email(user_email: str, reset_token: str):
-    reset_url = f"https://nutrivision.vercel.app/reset-password?token={reset_token}"
+    reset_url = f"https://nutrivision-drab.vercel.app/reset-password?token={reset_token}"
     subject = "Recuperacao de Senha - Nutri-Vision"
     html = f"""
     <html>
