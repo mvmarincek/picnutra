@@ -314,14 +314,12 @@ function ResultContent() {
           )}
 
           {analysis.sugestao_melhorada_imagem_url && (
-            <div className="relative flex justify-center">
-              <div className="relative w-4/5 max-w-xs">
-                <img
-                  src={analysis.sugestao_melhorada_imagem_url}
-                  alt="Versão melhorada"
-                  className="w-full h-auto rounded-2xl shadow-lg"
-                />
-              </div>
+            <div className="mt-4">
+              <img
+                src={analysis.sugestao_melhorada_imagem_url}
+                alt="Versão melhorada"
+                className="w-full h-auto rounded-2xl shadow-lg"
+              />
             </div>
           )}
         </div>
