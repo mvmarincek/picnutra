@@ -185,25 +185,12 @@ function ResultContent() {
 
           <div className="mb-6">
             <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-              <span className="text-lg">🍽️</span> Alimentos Identificados
-            </h3>
-            <div className="space-y-2">
-              {analysis.itens_identificados.map((item, idx) => (
-                <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
-                  <span className="font-medium">{item.nome}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-              <span className="text-lg">⚖️</span> Porções Estimadas
+              <span className="text-lg">🍽️</span> Alimentos e Porções
             </h3>
             <div className="space-y-2">
               {analysis.porcoes_estimadas.map((porcao, idx) => (
                 <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
-                  <span>{porcao.item}</span>
+                  <span className="font-medium">{porcao.item}</span>
                   <span className="text-sm font-medium text-gray-600 bg-white px-3 py-1 rounded-full">
                     ~{porcao.peso_g_ml_central.toFixed(0)}g
                   </span>
