@@ -95,3 +95,4 @@ npm run dev
 
 - R$ 49,90/mês
 - 30 análises completas incluídas
+"# Deploy trigger"  
