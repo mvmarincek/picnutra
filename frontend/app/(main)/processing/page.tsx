@@ -6,17 +6,49 @@ import { useAuth } from '@/lib/auth';
 import { jobsApi, mealsApi, JobResponse } from '@/lib/api';
 import { Loader2, Salad, ArrowRight } from 'lucide-react';
 
+const dicasEMotivacao = [
+  { emoji: "🥗", texto: "Comer devagar ajuda na digestão e aumenta a saciedade!" },
+  { emoji: "💧", texto: "Beba água antes das refeições - hidratação é essencial!" },
+  { emoji: "🌈", texto: "Quanto mais cores no prato, mais nutrientes você consome!" },
+  { emoji: "🥦", texto: "Vegetais crus preservam mais vitaminas que os cozidos." },
+  { emoji: "💪", texto: "Proteína em cada refeição ajuda a manter a massa muscular." },
+  { emoji: "🍋", texto: "Vitamina C ajuda na absorção de ferro dos vegetais." },
+  { emoji: "🥑", texto: "Gorduras boas são essenciais para absorver vitaminas A, D, E e K." },
+  { emoji: "🌿", texto: "Ervas frescas adicionam sabor sem calorias extras!" },
+  { emoji: "🍎", texto: "Uma maçã por dia? A fibra ajuda no funcionamento intestinal." },
+  { emoji: "🥚", texto: "Ovos são uma das proteínas mais completas da natureza." },
+  { emoji: "⭐", texto: "Você está fazendo um ótimo trabalho cuidando da sua saúde!" },
+  { emoji: "🎯", texto: "Pequenas mudanças diárias geram grandes resultados!" },
+  { emoji: "🔥", texto: "Seu metabolismo agradece quando você come regularmente." },
+  { emoji: "🧠", texto: "Ômega-3 encontrado em peixes é ótimo para o cérebro!" },
+  { emoji: "🌅", texto: "Café da manhã nutritivo dá energia para o dia todo." },
+  { emoji: "🥜", texto: "Um punhado de castanhas é um lanche perfeito e saudável." },
+  { emoji: "🍵", texto: "Chás naturais são ótimos para digestão após as refeições." },
+  { emoji: "🏃", texto: "Alimentação + movimento = combinação perfeita para saúde!" },
+  { emoji: "😴", texto: "Dormir bem também influencia nas escolhas alimentares." },
+  { emoji: "🙌", texto: "Parabéns por registrar suas refeições! Autoconhecimento é poder." },
+];
+
 function ProcessingContent() {
   const [job, setJob] = useState<JobResponse | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [pollingActive, setPollingActive] = useState(true);
+  const [dicaAtual, setDicaAtual] = useState(0);
   const { token } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const jobId = searchParams.get('jobId');
   const mealId = searchParams.get('mealId');
+
+  useEffect(() => {
+    setDicaAtual(Math.floor(Math.random() * dicasEMotivacao.length));
+    const interval = setInterval(() => {
+      setDicaAtual(prev => (prev + 1) % dicasEMotivacao.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const pollJob = useCallback(async () => {
     if (!token || !jobId || !pollingActive) return;
@@ -204,16 +236,17 @@ function ProcessingContent() {
         <h2 className="text-xl font-bold mb-2 text-gray-900">Analisando sua refeição...</h2>
         <p className="text-gray-500 mb-6">{job?.etapa_atual || 'Iniciando análise...'}</p>
         
-        <div className="flex justify-center gap-1">
+        <div className="flex justify-center gap-1 mb-6">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
           <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
           <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
         </div>
+
+        <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl p-4 transition-all duration-500">
+          <div className="text-3xl mb-2">{dicasEMotivacao[dicaAtual].emoji}</div>
+          <p className="text-gray-700 font-medium">{dicasEMotivacao[dicaAtual].texto}</p>
+        </div>
       </div>
-      
-      <p className="text-center text-sm text-gray-400 mt-4">
-        Isso pode levar alguns segundos...
-      </p>
     </div>
   );
 }
