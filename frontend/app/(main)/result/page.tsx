@@ -307,6 +307,10 @@ function ResultContent() {
                       <p className="font-bold text-purple-600">{analysis.macros_nova_versao.gordura_g.toFixed(0)}g</p>
                       <p className="text-xs text-gray-500">Gordura</p>
                     </div>
+                    <div className="bg-white rounded-lg p-2 text-center col-span-2">
+                      <p className="font-bold text-purple-600">{(analysis.macros_nova_versao.fibra_g || 0).toFixed(0)}g</p>
+                      <p className="text-xs text-gray-500">Fibra</p>
+                    </div>
                   </>
                 )}
               </div>
