@@ -8,6 +8,14 @@ declare global {
   }
 }
 
+const slotEnvMap: Record<string, string | undefined> = {
+  HOME_BANNER: process.env.NEXT_PUBLIC_ADSENSE_SLOT_HOME,
+  RESULT_BANNER: process.env.NEXT_PUBLIC_ADSENSE_SLOT_RESULT,
+  HISTORY_BANNER: process.env.NEXT_PUBLIC_ADSENSE_SLOT_HISTORY,
+  PROFILE_BANNER: process.env.NEXT_PUBLIC_ADSENSE_SLOT_PROFILE,
+  PROCESSING_BANNER: process.env.NEXT_PUBLIC_ADSENSE_SLOT_PROCESSING,
+};
+
 interface AdBannerProps {
   slot: string;
   format?: 'auto' | 'horizontal' | 'vertical' | 'rectangle';
@@ -15,23 +23,30 @@ interface AdBannerProps {
 }
 
 export default function AdBanner({ slot, format = 'auto', className = '' }: AdBannerProps) {
+  const slotId = slotEnvMap[slot] || slot;
+  const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+
   useEffect(() => {
     try {
-      if (typeof window !== 'undefined' && window.adsbygoogle) {
+      if (typeof window !== 'undefined' && window.adsbygoogle && clientId && slotId) {
         window.adsbygoogle.push({});
       }
     } catch (err) {
       console.error('AdSense error:', err);
     }
-  }, []);
+  }, [clientId, slotId]);
+
+  if (!clientId || !slotId) {
+    return null;
+  }
 
   return (
     <div className={`ad-container ${className}`}>
       <ins
         className="adsbygoogle"
         style={{ display: 'block' }}
-        data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || ''}
-        data-ad-slot={slot}
+        data-ad-client={clientId}
+        data-ad-slot={slotId}
         data-ad-format={format}
         data-full-width-responsive="true"
       />
