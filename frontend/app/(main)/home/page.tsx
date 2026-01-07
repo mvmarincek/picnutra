@@ -52,20 +52,38 @@ export default function HomePage() {
     if (!selectedFile) return;
 
     try {
-      const options = {
-        maxSizeMB: 2,
-        maxWidthOrHeight: 2048,
-        useWebWorker: true
-      };
-      const compressedFile = await imageCompression(selectedFile, options);
-      setFile(compressedFile);
+      let fileToUse = selectedFile;
+      
+      if (selectedFile.size > 2 * 1024 * 1024) {
+        try {
+          const options = {
+            maxSizeMB: 2,
+            maxWidthOrHeight: 2048,
+            useWebWorker: false
+          };
+          fileToUse = await imageCompression(selectedFile, options);
+        } catch (compressionErr) {
+          console.warn('Compression failed, using original file:', compressionErr);
+          fileToUse = selectedFile;
+        }
+      }
+      
+      setFile(fileToUse);
       
       const reader = new FileReader();
-      reader.onload = (e) => setPreview(e.target?.result as string);
-      reader.readAsDataURL(compressedFile);
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setPreview(event.target.result as string);
+        }
+      };
+      reader.onerror = () => {
+        setError('Erro ao ler imagem');
+      };
+      reader.readAsDataURL(fileToUse);
       setError('');
     } catch (err) {
-      setError('Erro ao processar imagem');
+      console.error('File select error:', err);
+      setError('Erro ao processar imagem. Tente outra foto.');
     }
   };
 
