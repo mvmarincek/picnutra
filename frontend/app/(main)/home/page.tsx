@@ -47,40 +47,58 @@ export default function HomePage() {
     setTip(tips[Math.floor(Math.random() * tips.length)]);
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (preview && preview.startsWith('blob:')) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
+
+  const clearImage = () => {
+    if (preview && preview.startsWith('blob:')) {
+      URL.revokeObjectURL(preview);
+    }
+    setPreview(null);
+    setFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
 
+    setError('');
+
+    if (!selectedFile.type.startsWith('image/')) {
+      setError('Por favor, selecione uma imagem.');
+      return;
+    }
+
     try {
-      let fileToUse = selectedFile;
+      let fileToUse: File = selectedFile;
       
       if (selectedFile.size > 2 * 1024 * 1024) {
         try {
           const options = {
             maxSizeMB: 2,
             maxWidthOrHeight: 2048,
-            useWebWorker: false
+            useWebWorker: false,
+            fileType: selectedFile.type as string
           };
-          fileToUse = await imageCompression(selectedFile, options);
+          const compressed = await imageCompression(selectedFile, options);
+          fileToUse = new File([compressed], selectedFile.name, { type: compressed.type });
         } catch (compressionErr) {
-          console.warn('Compression failed, using original file:', compressionErr);
-          fileToUse = selectedFile;
+          console.warn('Compression failed, using original:', compressionErr);
         }
       }
       
       setFile(fileToUse);
+      const objectUrl = URL.createObjectURL(fileToUse);
+      setPreview(objectUrl);
       
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setPreview(event.target.result as string);
-        }
-      };
-      reader.onerror = () => {
-        setError('Erro ao ler imagem');
-      };
-      reader.readAsDataURL(fileToUse);
-      setError('');
     } catch (err) {
       console.error('File select error:', err);
       setError('Erro ao processar imagem. Tente outra foto.');
@@ -232,7 +250,7 @@ export default function HomePage() {
             <div className="relative rounded-2xl overflow-hidden shadow-lg">
               <img src={preview} alt="Preview" className="w-full" />
               <button
-                onClick={() => { setPreview(null); setFile(null); }}
+                onClick={clearImage}
                 className="absolute top-3 right-3 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center transition-colors"
               >
                 ✕
@@ -260,6 +278,7 @@ export default function HomePage() {
               ref={fileInputRef}
               type="file"
               accept="image/*"
+              capture="environment"
               onChange={handleFileSelect}
               className="hidden"
             />
