@@ -536,35 +536,98 @@ Este projeto foi desenvolvido com assistência de IA. Para continuidade:
 
 ---
 
-*Última atualização: Janeiro 2025*
+*Última atualização: Janeiro 2026*
 
 ---
 
-## Atualizações - Sessão Janeiro 2026
+## Atualizações - Sessão Janeiro 2026 (Parte 2)
+
+### Domínio Personalizado
+
+**Vercel Domains:** 
+- `nutrivision-drab.vercel.app` (gerado automaticamente)
+- `nutrivision.ai8hub.com` (domínio personalizado - configurar CNAME)
+
+**Configuração DNS:**
+- Tipo: CNAME
+- Nome: nutrivision
+- Valor: cname.vercel-dns.com
 
 ### Sistema de Email (Resend)
 
 **Arquivo:** `backend/app/services/email_service.py`
-**Variável Render:** `RESEND_API_KEY`
+**Variável Render:** `RESEND_API_KEY` = `re_ji5CoGsy_BH5pxkxj8eU2Pu2uhdqvUJiJ`
+**Remetente:** `Nutri-Vision <nutrivision-noreply@ai8hub.com>`
+**Domínio verificado:** `ai8hub.com`
+
+**URLs nos emails atualizadas para:** `https://nutrivision-drab.vercel.app`
 
 Funções disponíveis:
-- `send_welcome_email(user_email)` - Enviado no cadastro
+- `send_welcome_email(user_email)` - Enviado automaticamente no cadastro
 - `send_password_reset_email(user_email, reset_token)` - Recuperação de senha
 - `send_suggestion_email(user_email, user_id, mensagem)` - Sugestões (envia para mvmarincek@gmail.com)
+
+### Modelo de Planos FREE vs PRO com AdSense
+
+**Lógica implementada:**
+
+| Plano | Análise Simples | Análise Completa | Anúncios |
+|-------|-----------------|------------------|----------|
+| FREE | Grátis e ilimitada | Requer créditos | Sim (AdSense) |
+| PRO | Usa quota/créditos | Usa quota/créditos | Não |
+
+**Backend - Validação de créditos:**
+- Arquivo: `backend/app/agents/orchestrator.py`
+- FREE + análise simples = `free_unlimited` (não deduz créditos)
+- PRO = usa quota primeiro, depois créditos
+- FREE + análise completa = requer créditos
+
+**Frontend - Exibição:**
+- Análise rápida mostra "Grátis" para usuários FREE
+- Análise completa mostra "12 créditos" com badge PRO
+
+### Google AdSense
+
+**Componente:** `frontend/components/AdBanner.tsx`
+
+**Variáveis de ambiente (Vercel):**
+| Variável | Descrição |
+|----------|-----------|
+| `NEXT_PUBLIC_ADSENSE_CLIENT_ID` | ID do AdSense (ex: `ca-pub-3364979853180818`) |
+| `NEXT_PUBLIC_ADSENSE_SLOT_HOME` | Slot ID - Página Home |
+| `NEXT_PUBLIC_ADSENSE_SLOT_RESULT` | Slot ID - Página Resultado |
+| `NEXT_PUBLIC_ADSENSE_SLOT_HISTORY` | Slot ID - Página Histórico |
+| `NEXT_PUBLIC_ADSENSE_SLOT_PROFILE` | Slot ID - Página Perfil |
+| `NEXT_PUBLIC_ADSENSE_SLOT_PROCESSING` | Slot ID - Página Processamento |
+
+**Implementação:**
+- `frontend/app/layout.tsx` - Carrega script AdSense + metatag
+- `frontend/components/AdBanner.tsx` - Componente de banner
+- Banners só aparecem para usuários com `plan === 'free'`
+- Anúncios não aparecem se variáveis não estiverem configuradas
+
+**Páginas com banners:**
+1. Home - antes das dicas
+2. Resultado - antes do botão "Nova análise"
+3. Histórico - após a lista de refeições
+4. Perfil - após a caixa de sugestões
+5. Processamento - após as dicas motivacionais
+
+**PENDENTE:** Verificar domínio no Google AdSense (requer acesso ao domínio raiz `ai8hub.com` para arquivo `ads.txt`)
 
 ### Recuperação de Senha
 
 **Endpoints:**
-- `POST /auth/forgot-password` - Solicita recuperação
+- `POST /auth/forgot-password` - Solicita recuperação (verifica se usuário existe)
 - `POST /auth/reset-password` - Redefine senha
 
-**Tokens em memória:** `password_reset_tokens` dict em `backend/app/api/routes/auth.py`
-- Expiram em 1 hora
-- Formato: `{token: {user_id, email, expires}}`
+**Comportamento:**
+- Se usuário não existe: retorna `{exists: false}` e frontend oferece criar conta
+- Se usuário existe: envia email com link de recuperação
 
 **Páginas Frontend:**
 - `frontend/app/(auth)/forgot-password/page.tsx` - Solicitar email
-- `frontend/app/reset-password/page.tsx` - Formulário nova senha (NA RAIZ, não em (auth))
+- `frontend/app/reset-password/page.tsx` - Formulário nova senha (NA RAIZ para funcionar no Vercel)
 
 ### Caixa de Sugestões
 
@@ -579,40 +642,50 @@ Funções disponíveis:
 - Alternam a cada 4 segundos
 - Array `dicasEMotivacao` no início do arquivo
 
-### Imagem DALL-E
+### Paralelização de Agentes
 
-**Arquivo:** `backend/app/agents/image_generator.py`
-- Modelo: DALL-E 2
-- Tamanho: 512x512 (quadrado)
+**Arquivo:** `backend/app/agents/orchestrator.py`
+- HealthAdvisor e MealOptimizer rodam em paralelo com `asyncio.gather`
+- Melhora tempo de resposta da análise completa
 
 ### JSON Parsing Robusto
 
 **Arquivo:** `backend/app/agents/json_utils.py`
 - Função `parse_json_safe(content)` - Remove trailing commas antes de parse
-- Usado em todos os agentes
+- Corrige erro "Illegal trailing comma" do GPT-4o
 
-### Melhorias UI
+### Imagem DALL-E
 
-**Result page:** `frontend/app/(main)/result/page.tsx`
-- Imagem mostra completa sem cortes (`w-full h-auto`)
-- Seções "Alimentos e Porções" unificadas
-- Botão "Nova análise" no final com seta direita
-- Removidos badges de confiança
+**Arquivo:** `backend/app/agents/image_generator.py`
+- Modelo: DALL-E 2 (mais rápido)
+- Tamanho: 512x512 (quadrado)
+- Imagem exibida completa sem cortes
 
-**Login/Registro:** Adicionado ícone do app (Salad com gradient)
+---
 
-### Paralelização
+## Variáveis de Ambiente Atualizadas
 
-**Arquivo:** `backend/app/agents/orchestrator.py`
-- HealthAdvisor e MealOptimizer rodam em paralelo (`asyncio.gather`)
+### Backend (Render)
+```env
+DATABASE_URL=postgresql://...
+SECRET_KEY=...
+OPENAI_API_KEY=sk-proj-...
+RESEND_API_KEY=re_ji5CoGsy_BH5pxkxj8eU2Pu2uhdqvUJiJ
+FRONTEND_URL=https://nutrivision-drab.vercel.app
+BACKEND_URL=https://nutrivision-api-dcr0.onrender.com
+```
 
-### PROBLEMA PENDENTE
+### Frontend (Vercel)
+```env
+NEXT_PUBLIC_API_URL=https://nutrivision-api-dcr0.onrender.com
+NEXT_PUBLIC_ADSENSE_CLIENT_ID=ca-pub-3364979853180818
+NEXT_PUBLIC_ADSENSE_SLOT_HOME=<slot_id>
+NEXT_PUBLIC_ADSENSE_SLOT_RESULT=<slot_id>
+NEXT_PUBLIC_ADSENSE_SLOT_HISTORY=<slot_id>
+NEXT_PUBLIC_ADSENSE_SLOT_PROFILE=<slot_id>
+NEXT_PUBLIC_ADSENSE_SLOT_PROCESSING=<slot_id>
+```
 
-A página `/reset-password` retorna 404 no Vercel. O arquivo existe em:
-- `frontend/app/reset-password/page.tsx` (movido da pasta (auth) para raiz)
+---
 
-Possíveis causas:
-1. Vercel não fez redeploy
-2. Build do Next.js falhou silenciosamente
-
-**Solução:** Verificar logs de build no dashboard do Vercel e forçar redeploy manual se necessário.
+*Última atualização: Janeiro 2026 - Sessão 2*
