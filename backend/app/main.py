@@ -58,6 +58,9 @@ async def run_migration():
         "CREATE UNIQUE INDEX IF NOT EXISTS ix_users_referral_code ON users(referral_code)",
         "ALTER TABLE profiles ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(500)",
         "ALTER TABLE credit_transactions ADD COLUMN IF NOT EXISTS payment_id VARCHAR(255)",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS asaas_customer_id VARCHAR(255)",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS asaas_subscription_id VARCHAR(255)",
+        "ALTER TABLE users DROP COLUMN IF EXISTS stripe_customer_id",
     ]
     
     results = []

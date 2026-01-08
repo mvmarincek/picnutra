@@ -10,19 +10,12 @@ from app.models.models import User, CreditTransaction
 from app.core.security import get_current_user
 from app.core.config import settings
 from app.services.asaas_service import asaas_service
-from app.services.email_service import send_credits_purchased_email
+from app.services.email_service import send_credits_purchased_email, send_upgraded_to_pro_email
 
 router = APIRouter(prefix="/billing", tags=["billing"])
 
 class CreatePixPaymentRequest(BaseModel):
     package: str
-
-class CreatePixPaymentResponse(BaseModel):
-    payment_id: str
-    pix_code: str
-    pix_qr_code_base64: str
-    value: float
-    expiration_date: str
 
 class CreateCardPaymentRequest(BaseModel):
     package: str
@@ -36,6 +29,25 @@ class CreateCardPaymentRequest(BaseModel):
     postal_code: str
     address_number: str
 
+class CreateProSubscriptionRequest(BaseModel):
+    billing_type: str
+    card_holder_name: Optional[str] = None
+    card_number: Optional[str] = None
+    expiry_month: Optional[str] = None
+    expiry_year: Optional[str] = None
+    cvv: Optional[str] = None
+    holder_cpf: Optional[str] = None
+    holder_phone: Optional[str] = None
+    postal_code: Optional[str] = None
+    address_number: Optional[str] = None
+
+class CreatePixPaymentResponse(BaseModel):
+    payment_id: str
+    pix_code: str
+    pix_qr_code_base64: str
+    value: float
+    expiration_date: str
+
 class PaymentStatusResponse(BaseModel):
     status: str
     confirmed: bool
@@ -44,6 +56,7 @@ class BillingStatusResponse(BaseModel):
     plan: str
     credit_balance: int
     pro_analyses_remaining: int
+    has_subscription: bool
 
 @router.get("/packages")
 async def get_packages():
@@ -54,8 +67,21 @@ async def get_billing_status(current_user: User = Depends(get_current_user)):
     return BillingStatusResponse(
         plan=current_user.plan,
         credit_balance=current_user.credit_balance,
-        pro_analyses_remaining=current_user.pro_analyses_remaining or 0
+        pro_analyses_remaining=current_user.pro_analyses_remaining or 0,
+        has_subscription=bool(current_user.asaas_subscription_id)
     )
+
+async def get_or_create_customer(user: User, db: AsyncSession, cpf: Optional[str] = None):
+    if user.asaas_customer_id:
+        return user.asaas_customer_id
+    
+    customer = await asaas_service.get_customer_by_email(user.email)
+    if not customer:
+        customer = await asaas_service.create_customer(user.email, cpf=cpf)
+    
+    user.asaas_customer_id = customer["id"]
+    await db.commit()
+    return customer["id"]
 
 @router.post("/create-pix-payment", response_model=CreatePixPaymentResponse)
 async def create_pix_payment(
@@ -64,18 +90,14 @@ async def create_pix_payment(
     db: AsyncSession = Depends(get_db)
 ):
     if request.package not in settings.CREDIT_PACKAGES:
-        raise HTTPException(status_code=400, detail="Pacote inválido")
+        raise HTTPException(status_code=400, detail="Pacote invalido")
     
     package = settings.CREDIT_PACKAGES[request.package]
     value = package["price"] / 100
     credits = package["credits"]
     
     try:
-        customer = await asaas_service.get_customer_by_email(current_user.email)
-        if not customer:
-            customer = await asaas_service.create_customer(current_user.email)
-        
-        customer_id = customer["id"]
+        customer_id = await get_or_create_customer(current_user, db)
         
         external_reference = json.dumps({
             "user_id": current_user.id,
@@ -86,7 +108,7 @@ async def create_pix_payment(
         payment = await asaas_service.create_pix_payment(
             customer_id=customer_id,
             value=value,
-            description=f"Nutri-Vision - {credits} Créditos",
+            description=f"Nutri-Vision - {credits} Creditos",
             external_reference=external_reference
         )
         
@@ -110,18 +132,14 @@ async def create_card_payment(
     db: AsyncSession = Depends(get_db)
 ):
     if request.package not in settings.CREDIT_PACKAGES:
-        raise HTTPException(status_code=400, detail="Pacote inválido")
+        raise HTTPException(status_code=400, detail="Pacote invalido")
     
     package = settings.CREDIT_PACKAGES[request.package]
     value = package["price"] / 100
     credits = package["credits"]
     
     try:
-        customer = await asaas_service.get_customer_by_email(current_user.email)
-        if not customer:
-            customer = await asaas_service.create_customer(current_user.email)
-        
-        customer_id = customer["id"]
+        customer_id = await get_or_create_customer(current_user, db, cpf=request.holder_cpf)
         
         external_reference = json.dumps({
             "user_id": current_user.id,
@@ -132,7 +150,7 @@ async def create_card_payment(
         payment = await asaas_service.create_credit_card_payment(
             customer_id=customer_id,
             value=value,
-            description=f"Nutri-Vision - {credits} Créditos",
+            description=f"Nutri-Vision - {credits} Creditos",
             external_reference=external_reference,
             card_holder_name=request.card_holder_name,
             card_number=request.card_number,
@@ -153,7 +171,7 @@ async def create_card_payment(
                 user_id=current_user.id,
                 credits_added=credits,
                 payment_id=payment["id"],
-                description=f"Compra de {credits} créditos (Cartão)"
+                description=f"Compra de {credits} creditos (Cartao)"
             )
             db.add(transaction)
             await db.commit()
@@ -166,6 +184,120 @@ async def create_card_payment(
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Erro ao processar pagamento: {str(e)}")
+
+@router.post("/create-pro-subscription")
+async def create_pro_subscription(
+    request: CreateProSubscriptionRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    if current_user.plan == "pro":
+        raise HTTPException(status_code=400, detail="Voce ja e assinante PRO")
+    
+    if request.billing_type not in ["PIX", "CREDIT_CARD", "BOLETO"]:
+        raise HTTPException(status_code=400, detail="Tipo de pagamento invalido")
+    
+    try:
+        cpf = request.holder_cpf if request.billing_type in ["CREDIT_CARD", "BOLETO"] else None
+        customer_id = await get_or_create_customer(current_user, db, cpf=cpf)
+        
+        if cpf:
+            await asaas_service.update_customer(customer_id, cpf)
+        
+        external_reference = json.dumps({
+            "user_id": current_user.id,
+            "type": "pro_subscription"
+        })
+        
+        card_data = None
+        card_holder_info = None
+        
+        if request.billing_type == "CREDIT_CARD":
+            card_data = {
+                "holderName": request.card_holder_name,
+                "number": request.card_number,
+                "expiryMonth": request.expiry_month,
+                "expiryYear": request.expiry_year,
+                "ccv": request.cvv
+            }
+            card_holder_info = {
+                "name": request.card_holder_name,
+                "email": current_user.email,
+                "cpfCnpj": request.holder_cpf,
+                "postalCode": request.postal_code,
+                "addressNumber": request.address_number,
+                "phone": request.holder_phone
+            }
+        
+        subscription = await asaas_service.create_subscription(
+            customer_id=customer_id,
+            value=49.90,
+            billing_type=request.billing_type,
+            description="Nutri-Vision PRO - Assinatura Mensal",
+            external_reference=external_reference,
+            card_data=card_data,
+            card_holder_info=card_holder_info
+        )
+        
+        current_user.asaas_subscription_id = subscription["id"]
+        
+        if request.billing_type == "CREDIT_CARD" and subscription.get("status") == "ACTIVE":
+            current_user.plan = "pro"
+            current_user.pro_analyses_remaining = settings.PRO_MONTHLY_ANALYSES
+            await db.commit()
+            send_upgraded_to_pro_email(current_user.email)
+            return {"status": "active", "message": "Assinatura PRO ativada com sucesso!"}
+        
+        await db.commit()
+        
+        if request.billing_type == "PIX":
+            payments = subscription.get("payments", [])
+            if payments:
+                first_payment_id = payments[0].get("id") if isinstance(payments[0], dict) else payments[0]
+                pix_data = await asaas_service.get_pix_qr_code(first_payment_id)
+                return {
+                    "status": "pending",
+                    "payment_id": first_payment_id,
+                    "pix_code": pix_data.get("payload", ""),
+                    "pix_qr_code_base64": pix_data.get("encodedImage", ""),
+                    "message": "Pague o PIX para ativar sua assinatura"
+                }
+        
+        if request.billing_type == "BOLETO":
+            payments = subscription.get("payments", [])
+            if payments:
+                first_payment_id = payments[0].get("id") if isinstance(payments[0], dict) else payments[0]
+                boleto_url = await asaas_service.get_boleto_url(first_payment_id)
+                return {
+                    "status": "pending",
+                    "payment_id": first_payment_id,
+                    "boleto_url": boleto_url,
+                    "message": "Pague o boleto para ativar sua assinatura"
+                }
+        
+        return {"status": "pending", "subscription_id": subscription["id"]}
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Erro ao criar assinatura: {str(e)}")
+
+@router.post("/cancel-subscription")
+async def cancel_subscription(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    if not current_user.asaas_subscription_id:
+        raise HTTPException(status_code=400, detail="Voce nao possui assinatura ativa")
+    
+    try:
+        await asaas_service.cancel_subscription(current_user.asaas_subscription_id)
+        current_user.asaas_subscription_id = None
+        current_user.plan = "free"
+        await db.commit()
+        
+        return {"status": "cancelled", "message": "Assinatura cancelada com sucesso"}
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Erro ao cancelar assinatura: {str(e)}")
 
 @router.get("/payment-status/{payment_id}", response_model=PaymentStatusResponse)
 async def get_payment_status(
@@ -194,7 +326,7 @@ async def asaas_webhook(
     event_type = body.get("event")
     payment = body.get("payment", {})
     
-    if event_type == "PAYMENT_CONFIRMED" or event_type == "PAYMENT_RECEIVED":
+    if event_type in ["PAYMENT_CONFIRMED", "PAYMENT_RECEIVED"]:
         external_reference = payment.get("externalReference")
         
         if external_reference:
@@ -204,33 +336,46 @@ async def asaas_webhook(
                 credits = ref_data.get("credits")
                 payment_type = ref_data.get("type")
                 
-                if user_id and credits and payment_type == "credits":
+                if user_id:
                     result = await db.execute(select(User).where(User.id == int(user_id)))
                     user = result.scalar_one_or_none()
                     
                     if user:
-                        existing = await db.execute(
-                            select(CreditTransaction).where(
-                                CreditTransaction.payment_id == payment.get("id")
+                        if payment_type == "credits" and credits:
+                            existing = await db.execute(
+                                select(CreditTransaction).where(
+                                    CreditTransaction.payment_id == payment.get("id")
+                                )
                             )
-                        )
-                        if existing.scalar_one_or_none():
-                            return {"status": "already_processed"}
+                            if existing.scalar_one_or_none():
+                                return {"status": "already_processed"}
+                            
+                            user.credit_balance += int(credits)
+                            
+                            transaction = CreditTransaction(
+                                user_id=user.id,
+                                credits_added=int(credits),
+                                payment_id=payment.get("id"),
+                                description=f"Compra de {credits} creditos"
+                            )
+                            db.add(transaction)
+                            await db.commit()
+                            
+                            send_credits_purchased_email(user.email, int(credits), user.credit_balance)
+                            return {"status": "credits_added", "credits": credits}
                         
-                        user.credit_balance += int(credits)
-                        
-                        transaction = CreditTransaction(
-                            user_id=user.id,
-                            credits_added=int(credits),
-                            payment_id=payment.get("id"),
-                            description=f"Compra de {credits} créditos (PIX)"
-                        )
-                        db.add(transaction)
-                        await db.commit()
-                        
-                        send_credits_purchased_email(user.email, int(credits), user.credit_balance)
-                        
-                        return {"status": "credits_added", "credits": credits}
+                        elif payment_type == "pro_subscription":
+                            if user.plan != "pro":
+                                user.plan = "pro"
+                                user.pro_analyses_remaining = settings.PRO_MONTHLY_ANALYSES
+                                await db.commit()
+                                send_upgraded_to_pro_email(user.email)
+                                return {"status": "pro_activated"}
+                            else:
+                                user.pro_analyses_remaining = settings.PRO_MONTHLY_ANALYSES
+                                await db.commit()
+                                return {"status": "pro_renewed"}
+                            
             except json.JSONDecodeError:
                 pass
     
