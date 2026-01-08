@@ -53,48 +53,14 @@ export default function HomePage() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const convertToJpeg = (file: File): Promise<File> => {
-    return new Promise((resolve) => {
-      const img = document.createElement('img');
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(img, 0, 0);
-          canvas.toBlob(
-            (blob) => {
-              if (blob) {
-                resolve(new File([blob], file.name.replace(/\.[^/.]+$/, '.jpg'), { type: 'image/jpeg' }));
-              } else {
-                resolve(file);
-              }
-            },
-            'image/jpeg',
-            0.92
-          );
-        } else {
-          resolve(file);
-        }
-        URL.revokeObjectURL(img.src);
-      };
-      img.onerror = () => {
-        URL.revokeObjectURL(img.src);
-        resolve(file);
-      };
-      img.src = URL.createObjectURL(file);
-    });
-  };
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
     
     setError('');
-    
-    let fileToUse = f;
     const fileName = f.name.toLowerCase();
+    
+    // Check if HEIC - needs special conversion
     const isHeic = f.type === 'image/heic' || f.type === 'image/heif' || 
                    fileName.endsWith('.heic') || fileName.endsWith('.heif');
     
@@ -103,29 +69,19 @@ export default function HomePage() {
         const heic2any = (await import('heic2any')).default;
         const converted = await heic2any({ blob: f, toType: 'image/jpeg', quality: 0.92 });
         const blob = Array.isArray(converted) ? converted[0] : converted;
-        fileToUse = new File([blob], f.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
-      } catch {
-        setError('Formato não suportado. Tente outro arquivo.');
+        const jpegFile = new File([blob], f.name.replace(/\.[^/.]+$/, '.jpg'), { type: 'image/jpeg' });
+        setFile(jpegFile);
+        setPreview(URL.createObjectURL(jpegFile));
         return;
-      }
-    } else if (f.type === 'image/webp' || f.type === 'image/avif' || f.type === 'image/tiff' || 
-               fileName.endsWith('.webp') || fileName.endsWith('.avif') || fileName.endsWith('.tiff')) {
-      try {
-        fileToUse = await convertToJpeg(f);
       } catch {
-        // Use original if conversion fails
+        setError('Não foi possível processar este arquivo HEIC.');
+        return;
       }
     }
     
-    setFile(fileToUse);
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setPreview(ev.target?.result as string);
-    };
-    reader.onerror = () => {
-      setError('Erro ao carregar imagem. Tente outro arquivo.');
-    };
-    reader.readAsDataURL(fileToUse);
+    // For all other formats, try direct use first
+    setFile(f);
+    setPreview(URL.createObjectURL(f));
   };
 
   const handleAnalyze = async () => {
