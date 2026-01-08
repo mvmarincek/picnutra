@@ -46,6 +46,14 @@ export async function api<T>(endpoint: string, options: ApiOptions = {}): Promis
   });
   
   if (!response.ok) {
+    if (response.status === 401) {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login?expired=1';
+      }
+      throw new Error('Sessao expirada. Faca login novamente.');
+    }
     const error = await response.json().catch(() => ({ detail: 'Erro desconhecido' }));
     throw new Error(error.detail || 'Erro na requisição');
   }

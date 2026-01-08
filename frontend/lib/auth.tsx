@@ -21,16 +21,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+  const logout = useCallback(() => {
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }, []);
+
+  const refreshUser = useCallback(async () => {
+    const storedToken = localStorage.getItem('token');
+    if (!storedToken) return;
+    try {
+      const updatedUser = await authApi.getMe(storedToken);
+      setUser(updatedUser);
+      setToken(storedToken);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    } catch (err) {
+      console.error('Failed to refresh user:', err);
+      logout();
+    }
+  }, [logout]);
+
+  useEffect(() => {
+    const initAuth = async () => {
+      const storedToken = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
+      
+      if (storedToken && storedUser) {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+        
+        try {
+          const updatedUser = await authApi.getMe(storedToken);
+          setUser(updatedUser);
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        } catch (err) {
+          console.error('Token validation failed:', err);
+          logout();
+        }
+      }
+      setIsLoading(false);
+    };
+    
+    initAuth();
+  }, [logout]);
 
   const login = async (email: string, password: string) => {
     const response = await authApi.login(email, password);
@@ -48,28 +82,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('user', JSON.stringify(response.user));
   };
 
-  const logout = () => {
-    setToken(null);
-    setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-  };
-
   const updateUser = (updatedUser: User) => {
     setUser(updatedUser);
     localStorage.setItem('user', JSON.stringify(updatedUser));
   };
-
-  const refreshUser = useCallback(async () => {
-    if (!token) return;
-    try {
-      const updatedUser = await authApi.getMe(token);
-      setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-    } catch (err) {
-      console.error('Failed to refresh user:', err);
-    }
-  }, [token]);
 
   return (
     <AuthContext.Provider value={{ user, token, isLoading, login, register, logout, updateUser, refreshUser }}>

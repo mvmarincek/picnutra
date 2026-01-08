@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql://localhost/nutrivision"
     SECRET_KEY: str = "your-super-secret-key-change-in-production"
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 43200
     OPENAI_API_KEY: str = ""
     FRONTEND_URL: str = "http://localhost:3000"
     BACKEND_URL: str = "https://nutrivision-api-dcr0.onrender.com"
