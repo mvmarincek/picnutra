@@ -10,7 +10,7 @@ from app.schemas.schemas import (
 )
 from app.core.security import get_current_user
 from app.core.config import settings
-from app.services.email_service import send_upgraded_to_pro_email, send_credits_purchased_email, send_subscription_cancelled_email
+from app.services.email_service import send_upgraded_to_pro_email, send_credits_purchased_email, send_subscription_cancelled_email, send_subscription_renewed_email, send_payment_failed_email
 
 router = APIRouter(prefix="/billing", tags=["billing"])
 
@@ -171,6 +171,34 @@ async def stripe_webhook(
             else:
                 user.plan = "free"
             await db.commit()
+    
+    elif event["type"] == "invoice.paid":
+        invoice = event["data"]["object"]
+        customer_id = invoice.get("customer")
+        billing_reason = invoice.get("billing_reason")
+        
+        if billing_reason == "subscription_cycle":
+            result = await db.execute(
+                select(User).where(User.stripe_customer_id == customer_id)
+            )
+            user = result.scalar_one_or_none()
+            
+            if user:
+                user.pro_analyses_remaining = settings.PRO_MONTHLY_ANALYSES
+                await db.commit()
+                send_subscription_renewed_email(user.email)
+    
+    elif event["type"] == "invoice.payment_failed":
+        invoice = event["data"]["object"]
+        customer_id = invoice.get("customer")
+        
+        result = await db.execute(
+            select(User).where(User.stripe_customer_id == customer_id)
+        )
+        user = result.scalar_one_or_none()
+        
+        if user:
+            send_payment_failed_email(user.email)
     
     elif event["type"] == "customer.subscription.deleted":
         subscription = event["data"]["object"]

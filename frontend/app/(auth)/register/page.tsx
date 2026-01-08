@@ -4,7 +4,7 @@ import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
-import { Salad, Gift } from 'lucide-react';
+import { Salad, Gift, Mail, CheckCircle } from 'lucide-react';
 
 function RegisterContent() {
   const [email, setEmail] = useState('');
@@ -12,6 +12,7 @@ function RegisterContent() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [registered, setRegistered] = useState(false);
   const { register } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -35,13 +36,58 @@ function RegisterContent() {
 
     try {
       await register(email, password, referralCode || undefined);
-      router.push('/profile');
+      setRegistered(true);
     } catch (err: any) {
       setError(err.message || 'Erro ao criar conta');
     } finally {
       setLoading(false);
     }
   };
+
+  if (registered) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <Link href="/" className="inline-flex flex-col items-center gap-2">
+              <div className="w-16 h-16 rounded-2xl gradient-fresh flex items-center justify-center shadow-lg">
+                <Salad className="w-8 h-8 text-white" />
+              </div>
+              <span className="text-3xl font-bold bg-gradient-to-r from-green-600 to-teal-500 bg-clip-text text-transparent">
+                Nutri-Vision
+              </span>
+            </Link>
+          </div>
+
+          <div className="bg-white rounded-3xl shadow-xl p-8 border border-green-100 text-center">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
+              <Mail className="w-10 h-10 text-green-600" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Verifique seu email!</h2>
+            <p className="text-gray-600 mb-4">
+              Enviamos um link de confirmacao para:
+            </p>
+            <p className="font-semibold text-green-600 mb-6">{email}</p>
+            <div className="bg-green-50 rounded-2xl p-4 mb-6">
+              <div className="flex items-center gap-2 text-green-700 text-sm">
+                <CheckCircle className="w-5 h-5" />
+                <span>Clique no link do email para ativar sua conta</span>
+              </div>
+            </div>
+            <p className="text-sm text-gray-500 mb-4">
+              Nao recebeu o email? Verifique a pasta de spam.
+            </p>
+            <button
+              onClick={() => router.push('/login')}
+              className="w-full gradient-fresh text-white py-3 rounded-2xl font-semibold hover:shadow-lg transition-all"
+            >
+              Ir para login
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center p-4">

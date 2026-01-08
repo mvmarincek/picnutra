@@ -41,6 +41,7 @@ export interface User {
   credit_balance: number;
   pro_analyses_remaining: number;
   referral_code?: string;
+  email_verified: boolean;
   created_at: string;
 }
 
@@ -182,7 +183,13 @@ export const authApi = {
     api<{ message: string }>('/auth/reset-password', { method: 'POST', body: { token, new_password } }),
   
   downgradeToFree: (token: string) =>
-    api<User>('/auth/downgrade-to-free', { method: 'POST', token })
+    api<User>('/auth/downgrade-to-free', { method: 'POST', token }),
+  
+  resendVerification: (email: string) =>
+    api<{ message: string; already_verified?: boolean }>('/auth/resend-verification', { method: 'POST', body: { email } }),
+  
+  checkEmailVerified: (token: string) =>
+    api<{ email_verified: boolean }>('/auth/check-email-verified', { token })
 };
 
 export const profileApi = {

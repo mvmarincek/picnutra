@@ -302,3 +302,163 @@ def send_subscription_cancelled_email(user_email: str):
     </html>
     """
     return send_email(user_email, subject, html)
+
+def send_email_verification(user_email: str, verification_token: str):
+    verify_url = f"https://nutrivision-drab.vercel.app/verify-email?token={verification_token}"
+    subject = "Confirme seu email - Nutri-Vision"
+    html = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
+        <div style="background: linear-gradient(135deg, #22c55e, #14b8a6); padding: 30px; border-radius: 20px; text-align: center; margin-bottom: 20px;">
+            <h1 style="color: white; margin: 0; font-size: 28px;">Nutri-Vision</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Confirme seu email para ativar sua conta</p>
+        </div>
+        
+        <div style="background: white; border-radius: 20px; padding: 30px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 48px;">📧</span>
+            </div>
+            <h2 style="color: #22c55e; margin: 0 0 20px 0; text-align: center;">Quase la!</h2>
+            <p style="color: #334155; line-height: 1.8; margin: 0 0 20px 0; text-align: center;">
+                Clique no botao abaixo para confirmar seu email e ativar sua conta no Nutri-Vision.
+            </p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{verify_url}" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
+                    Confirmar Email
+                </a>
+            </div>
+            
+            <p style="color: #64748b; font-size: 14px; line-height: 1.6; margin: 0; text-align: center;">
+                Se voce nao criou uma conta no Nutri-Vision, ignore este email.
+            </p>
+        </div>
+        
+        <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">
+            Equipe Nutri-Vision
+        </p>
+    </body>
+    </html>
+    """
+    return send_email(user_email, subject, html)
+
+def send_email_verified_success(user_email: str):
+    subject = "Email confirmado! Bem-vindo ao Nutri-Vision!"
+    html = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
+        <div style="background: linear-gradient(135deg, #22c55e, #14b8a6); padding: 30px; border-radius: 20px; text-align: center; margin-bottom: 20px;">
+            <h1 style="color: white; margin: 0; font-size: 28px;">Nutri-Vision</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Sua conta foi ativada com sucesso!</p>
+        </div>
+        
+        <div style="background: white; border-radius: 20px; padding: 30px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 48px;">🎉</span>
+            </div>
+            <h2 style="color: #22c55e; margin: 0 0 20px 0; text-align: center;">Conta ativada!</h2>
+            <p style="color: #334155; line-height: 1.8; margin: 0 0 15px 0; text-align: center;">
+                Seu email foi confirmado e sua conta esta pronta para uso.
+            </p>
+            <div style="background: #f0fdf4; border-radius: 15px; padding: 15px; margin-bottom: 15px;">
+                <p style="color: #166534; margin: 0; text-align: center;">
+                    <strong>Voce tem 36 creditos de bonus para comecar!</strong>
+                </p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <a href="https://nutrivision-drab.vercel.app/home" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
+                Comecar a usar
+            </a>
+        </div>
+        
+        <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">
+            Cuide da sua saude, uma refeicao de cada vez.<br>
+            Equipe Nutri-Vision
+        </p>
+    </body>
+    </html>
+    """
+    return send_email(user_email, subject, html)
+
+def send_subscription_renewed_email(user_email: str):
+    subject = "Assinatura PRO renovada - Nutri-Vision"
+    html = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
+        <div style="background: linear-gradient(135deg, #8b5cf6, #ec4899); padding: 30px; border-radius: 20px; text-align: center; margin-bottom: 20px;">
+            <h1 style="color: white; margin: 0; font-size: 28px;">Nutri-Vision PRO</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Assinatura renovada!</p>
+        </div>
+        
+        <div style="background: white; border-radius: 20px; padding: 30px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 48px;">👑</span>
+            </div>
+            <h2 style="color: #8b5cf6; margin: 0 0 20px 0; text-align: center;">Renovacao confirmada!</h2>
+            <p style="color: #334155; line-height: 1.8; margin: 0 0 15px 0; text-align: center;">
+                Sua assinatura PRO foi renovada automaticamente.
+            </p>
+            <p style="color: #334155; line-height: 1.8; margin: 0; text-align: center;">
+                Continue aproveitando analises completas ilimitadas!
+            </p>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <a href="https://nutrivision-drab.vercel.app/home" style="display: inline-block; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
+                Continuar usando
+            </a>
+        </div>
+        
+        <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">
+            Obrigado por continuar com o Nutri-Vision PRO!<br>
+            Equipe Nutri-Vision
+        </p>
+    </body>
+    </html>
+    """
+    return send_email(user_email, subject, html)
+
+def send_payment_failed_email(user_email: str):
+    subject = "Problema com seu pagamento - Nutri-Vision"
+    html = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
+        <div style="background: linear-gradient(135deg, #ef4444, #f97316); padding: 30px; border-radius: 20px; text-align: center; margin-bottom: 20px;">
+            <h1 style="color: white; margin: 0; font-size: 28px;">Nutri-Vision</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Acao necessaria</p>
+        </div>
+        
+        <div style="background: white; border-radius: 20px; padding: 30px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 48px;">⚠️</span>
+            </div>
+            <h2 style="color: #ef4444; margin: 0 0 20px 0; text-align: center;">Falha no pagamento</h2>
+            <p style="color: #334155; line-height: 1.8; margin: 0 0 15px 0; text-align: center;">
+                Nao conseguimos processar o pagamento da sua assinatura PRO.
+            </p>
+            <p style="color: #334155; line-height: 1.8; margin: 0 0 20px 0; text-align: center;">
+                Por favor, atualize seus dados de pagamento para continuar usando o plano PRO.
+            </p>
+            <div style="background: #fef2f2; border-radius: 15px; padding: 15px;">
+                <p style="color: #991b1b; margin: 0; text-align: center; font-size: 14px;">
+                    Se o pagamento nao for atualizado, sua assinatura sera cancelada automaticamente.
+                </p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <a href="https://nutrivision-drab.vercel.app/billing" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
+                Atualizar pagamento
+            </a>
+        </div>
+        
+        <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">
+            Precisa de ajuda? Responda este email.<br>
+            Equipe Nutri-Vision
+        </p>
+    </body>
+    </html>
+    """
+    return send_email(user_email, subject, html)

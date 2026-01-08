@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, DateTime, JSON, Enum
+from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, DateTime, JSON, Enum, Boolean
 from sqlalchemy.orm import relationship
 import enum
 from app.db.database import Base
@@ -38,6 +38,8 @@ class User(Base):
     pro_analyses_remaining = Column(Integer, default=0)
     referral_code = Column(String(20), unique=True, nullable=True, index=True)
     referred_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    email_verified = Column(Boolean, default=False)
+    email_verification_token = Column(String(64), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     profile = relationship("Profile", back_populates="user", uselist=False)

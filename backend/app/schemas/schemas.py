@@ -18,6 +18,7 @@ class UserResponse(BaseModel):
     credit_balance: int
     pro_analyses_remaining: int
     referral_code: Optional[str] = None
+    email_verified: bool = False
     created_at: datetime
     
     class Config:
