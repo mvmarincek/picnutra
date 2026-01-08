@@ -266,7 +266,8 @@ export default function HomePage() {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*,capture=camera"
+              accept="image/*"
+              capture="environment"
               onChange={handleFileChange}
               className="hidden"
             />
