@@ -36,12 +36,15 @@ class User(Base):
     credit_balance = Column(Integer, default=0)
     stripe_customer_id = Column(String(255), nullable=True)
     pro_analyses_remaining = Column(Integer, default=0)
+    referral_code = Column(String(20), unique=True, nullable=True, index=True)
+    referred_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     profile = relationship("Profile", back_populates="user", uselist=False)
     meals = relationship("Meal", back_populates="user")
     jobs = relationship("Job", back_populates="user")
     credit_transactions = relationship("CreditTransaction", back_populates="user")
+    referrals = relationship("Referral", back_populates="referrer", foreign_keys="Referral.referrer_id")
 
 class Profile(Base):
     __tablename__ = "profiles"
@@ -128,3 +131,14 @@ class CreditTransaction(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     user = relationship("User", back_populates="credit_transactions")
+
+class Referral(Base):
+    __tablename__ = "referrals"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    referrer_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    referred_id = Column(Integer, ForeignKey("users.id"), nullable=False, unique=True)
+    credits_awarded = Column(Integer, default=12)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    referrer = relationship("User", back_populates="referrals", foreign_keys=[referrer_id])

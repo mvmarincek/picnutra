@@ -5,6 +5,7 @@ from datetime import datetime
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
+    referral_code: Optional[str] = None
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -16,6 +17,7 @@ class UserResponse(BaseModel):
     plan: str
     credit_balance: int
     pro_analyses_remaining: int
+    referral_code: Optional[str] = None
     created_at: datetime
     
     class Config:

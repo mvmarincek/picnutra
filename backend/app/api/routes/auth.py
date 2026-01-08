@@ -3,16 +3,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel
 from app.db.database import get_db
-from app.models.models import User
+from app.models.models import User, Referral
 from app.schemas.schemas import UserCreate, UserLogin, TokenResponse, UserResponse
 from app.core.security import get_password_hash, verify_password, create_access_token, get_current_user
-from app.services.email_service import send_welcome_email, send_password_reset_email
+from app.services.email_service import send_welcome_email, send_password_reset_email, send_referral_activated_email, send_upgraded_to_pro_email
 import secrets
+import string
 from datetime import datetime, timedelta
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 password_reset_tokens = {}
+
+def generate_referral_code():
+    return ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(8))
 
 class ForgotPasswordRequest(BaseModel):
     email: str
@@ -31,14 +35,56 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks, db:
             detail="Email já cadastrado"
         )
     
+    referrer = None
+    if user_data.referral_code:
+        referrer_result = await db.execute(
+            select(User).where(User.referral_code == user_data.referral_code.upper())
+        )
+        referrer = referrer_result.scalar_one_or_none()
+    
+    referral_code = generate_referral_code()
+    while True:
+        check = await db.execute(select(User).where(User.referral_code == referral_code))
+        if not check.scalar_one_or_none():
+            break
+        referral_code = generate_referral_code()
+    
     user = User(
         email=user_data.email,
         password_hash=get_password_hash(user_data.password),
-        credit_balance=0
+        credit_balance=0,
+        referral_code=referral_code,
+        referred_by=referrer.id if referrer else None
     )
     db.add(user)
     await db.commit()
     await db.refresh(user)
+    
+    if referrer:
+        was_free = referrer.plan == "free"
+        referrer.credit_balance += 12
+        if was_free:
+            referrer.plan = "pro"
+        
+        referral_record = Referral(
+            referrer_id=referrer.id,
+            referred_id=user.id,
+            credits_awarded=12
+        )
+        db.add(referral_record)
+        await db.commit()
+        await db.refresh(referrer)
+        
+        background_tasks.add_task(
+            send_referral_activated_email,
+            referrer.email,
+            user.email,
+            12,
+            referrer.credit_balance
+        )
+        
+        if was_free:
+            background_tasks.add_task(send_upgraded_to_pro_email, referrer.email)
     
     background_tasks.add_task(send_welcome_email, user.email)
     
