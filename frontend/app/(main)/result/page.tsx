@@ -6,7 +6,6 @@ import { useAuth } from '@/lib/auth';
 import { mealsApi, MealDetail } from '@/lib/api';
 import { CheckCircle, AlertTriangle, Lightbulb, ArrowRight, Sparkles, Trophy, Heart, Flame, Salad } from 'lucide-react';
 import Image from 'next/image';
-import AdBanner from '@/components/AdBanner';
 import PageAds from '@/components/PageAds';
 
 const celebrationMessages = [
@@ -111,8 +110,6 @@ function ResultContent() {
 
   return (
     <div className="max-w-2xl mx-auto pb-8">
-      <PageAds slot="RESULT_BANNER" position="top" />
-
       <div className="bg-gradient-to-r from-green-100 to-teal-100 rounded-2xl p-4 mb-6 flex items-center gap-3">
         <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
           <Trophy className="w-6 h-6 text-yellow-500" />
@@ -345,7 +342,7 @@ function ResultContent() {
         Esta análise é informativa e não substitui orientação de nutricionista ou médico.
       </p>
 
-      <PageAds slot="RESULT_BANNER" position="bottom" />
+      <PageAds slot="RESULT" position="bottom" />
 
       <button
         onClick={() => router.push('/home')}

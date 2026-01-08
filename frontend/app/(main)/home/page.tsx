@@ -6,7 +6,6 @@ import { useAuth } from '@/lib/auth';
 import { mealsApi } from '@/lib/api';
 import { normalizeImageOrientation } from '@/lib/image-utils';
 import { Upload, UtensilsCrossed, Cake, Coffee, Target, Heart, Crown, Zap, Sparkles, ArrowRight, X } from 'lucide-react';
-import PageAds from '@/components/PageAds';
 
 type Phase = 'idle' | 'loading_image' | 'uploading' | 'error';
 
@@ -175,8 +174,6 @@ export default function HomePage() {
 
   return (
     <div className="max-w-lg mx-auto">
-      <PageAds slot="HOME_BANNER" position="top" />
-
       <div className="text-center mb-6">
         <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-100 to-teal-100 px-4 py-2 rounded-full mb-4">
           <Heart className="w-4 h-4 text-rose-500" />
@@ -343,8 +340,6 @@ export default function HomePage() {
           }
         </p>
       </div>
-
-      <PageAds slot="HOME_BANNER" position="bottom" />
 
       <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-100">
         <p className="text-sm text-amber-800 flex items-start gap-2">

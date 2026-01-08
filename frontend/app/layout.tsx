@@ -2,8 +2,11 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/lib/auth';
+import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
+
+const ADSENSE_CLIENT_ID = 'ca-pub-3364979853180818';
 
 export const metadata: Metadata = {
   title: 'Nutri-Vision Web',
@@ -24,27 +27,23 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const adsenseClientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
-  
   return (
     <html lang="pt-BR">
       <head>
         <link rel="apple-touch-icon" href="/icon-192.png" />
-        {adsenseClientId && (
-          <>
-            <meta name="google-adsense-account" content={adsenseClientId} />
-            <script
-              async
-              src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClientId}`}
-              crossOrigin="anonymous"
-            />
-          </>
-        )}
+        <meta name="google-adsense-account" content={ADSENSE_CLIENT_ID} />
       </head>
       <body className={inter.className}>
         <AuthProvider>
           {children}
         </AuthProvider>
+        <Script
+          id="adsense-script"
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

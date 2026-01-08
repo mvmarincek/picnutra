@@ -1,45 +1,57 @@
 'use client';
 
 import { useAuth } from '@/lib/auth';
-import AdBanner from './AdBanner';
+import AdSenseAd from './AdSenseAd';
 
-const slotEnvMap: Record<string, string | undefined> = {
-  HOME_BANNER: process.env.NEXT_PUBLIC_ADSENSE_SLOT_HOME,
-  RESULT_BANNER: process.env.NEXT_PUBLIC_ADSENSE_SLOT_RESULT,
-  HISTORY_BANNER: process.env.NEXT_PUBLIC_ADSENSE_SLOT_HISTORY,
-  PROFILE_BANNER: process.env.NEXT_PUBLIC_ADSENSE_SLOT_PROFILE,
-  PROCESSING_BANNER: process.env.NEXT_PUBLIC_ADSENSE_SLOT_PROCESSING,
+const AD_SLOTS = {
+  HISTORY: '1234567890',
+  RESULT: '1234567891',
+  ABOUT: '1234567892',
+  PROFILE: '1234567893',
 };
 
+type AllowedSlot = 'HISTORY' | 'RESULT' | 'ABOUT' | 'PROFILE';
+
 interface PageAdsProps {
-  slot: string;
-  position: 'top' | 'bottom';
+  slot: AllowedSlot;
+  position?: 'inline' | 'bottom';
 }
 
-export default function PageAds({ slot, position }: PageAdsProps) {
+export default function PageAds({ slot, position = 'inline' }: PageAdsProps) {
   const { user } = useAuth();
-  const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
-  const slotId = slotEnvMap[slot] || slot;
   
-  if (!clientId || !slotId) return null;
-  
-  if (position === 'top') {
-    if (user?.plan !== 'free') return null;
-    
+  if (user?.plan !== 'free') {
+    return null;
+  }
+
+  const slotId = AD_SLOTS[slot];
+  if (!slotId) return null;
+
+  if (position === 'bottom') {
     return (
-      <div className="mb-4 sticky top-0 z-40 bg-gradient-to-b from-gray-100 to-transparent pb-2">
-        <AdBanner slot={slot} format="horizontal" className="rounded-xl overflow-hidden shadow-md" />
+      <div className="mt-8 mb-4 px-2">
+        <div className="bg-gray-50 rounded-xl p-2">
+          <p className="text-xs text-gray-400 text-center mb-2">Publicidade</p>
+          <AdSenseAd 
+            slot={slotId} 
+            format="horizontal"
+            className="rounded-lg overflow-hidden"
+          />
+        </div>
       </div>
     );
   }
-  
+
   return (
-    <div className={`mt-6 ${user?.plan === 'free' ? 'mb-4' : 'mb-2 opacity-80'}`}>
-      <AdBanner 
-        slot={slot} 
-        format="horizontal" 
-        className={`rounded-2xl overflow-hidden ${user?.plan === 'free' ? 'shadow-lg' : ''}`} 
-      />
+    <div className="my-4 px-2">
+      <div className="bg-gray-50 rounded-xl p-2">
+        <p className="text-xs text-gray-400 text-center mb-2">Publicidade</p>
+        <AdSenseAd 
+          slot={slotId} 
+          format="rectangle"
+          className="rounded-lg overflow-hidden"
+        />
+      </div>
     </div>
   );
 }

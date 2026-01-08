@@ -6,7 +6,6 @@ import { useAuth } from '@/lib/auth';
 import { mealsApi, MealListItem } from '@/lib/api';
 import Image from 'next/image';
 import { Calendar, Trash2 } from 'lucide-react';
-import AdBanner from '@/components/AdBanner';
 import PageAds from '@/components/PageAds';
 
 export default function HistoryPage() {
@@ -82,7 +81,7 @@ export default function HistoryPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <PageAds slot="HISTORY_BANNER" position="top" />
+      <PageAds slot="HISTORY" position="top" />
 
       <h1 className="text-2xl font-bold mb-6">Histórico de Análises</h1>
 
@@ -159,7 +158,7 @@ export default function HistoryPage() {
         </div>
       )}
 
-      <PageAds slot="HISTORY_BANNER" position="bottom" />
+      <PageAds slot="HISTORY" position="bottom" />
     </div>
   );
 }

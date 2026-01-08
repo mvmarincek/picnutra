@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { jobsApi, mealsApi, JobResponse } from '@/lib/api';
 import { Salad, ArrowRight } from 'lucide-react';
-import PageAds from '@/components/PageAds';
 
 type Phase = 'processing' | 'waiting_user' | 'done' | 'error';
 
@@ -221,8 +220,6 @@ function ProcessingContent() {
 
   return (
     <div className="max-w-lg mx-auto">
-      <PageAds slot="PROCESSING_BANNER" position="top" />
-      
       <div className="bg-white rounded-3xl shadow-xl p-8 text-center border border-green-100">
         <div className="w-20 h-20 rounded-full gradient-fresh flex items-center justify-center mx-auto mb-6 animate-pulse">
           <Salad className="w-10 h-10 text-white" />
@@ -254,8 +251,6 @@ function ProcessingContent() {
           </div>
         )}
       </div>
-
-      <PageAds slot="PROCESSING_BANNER" position="bottom" />
     </div>
   );
 }
