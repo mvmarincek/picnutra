@@ -54,6 +54,50 @@ export default function HomePage() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const resizeImage = (file: File, maxSize: number = 1920): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        let { width, height } = img;
+        if (width <= maxSize && height <= maxSize) {
+          resolve(file);
+          return;
+        }
+        if (width > height) {
+          height = Math.round((height * maxSize) / width);
+          width = maxSize;
+        } else {
+          width = Math.round((width * maxSize) / height);
+          height = maxSize;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { reject(new Error('No context')); return; }
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(new File([blob], file.name.replace(/\.[^/.]+$/, '.jpg'), { type: 'image/jpeg' }));
+            } else {
+              reject(new Error('Blob failed'));
+            }
+          },
+          'image/jpeg',
+          0.9
+        );
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('Image load failed'));
+      };
+      img.src = url;
+    });
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
@@ -61,29 +105,28 @@ export default function HomePage() {
     setError('');
     const fileName = f.name.toLowerCase();
     
-    // HEIC needs special library
-    const isHeic = f.type === 'image/heic' || f.type === 'image/heif' || 
-                   fileName.endsWith('.heic') || fileName.endsWith('.heif');
-    
-    if (isHeic) {
-      try {
+    try {
+      let imageFile = f;
+      
+      // HEIC needs special library
+      const isHeic = f.type === 'image/heic' || f.type === 'image/heif' || 
+                     fileName.endsWith('.heic') || fileName.endsWith('.heif');
+      
+      if (isHeic) {
         const heic2any = (await import('heic2any')).default;
         const converted = await heic2any({ blob: f, toType: 'image/jpeg', quality: 0.92 });
         const blob = Array.isArray(converted) ? converted[0] : converted;
-        const jpegFile = new File([blob], f.name.replace(/\.[^/.]+$/, '.jpg'), { type: 'image/jpeg' });
-        setFile(jpegFile);
-        setPreview(URL.createObjectURL(jpegFile));
-        return;
-      } catch {
-        setError('Formato de imagem não suportado. Tire uma foto diretamente ou use: JPG, PNG, GIF, WebP ou HEIC.');
-        setShowErrorPopup(true);
-        return;
+        imageFile = new File([blob], f.name.replace(/\.[^/.]+$/, '.jpg'), { type: 'image/jpeg' });
       }
+      
+      // Resize to max 1920px
+      const resized = await resizeImage(imageFile, 1920);
+      setFile(resized);
+      setPreview(URL.createObjectURL(resized));
+    } catch {
+      setError('Formato de imagem não suportado. Tire uma foto diretamente ou use: JPG, PNG, GIF, WebP ou HEIC.');
+      setShowErrorPopup(true);
     }
-    
-    // For all other formats, use directly
-    setFile(f);
-    setPreview(URL.createObjectURL(f));
   };
 
   const handleAnalyze = async () => {
