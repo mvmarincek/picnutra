@@ -7,6 +7,8 @@ import { mealsApi } from '@/lib/api';
 import { Upload, UtensilsCrossed, Cake, Coffee, Target, Heart, Crown, Zap, Sparkles, ArrowRight, X } from 'lucide-react';
 import PageAds from '@/components/PageAds';
 
+type Phase = 'idle' | 'uploading' | 'error';
+
 const mealTypes = [
   { id: 'prato', label: 'Prato', icon: UtensilsCrossed, color: 'from-green-400 to-teal-400' },
   { id: 'sobremesa', label: 'Sobremesa', icon: Cake, color: 'from-pink-400 to-rose-400' },
@@ -29,12 +31,12 @@ const tips = [
 ];
 
 export default function HomePage() {
+  const [phase, setPhase] = useState<Phase>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [mealType, setMealType] = useState('prato');
   const [mode, setMode] = useState<'simple' | 'full'>('simple');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [motivationalMessage, setMotivationalMessage] = useState('');
   const [tip, setTip] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -62,12 +64,15 @@ export default function HomePage() {
     reader.readAsDataURL(frozenFile);
 
     setImageFile(frozenFile);
-    setError('');
+    setPhase('idle');
+    setErrorMessage(null);
   };
 
   const clearImage = () => {
     setImageFile(null);
     setImagePreview(null);
+    setPhase('idle');
+    setErrorMessage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -80,24 +85,69 @@ export default function HomePage() {
     const cost = mode === 'full' ? 12 : 5;
     
     if (!isFreeSimple && user && user.credit_balance < cost && user.pro_analyses_remaining <= 0) {
-      setError(`Créditos insuficientes. Você precisa de ${cost} créditos.`);
+      setPhase('error');
+      setErrorMessage(`Créditos insuficientes. Você precisa de ${cost} créditos.`);
       return;
     }
 
-    setLoading(true);
-    setError('');
+    setPhase('uploading');
+    setErrorMessage(null);
 
     try {
       const uploadResult = await mealsApi.upload(token, imageFile, mealType);
       const analyzeResult = await mealsApi.analyze(token, uploadResult.meal_id, mode);
       router.push(`/processing?jobId=${analyzeResult.job_id}&mealId=${uploadResult.meal_id}`);
     } catch (err: any) {
-      setError(err.message || 'Erro ao iniciar análise');
-      setLoading(false);
+      setPhase('error');
+      setErrorMessage(err.message || 'Erro ao iniciar análise');
     }
   };
 
   const cost = mode === 'full' ? 12 : 5;
+
+  if (phase === 'error') {
+    return (
+      <div className="max-w-lg mx-auto">
+        <div className="bg-white rounded-3xl shadow-xl p-8 text-center border border-red-100">
+          <div className="text-5xl mb-4">😕</div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Algo deu errado</h2>
+          <p className="text-gray-600 mb-6">{errorMessage || 'Ocorreu um erro inesperado.'}</p>
+          <button
+            onClick={() => {
+              setPhase('idle');
+              setErrorMessage(null);
+            }}
+            className="w-full gradient-fresh text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
+          >
+            Tentar Novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === 'uploading') {
+    return (
+      <div className="max-w-lg mx-auto">
+        <div className="bg-white rounded-3xl shadow-xl p-8 text-center border border-green-100">
+          <div className="w-20 h-20 rounded-full gradient-fresh flex items-center justify-center mx-auto mb-6 animate-pulse">
+            <Upload className="w-10 h-10 text-white" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Enviando imagem...</h2>
+          <p className="text-gray-500 mb-6">Aguarde enquanto preparamos sua análise</p>
+          <div className="flex justify-center gap-2">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="w-3 h-3 rounded-full bg-green-400 animate-bounce"
+                style={{ animationDelay: `${i * 0.15}s` }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-lg mx-auto">
@@ -120,13 +170,6 @@ export default function HomePage() {
             <p className="text-sm text-gray-500">Descubra os nutrientes da sua refeição</p>
           </div>
         </div>
-
-        {error && (
-          <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-2xl mb-6 text-sm flex items-start gap-3">
-            <span className="text-lg">😕</span>
-            <span>{error}</span>
-          </div>
-        )}
 
         <div className="mb-6">
           <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -258,24 +301,15 @@ export default function HomePage() {
 
         <button
           onClick={handleAnalyze}
-          disabled={!imageFile || loading}
+          disabled={!imageFile}
           className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
-            imageFile && !loading
+            imageFile
               ? 'gradient-fresh text-white hover:shadow-xl hover:shadow-green-200'
               : 'bg-gray-100 text-gray-400 cursor-not-allowed'
           }`}
         >
-          {loading ? (
-            <>
-              <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
-              Analisando...
-            </>
-          ) : (
-            <>
-              Analisar Refeição
-              <ArrowRight className="w-5 h-5" />
-            </>
-          )}
+          Analisar Refeição
+          <ArrowRight className="w-5 h-5" />
         </button>
 
         <p className="text-center text-sm text-gray-500 mt-4">

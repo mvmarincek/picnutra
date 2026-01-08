@@ -7,6 +7,8 @@ import { jobsApi, mealsApi, JobResponse } from '@/lib/api';
 import { Salad, ArrowRight } from 'lucide-react';
 import PageAds from '@/components/PageAds';
 
+type Phase = 'processing' | 'waiting_user' | 'done' | 'error';
+
 const dicasEMotivacao = [
   { emoji: "🥗", texto: "Comer devagar ajuda na digestão e aumenta a saciedade!" },
   { emoji: "💧", texto: "Beba água antes das refeições - hidratação é essencial!" },
@@ -31,9 +33,10 @@ const dicasEMotivacao = [
 ];
 
 function ProcessingContent() {
+  const [phase, setPhase] = useState<Phase>('processing');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [job, setJob] = useState<JobResponse | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [dicaAtual, setDicaAtual] = useState(0);
   const { token } = useAuth();
@@ -41,11 +44,7 @@ function ProcessingContent() {
   const searchParams = useSearchParams();
   const jobId = searchParams.get('jobId');
   const mealId = searchParams.get('mealId');
-  const jobIdRef = useRef(jobId);
-
-  useEffect(() => {
-    jobIdRef.current = jobId;
-  }, [jobId]);
+  const currentJobIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     setDicaAtual(Math.floor(Math.random() * dicasEMotivacao.length));
@@ -58,28 +57,35 @@ function ProcessingContent() {
   useEffect(() => {
     if (!jobId || !token) return;
 
-    let stopped = false;
+    currentJobIdRef.current = jobId;
+    setPhase('processing');
+    setErrorMessage(null);
+    setJob(null);
+    setAnswers({});
 
     const checkStatus = async () => {
-      if (stopped || jobIdRef.current !== jobId) return;
+      if (currentJobIdRef.current !== jobId) return;
 
       try {
         const result = await jobsApi.get(token, parseInt(jobId));
-        if (stopped) return;
+        
+        if (currentJobIdRef.current !== jobId) return;
 
         setJob(result);
 
         if (result.status === 'completed') {
-          stopped = true;
+          setPhase('done');
           router.push(`/result?mealId=${mealId}`);
         } else if (result.status === 'failed') {
-          stopped = true;
-          setError(result.erro || 'Erro na análise');
+          setPhase('error');
+          setErrorMessage(result.erro || 'Erro na análise');
+        } else if (result.status === 'waiting_user') {
+          setPhase('waiting_user');
         }
       } catch (err: any) {
-        if (!stopped) {
-          setError(err.message);
-          stopped = true;
+        if (currentJobIdRef.current === jobId) {
+          setPhase('error');
+          setErrorMessage(err.message);
         }
       }
     };
@@ -88,26 +94,28 @@ function ProcessingContent() {
     const interval = setInterval(checkStatus, 1500);
 
     return () => {
-      stopped = true;
       clearInterval(interval);
     };
   }, [jobId, token, mealId, router]);
 
   const handleSubmitAnswers = async () => {
     if (!token || !mealId) return;
+    
     setSubmitting(true);
-    setError('');
+    setPhase('processing');
+    setErrorMessage(null);
 
     try {
       const result = await mealsApi.submitAnswers(token, parseInt(mealId), answers);
       router.replace(`/processing?jobId=${result.job_id}&mealId=${mealId}`);
     } catch (err: any) {
-      setError(err.message);
+      setPhase('error');
+      setErrorMessage(err.message);
       setSubmitting(false);
     }
   };
 
-  if (error) {
+  if (phase === 'error') {
     return (
       <div className="max-w-lg mx-auto">
         <div className="bg-white rounded-3xl shadow-xl p-8 text-center border border-amber-100">
@@ -116,8 +124,7 @@ function ProcessingContent() {
           </div>
           <h2 className="text-xl font-bold mb-2 text-gray-900">Ops! Tivemos um probleminha</h2>
           <p className="text-gray-600 mb-6">
-            Desculpe pelo inconveniente! Isso pode acontecer em alguns casos. 
-            Por favor, tente novamente - geralmente funciona na segunda tentativa.
+            {errorMessage || 'Desculpe pelo inconveniente! Por favor, tente novamente.'}
           </p>
           <button
             onClick={() => router.push('/home')}
@@ -130,7 +137,7 @@ function ProcessingContent() {
     );
   }
 
-  if (job?.status === 'waiting_user' && job.questions) {
+  if (phase === 'waiting_user' && job?.questions) {
     const allAnswered = job.questions.every(q => answers[q.id]);
     
     return (
