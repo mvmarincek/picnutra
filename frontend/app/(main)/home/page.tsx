@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { mealsApi } from '@/lib/api';
 import { Upload, UtensilsCrossed, Cake, Coffee, Target, Heart, Crown, Zap, Sparkles, ArrowRight } from 'lucide-react';
-import heic2any from 'heic2any';
 import AdBanner from '@/components/AdBanner';
 import PageAds from '@/components/PageAds';
 
@@ -101,6 +100,7 @@ export default function HomePage() {
     
     if (isHeic) {
       try {
+        const heic2any = (await import('heic2any')).default;
         const converted = await heic2any({ blob: f, toType: 'image/jpeg', quality: 0.92 });
         const blob = Array.isArray(converted) ? converted[0] : converted;
         fileToUse = new File([blob], f.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
