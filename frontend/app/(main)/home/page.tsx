@@ -4,8 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { mealsApi } from '@/lib/api';
-import { Upload, UtensilsCrossed, Cake, Coffee, Sparkles, Target, Zap, ArrowRight, Heart, Crown, Camera } from 'lucide-react';
-import imageCompression from 'browser-image-compression';
+import { Upload, UtensilsCrossed, Cake, Coffee, Target, Heart, Crown } from 'lucide-react';
 import AdBanner from '@/components/AdBanner';
 import PageAds from '@/components/PageAds';
 
@@ -40,7 +39,6 @@ export default function HomePage() {
   const [motivationalMessage, setMotivationalMessage] = useState('');
   const [tip, setTip] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
   const { user, token } = useAuth();
   const router = useRouter();
 
@@ -49,87 +47,24 @@ export default function HomePage() {
     setTip(tips[Math.floor(Math.random() * tips.length)]);
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (preview && preview.startsWith('blob:')) {
-        URL.revokeObjectURL(preview);
-      }
-    };
-  }, [preview]);
-
   const clearImage = () => {
-    if (preview && preview.startsWith('blob:')) {
-      URL.revokeObjectURL(preview);
-    }
     setPreview(null);
     setFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-    if (cameraInputRef.current) {
-      cameraInputRef.current.value = '';
-    }
   };
 
-  const convertToJpeg = (file: File): Promise<File> => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        ctx?.drawImage(img, 0, 0);
-        canvas.toBlob((blob) => {
-          if (blob) {
-            resolve(new File([blob], file.name.replace(/\.[^/.]+$/, '.jpg'), { type: 'image/jpeg' }));
-          } else {
-            resolve(file);
-          }
-        }, 'image/jpeg', 0.9);
-      };
-      img.onerror = () => resolve(file);
-      img.src = URL.createObjectURL(file);
-    });
-  };
-
-  const handleGallerySelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      const selectedFile = e.target.files?.[0];
-      if (!selectedFile) return;
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) {
       setError('');
-      
-      const converted = await convertToJpeg(selectedFile);
-      setFile(converted);
-      setPreview(URL.createObjectURL(converted));
-    } catch {
-      setError('Erro ao carregar imagem. Tente outro arquivo.');
-    }
-  };
-
-  const handleCameraCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (!selectedFile) return;
-    setError('');
-
-    try {
-      if (selectedFile.size > 2 * 1024 * 1024) {
-        const options = {
-          maxSizeMB: 1.5,
-          maxWidthOrHeight: 1920,
-          useWebWorker: false
-        };
-        const compressed = await imageCompression(selectedFile, options);
-        const compressedFile = new File([compressed], selectedFile.name, { type: compressed.type || 'image/jpeg' });
-        setFile(compressedFile);
-        setPreview(URL.createObjectURL(compressedFile));
-      } else {
-        setFile(selectedFile);
-        setPreview(URL.createObjectURL(selectedFile));
-      }
-    } catch {
-      setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile));
+      setFile(f);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        setPreview(ev.target?.result as string);
+      };
+      reader.readAsDataURL(f);
     }
   };
 
@@ -304,36 +239,19 @@ export default function HomePage() {
               <p className="text-gray-600 mb-4">
                 Tire uma foto ou selecione da galeria
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <button
-                  onClick={() => cameraInputRef.current?.click()}
-                  className="inline-flex items-center justify-center gap-2 gradient-fresh text-white px-6 py-3 rounded-full font-medium hover:shadow-lg hover:shadow-green-200 transition-all"
-                >
-                  <Camera className="w-5 h-5" />
-                  Tirar Foto
-                </button>
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="inline-flex items-center justify-center gap-2 bg-white border-2 border-green-400 text-green-600 px-6 py-3 rounded-full font-medium hover:bg-green-50 transition-all"
-                >
-                  <Upload className="w-5 h-5" />
-                  Galeria
-                </button>
-              </div>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex items-center justify-center gap-2 gradient-fresh text-white px-6 py-3 rounded-full font-medium hover:shadow-lg hover:shadow-green-200 transition-all"
+              >
+                <Upload className="w-5 h-5" />
+                Selecionar Imagem
+              </button>
             </div>
-            <input
-              ref={cameraInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handleCameraCapture}
-              className="hidden"
-            />
             <input
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              onChange={handleGallerySelect}
+              onChange={handleFileChange}
               className="hidden"
             />
           </div>
