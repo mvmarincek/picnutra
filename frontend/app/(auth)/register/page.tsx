@@ -10,6 +10,7 @@ function RegisterContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [registered, setRegistered] = useState(false);
@@ -21,6 +22,11 @@ function RegisterContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!acceptedTerms) {
+      setError('Voce precisa aceitar os Termos de Uso e Politica de Privacidade');
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError('As senhas não coincidem');
@@ -157,6 +163,27 @@ function RegisterContent() {
               placeholder="Digite a senha novamente"
               required
             />
+          </div>
+
+          <div className="mb-6">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-1 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+              />
+              <span className="text-sm text-gray-600">
+                Li e aceito os{' '}
+                <Link href="/terms" target="_blank" className="text-green-600 hover:underline font-medium">
+                  Termos de Uso
+                </Link>{' '}
+                e a{' '}
+                <Link href="/privacy" target="_blank" className="text-green-600 hover:underline font-medium">
+                  Politica de Privacidade
+                </Link>
+              </span>
+            </label>
           </div>
 
           <button

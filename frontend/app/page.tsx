@@ -275,16 +275,37 @@ export default function LandingPage() {
 
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl gradient-fresh flex items-center justify-center">
-                <Salad className="w-6 h-6 text-white" />
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded-xl gradient-fresh flex items-center justify-center">
+                  <Salad className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-xl font-bold">Nutri-Vision</span>
               </div>
-              <span className="text-xl font-bold">Nutri-Vision</span>
+              <nav className="flex flex-wrap justify-center gap-6 text-sm">
+                <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
+                  Privacidade
+                </Link>
+                <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
+                  Termos de Uso
+                </Link>
+                <Link href="/about" className="text-gray-400 hover:text-white transition-colors">
+                  Sobre
+                </Link>
+                <a href="mailto:contato@nutrivision.app" className="text-gray-400 hover:text-white transition-colors">
+                  Contato
+                </a>
+              </nav>
             </div>
-            <p className="text-gray-400 text-sm text-center">
-              Esta ferramenta é informativa e não substitui orientação de nutricionista ou médico.
-            </p>
+            <div className="border-t border-gray-800 pt-6 text-center">
+              <p className="text-gray-400 text-sm">
+                Esta ferramenta oferece estimativas aproximadas baseadas em imagem. Nao substitui orientacao de nutricionista ou medico.
+              </p>
+              <p className="text-gray-500 text-xs mt-2">
+                © {new Date().getFullYear()} Nutri-Vision. Todos os direitos reservados.
+              </p>
+            </div>
           </div>
         </div>
       </footer>

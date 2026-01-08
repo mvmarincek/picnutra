@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import Link from 'next/link';
 import { Home, History, Sparkles, User, LogOut, Salad } from 'lucide-react';
+import Footer from '@/components/Footer';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading, logout } = useAuth();
@@ -85,6 +86,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <main className="container mx-auto px-4 py-6">
         {children}
       </main>
+
+      <Footer />
 
       <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-green-100 shadow-lg">
         <div className="container mx-auto px-4">
