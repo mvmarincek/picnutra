@@ -36,6 +36,7 @@ export default function HomePage() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [motivationalMessage, setMotivationalMessage] = useState('');
   const [tip, setTip] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -75,6 +76,7 @@ export default function HomePage() {
         return;
       } catch {
         setError('Formato de imagem não suportado. Tire uma foto diretamente ou use: JPG, PNG, GIF, WebP ou HEIC.');
+        setShowErrorPopup(true);
         return;
       }
     }
@@ -233,10 +235,6 @@ export default function HomePage() {
                 src={preview} 
                 alt="Preview" 
                 className="w-full"
-                onError={() => {
-                  clearImage();
-                  setError('Formato de imagem não suportado. Tire uma foto diretamente ou use: JPG, PNG, GIF, WebP ou HEIC.');
-                }}
               />
               <button
                 onClick={clearImage}
@@ -311,6 +309,27 @@ export default function HomePage() {
           <span>{tip}</span>
         </p>
       </div>
+
+      {showErrorPopup && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full text-center">
+            <div className="text-5xl mb-4">😕</div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Formato não suportado</h3>
+            <p className="text-gray-600 mb-6">
+              Tire uma foto diretamente ou use um dos formatos: JPG, PNG, GIF, WebP ou HEIC.
+            </p>
+            <button
+              onClick={() => {
+                setShowErrorPopup(false);
+                setError('');
+              }}
+              className="w-full gradient-fresh text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
+            >
+              Nova Análise
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
