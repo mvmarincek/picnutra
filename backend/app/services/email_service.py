@@ -23,7 +23,7 @@ def send_email(to: str, subject: str, html_content: str):
         return False
 
 def send_welcome_email(user_email: str):
-    subject = "Bem-vindo ao Nutri-Vision!"
+    subject = "Bem-vindo ao Nutri-Vision! Voce ganhou 36 creditos!"
     html = f"""
     <html>
     <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
@@ -33,27 +33,34 @@ def send_welcome_email(user_email: str):
         </div>
         
         <div style="background: white; border-radius: 20px; padding: 30px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-            <h2 style="color: #22c55e; margin: 0 0 20px 0;">Ola!</h2>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 48px;">🎁</span>
+            </div>
+            <h2 style="color: #22c55e; margin: 0 0 20px 0; text-align: center;">Voce ganhou 36 creditos de bonus!</h2>
             <p style="color: #334155; line-height: 1.8; margin: 0 0 15px 0;">
                 Parabens por dar o primeiro passo em direcao a uma alimentacao mais consciente!
             </p>
             <p style="color: #334155; line-height: 1.8; margin: 0 0 20px 0;">
-                Com o Nutri-Vision, voce pode:
+                Com seus <strong style="color: #22c55e;">36 creditos de bonus</strong>, voce pode fazer <strong>3 analises completas</strong> com:
             </p>
             <ul style="color: #334155; line-height: 2; padding-left: 20px; margin: 0 0 20px 0;">
-                <li>Fotografar suas refeicoes e receber analise nutricional instantanea</li>
-                <li>Acompanhar calorias, proteinas, carboidratos e gorduras</li>
-                <li>Receber dicas personalizadas para melhorar sua alimentacao</li>
-                <li>Visualizar versoes otimizadas dos seus pratos</li>
+                <li>Analise detalhada de calorias, proteinas, carboidratos e gorduras</li>
+                <li>Sugestoes de melhorias para suas refeicoes</li>
+                <li>Visualizacao de versoes otimizadas dos seus pratos</li>
             </ul>
-            <p style="color: #334155; line-height: 1.8; margin: 0;">
-                As <strong style="color: #22c55e;">analises rapidas sao gratuitas e ilimitadas</strong>! Comece agora mesmo a conhecer melhor sua alimentacao.
+            <div style="background: #f0fdf4; border-radius: 15px; padding: 15px; margin-bottom: 15px;">
+                <p style="color: #166534; margin: 0; text-align: center;">
+                    <strong>Analises simples sao sempre gratuitas e ilimitadas!</strong>
+                </p>
+            </div>
+            <p style="color: #64748b; line-height: 1.8; margin: 0; font-size: 14px;">
+                Quando seus creditos acabarem, voce pode continuar usando analises simples gratuitamente ou assinar o plano PRO para acesso ilimitado a todas as funcionalidades.
             </p>
         </div>
         
         <div style="text-align: center; margin-bottom: 20px;">
             <a href="https://nutrivision-drab.vercel.app/home" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
-                Comecar Agora
+                Usar meus creditos
             </a>
         </div>
         
@@ -143,9 +150,14 @@ def send_referral_activated_email(referrer_email: str, referred_email: str, cred
             <p style="color: #334155; line-height: 1.8; margin: 0 0 15px 0; text-align: center;">
                 Seu amigo <strong>{referred_email}</strong> se cadastrou usando seu link de indicacao!
             </p>
-            <p style="color: #334155; line-height: 1.8; margin: 0; text-align: center;">
+            <p style="color: #334155; line-height: 1.8; margin: 0 0 15px 0; text-align: center;">
                 Seu novo saldo: <strong style="color: #22c55e;">{new_balance} creditos</strong>
             </p>
+            <div style="background: #f0fdf4; border-radius: 15px; padding: 15px;">
+                <p style="color: #166534; margin: 0; text-align: center; font-size: 14px;">
+                    Com {new_balance} creditos voce pode fazer <strong>{new_balance // 12} analise(s) completa(s)</strong>!
+                </p>
+            </div>
         </div>
         
         <div style="text-align: center; margin-bottom: 20px;">
@@ -164,31 +176,34 @@ def send_referral_activated_email(referrer_email: str, referred_email: str, cred
     return send_email(referrer_email, subject, html)
 
 def send_upgraded_to_pro_email(user_email: str):
-    subject = "Voce agora e PRO! - Nutri-Vision"
+    subject = "Bem-vindo ao Nutri-Vision PRO!"
     html = f"""
     <html>
     <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
         <div style="background: linear-gradient(135deg, #8b5cf6, #ec4899); padding: 30px; border-radius: 20px; text-align: center; margin-bottom: 20px;">
             <h1 style="color: white; margin: 0; font-size: 28px;">Nutri-Vision PRO</h1>
-            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Bem-vindo ao time PRO!</p>
+            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Sua assinatura foi ativada com sucesso!</p>
         </div>
         
         <div style="background: white; border-radius: 20px; padding: 30px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             <div style="text-align: center; margin-bottom: 20px;">
                 <span style="font-size: 48px;">👑</span>
             </div>
-            <h2 style="color: #8b5cf6; margin: 0 0 20px 0; text-align: center;">Parabens!</h2>
-            <p style="color: #334155; line-height: 1.8; margin: 0 0 15px 0; text-align: center;">
-                Voce agora e um usuario <strong style="color: #8b5cf6;">PRO</strong> do Nutri-Vision!
-            </p>
+            <h2 style="color: #8b5cf6; margin: 0 0 20px 0; text-align: center;">Parabens! Voce agora e PRO!</h2>
             <p style="color: #334155; line-height: 1.8; margin: 0 0 20px 0;">
-                Como usuario PRO, voce tem:
+                Como assinante PRO, voce tem:
             </p>
             <ul style="color: #334155; line-height: 2; padding-left: 20px; margin: 0 0 20px 0;">
-                <li>Analises completas com sugestoes visuais</li>
-                <li>Sem anuncios</li>
+                <li><strong>Analises completas ilimitadas</strong></li>
+                <li><strong>Sem anuncios</strong></li>
+                <li>Sugestoes visuais de melhorias</li>
                 <li>Acesso a todos os recursos premium</li>
             </ul>
+            <div style="background: #faf5ff; border-radius: 15px; padding: 15px;">
+                <p style="color: #7c3aed; margin: 0; text-align: center; font-size: 14px;">
+                    Sua assinatura sera renovada automaticamente todo mes.
+                </p>
+            </div>
         </div>
         
         <div style="text-align: center; margin-bottom: 20px;">
@@ -198,7 +213,89 @@ def send_upgraded_to_pro_email(user_email: str):
         </div>
         
         <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">
-            Obrigado por fazer parte do Nutri-Vision!<br>
+            Obrigado por assinar o Nutri-Vision PRO!<br>
+            Equipe Nutri-Vision
+        </p>
+    </body>
+    </html>
+    """
+    return send_email(user_email, subject, html)
+
+def send_credits_purchased_email(user_email: str, credits_purchased: int, new_balance: int):
+    subject = f"Compra confirmada: +{credits_purchased} creditos - Nutri-Vision"
+    html = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
+        <div style="background: linear-gradient(135deg, #22c55e, #14b8a6); padding: 30px; border-radius: 20px; text-align: center; margin-bottom: 20px;">
+            <h1 style="color: white; margin: 0; font-size: 28px;">Nutri-Vision</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Compra confirmada!</p>
+        </div>
+        
+        <div style="background: white; border-radius: 20px; padding: 30px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 48px;">✅</span>
+            </div>
+            <h2 style="color: #22c55e; margin: 0 0 20px 0; text-align: center;">+{credits_purchased} creditos adicionados!</h2>
+            <p style="color: #334155; line-height: 1.8; margin: 0 0 15px 0; text-align: center;">
+                Sua compra foi processada com sucesso.
+            </p>
+            <div style="background: #f0fdf4; border-radius: 15px; padding: 20px; text-align: center;">
+                <p style="color: #166534; margin: 0 0 10px 0; font-size: 14px;">Seu novo saldo:</p>
+                <p style="color: #22c55e; margin: 0; font-size: 32px; font-weight: bold;">{new_balance} creditos</p>
+                <p style="color: #166534; margin: 10px 0 0 0; font-size: 14px;">
+                    ({new_balance // 12} analise(s) completa(s) disponiveis)
+                </p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <a href="https://nutrivision-drab.vercel.app/home" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
+                Usar meus creditos
+            </a>
+        </div>
+        
+        <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">
+            Obrigado por sua compra!<br>
+            Equipe Nutri-Vision
+        </p>
+    </body>
+    </html>
+    """
+    return send_email(user_email, subject, html)
+
+def send_subscription_cancelled_email(user_email: str):
+    subject = "Assinatura PRO cancelada - Nutri-Vision"
+    html = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
+        <div style="background: linear-gradient(135deg, #64748b, #475569); padding: 30px; border-radius: 20px; text-align: center; margin-bottom: 20px;">
+            <h1 style="color: white; margin: 0; font-size: 28px;">Nutri-Vision</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Assinatura cancelada</p>
+        </div>
+        
+        <div style="background: white; border-radius: 20px; padding: 30px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <p style="color: #334155; line-height: 1.8; margin: 0 0 15px 0;">
+                Sua assinatura PRO foi cancelada. Voce voltou para o plano FREE.
+            </p>
+            <p style="color: #334155; line-height: 1.8; margin: 0 0 20px 0;">
+                Voce ainda pode usar:
+            </p>
+            <ul style="color: #334155; line-height: 2; padding-left: 20px; margin: 0 0 20px 0;">
+                <li>Analises simples gratuitas e ilimitadas</li>
+                <li>Seus creditos restantes para analises completas</li>
+            </ul>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">
+                Sentiremos sua falta! Voce pode voltar ao PRO a qualquer momento.
+            </p>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <a href="https://nutrivision-drab.vercel.app/billing" style="display: inline-block; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
+                Voltar ao PRO
+            </a>
+        </div>
+        
+        <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">
             Equipe Nutri-Vision
         </p>
     </body>

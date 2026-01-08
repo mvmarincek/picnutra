@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
-import { profileApi, feedbackApi, authApi } from '@/lib/api';
-import { Save, User, ArrowRight, Salad, Send, Lightbulb, ArrowDownCircle, Gift, Copy, Check, QrCode } from 'lucide-react';
+import { profileApi, feedbackApi } from '@/lib/api';
+import { Save, User, ArrowRight, Salad, Send, Lightbulb, Gift, Copy, Check, QrCode } from 'lucide-react';
 import AdBanner from '@/components/AdBanner';
 
 const objetivos = [
@@ -33,24 +33,9 @@ export default function ProfilePage() {
   const [sugestao, setSugestao] = useState('');
   const [enviandoSugestao, setEnviandoSugestao] = useState(false);
   const [sugestaoEnviada, setSugestaoEnviada] = useState(false);
-  const [downgrading, setDowngrading] = useState(false);
   const [linkCopiado, setLinkCopiado] = useState(false);
   const { token, user, updateUser } = useAuth();
   const router = useRouter();
-
-  const handleDowngradeToFree = async () => {
-    if (!token || !confirm('Tem certeza que deseja mudar para o plano FREE? Você verá anúncios, mas seus créditos serão mantidos para quando voltar ao PRO.')) return;
-    setDowngrading(true);
-    
-    try {
-      const updatedUser = await authApi.downgradeToFree(token);
-      updateUser(updatedUser);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setDowngrading(false);
-    }
-  };
 
   const referralLink = user?.referral_code 
     ? `https://nutrivision-drab.vercel.app/register?ref=${user.referral_code}` 
@@ -153,32 +138,6 @@ export default function ProfilePage() {
             )}
           </div>
         </div>
-
-        {user?.plan === 'pro' && (
-          <div className="mb-6 p-4 bg-gray-50 rounded-2xl border border-gray-200">
-            <p className="text-sm text-gray-600 mb-3">
-              Sem créditos? Mude para FREE e continue usando análises rápidas gratuitas (com anúncios). 
-              Seus créditos serão mantidos para quando voltar ao PRO.
-            </p>
-            <button
-              onClick={handleDowngradeToFree}
-              disabled={downgrading}
-              className="w-full py-3 rounded-xl font-medium flex items-center justify-center gap-2 bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all"
-            >
-              {downgrading ? (
-                <>
-                  <div className="animate-spin w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full"></div>
-                  Alterando...
-                </>
-              ) : (
-                <>
-                  <ArrowDownCircle className="w-4 h-4" />
-                  Mudar para plano FREE
-                </>
-              )}
-            </button>
-          </div>
-        )}
 
         {error && (
           <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-2xl mb-6 text-sm flex items-start gap-3">

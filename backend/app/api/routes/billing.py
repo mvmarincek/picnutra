@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, Header
+from fastapi import APIRouter, Depends, HTTPException, Request, Header, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import stripe
@@ -10,6 +10,7 @@ from app.schemas.schemas import (
 )
 from app.core.security import get_current_user
 from app.core.config import settings
+from app.services.email_service import send_upgraded_to_pro_email, send_credits_purchased_email, send_subscription_cancelled_email
 
 router = APIRouter(prefix="/billing", tags=["billing"])
 
@@ -141,12 +142,17 @@ async def stripe_webhook(
                         description=f"Compra de {credits} créditos"
                     )
                     db.add(transaction)
+                    await db.commit()
+                    await db.refresh(user)
+                    
+                    send_credits_purchased_email(user.email, credits, user.credit_balance)
                 
                 elif metadata.get("type") == "pro_subscription":
                     user.plan = "pro"
                     user.pro_analyses_remaining = settings.PRO_MONTHLY_ANALYSES
-                
-                await db.commit()
+                    await db.commit()
+                    
+                    send_upgraded_to_pro_email(user.email)
     
     elif event["type"] == "customer.subscription.updated":
         subscription = event["data"]["object"]
@@ -179,6 +185,8 @@ async def stripe_webhook(
             user.plan = "free"
             user.pro_analyses_remaining = 0
             await db.commit()
+            
+            send_subscription_cancelled_email(user.email)
     
     return {"status": "ok"}
 

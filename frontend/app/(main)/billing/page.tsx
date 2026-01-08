@@ -163,21 +163,21 @@ export default function BillingPage() {
             <ul className="space-y-2 mb-6">
               <li className="flex items-center">
                 <span className="mr-2">-</span>
-                30 análises completas por mês
+                Analises completas ilimitadas
               </li>
               <li className="flex items-center">
                 <span className="mr-2">-</span>
-                Sem anúncios
+                Sem anuncios
               </li>
               <li className="flex items-center">
                 <span className="mr-2">-</span>
-                Desconto em créditos adicionais
+                Acesso a todos os recursos premium
               </li>
             </ul>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-3xl font-bold">R$ 49,90</p>
-                <p className="text-sm opacity-80">/mês</p>
+                <p className="text-sm opacity-80">/mes</p>
               </div>
               <button
                 onClick={handleSubscribePro}

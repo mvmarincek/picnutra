@@ -6,7 +6,7 @@ from app.db.database import get_db
 from app.models.models import User, Referral
 from app.schemas.schemas import UserCreate, UserLogin, TokenResponse, UserResponse
 from app.core.security import get_password_hash, verify_password, create_access_token, get_current_user
-from app.services.email_service import send_welcome_email, send_password_reset_email, send_referral_activated_email, send_upgraded_to_pro_email
+from app.services.email_service import send_welcome_email, send_password_reset_email, send_referral_activated_email
 import secrets
 import string
 from datetime import datetime, timedelta
@@ -52,7 +52,7 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks, db:
     user = User(
         email=user_data.email,
         password_hash=get_password_hash(user_data.password),
-        credit_balance=0,
+        credit_balance=36,
         referral_code=referral_code,
         referred_by=referrer.id if referrer else None
     )
@@ -61,10 +61,7 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks, db:
     await db.refresh(user)
     
     if referrer:
-        was_free = referrer.plan == "free"
         referrer.credit_balance += 12
-        if was_free:
-            referrer.plan = "pro"
         
         referral_record = Referral(
             referrer_id=referrer.id,
@@ -82,9 +79,6 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks, db:
             12,
             referrer.credit_balance
         )
-        
-        if was_free:
-            background_tasks.add_task(send_upgraded_to_pro_email, referrer.email)
     
     background_tasks.add_task(send_welcome_email, user.email)
     
