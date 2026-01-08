@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId } from 'react';
+import { useEffect, useState } from 'react';
 
 declare global {
   interface Window {
@@ -14,18 +14,30 @@ interface AdSenseAdProps {
 }
 
 export default function AdSenseAd({ slot = '5278243728', className = '' }: AdSenseAdProps) {
-  const id = useId();
+  const [adLoaded, setAdLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (err) {
-      console.error('AdSense error:', err);
-    }
+    const timer = setTimeout(() => {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        setAdLoaded(true);
+      } catch (err) {
+        console.error('AdSense error:', err);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className={`ad-container ${className}`} style={{ minHeight: '100px', width: '100%' }}>
+    <div 
+      className={`ad-container ${className}`} 
+      style={{ 
+        minHeight: adLoaded ? '100px' : '0px', 
+        width: '100%',
+        transition: 'min-height 0.3s'
+      }}
+    >
       <ins
         className="adsbygoogle"
         style={{ display: 'block' }}
@@ -33,7 +45,6 @@ export default function AdSenseAd({ slot = '5278243728', className = '' }: AdSen
         data-ad-slot={slot}
         data-ad-format="auto"
         data-full-width-responsive="true"
-        key={id}
       />
     </div>
   );

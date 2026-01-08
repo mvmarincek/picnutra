@@ -15,11 +15,8 @@ export default function PageAds({ position = 'inline' }: PageAdsProps) {
   }
 
   return (
-    <div className={`${position === 'top' ? 'mb-4' : position === 'bottom' ? 'mt-8 mb-4' : 'my-4'}`}>
-      <div className="bg-gray-50 rounded-xl p-3">
-        <p className="text-xs text-gray-400 text-center mb-2">Publicidade</p>
-        <AdSenseAd />
-      </div>
+    <div className={`${position === 'top' ? 'mb-4' : position === 'bottom' ? 'mt-6' : 'my-4'}`}>
+      <AdSenseAd />
     </div>
   );
 }
