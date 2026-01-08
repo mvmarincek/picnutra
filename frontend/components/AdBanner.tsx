@@ -41,14 +41,14 @@ export default function AdBanner({ slot, format = 'auto', className = '' }: AdBa
   }
 
   return (
-    <div className={`ad-container ${className}`}>
+    <div className={`ad-container ${className}`} style={{ maxHeight: '33vh', overflow: 'hidden' }}>
       <ins
         className="adsbygoogle"
-        style={{ display: 'block' }}
+        style={{ display: 'block', maxHeight: '33vh' }}
         data-ad-client={clientId}
         data-ad-slot={slotId}
         data-ad-format={format}
-        data-full-width-responsive="true"
+        data-full-width-responsive="false"
       />
     </div>
   );
