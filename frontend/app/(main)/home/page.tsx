@@ -71,14 +71,38 @@ export default function HomePage() {
     }
   };
 
-  const handleGallerySelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const convertToJpeg = (file: File): Promise<File> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(new File([blob], file.name.replace(/\.[^/.]+$/, '.jpg'), { type: 'image/jpeg' }));
+          } else {
+            resolve(file);
+          }
+        }, 'image/jpeg', 0.9);
+      };
+      img.onerror = () => resolve(file);
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const handleGallerySelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       const selectedFile = e.target.files?.[0];
       if (!selectedFile) return;
       setError('');
-      setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile));
-    } catch (err) {
+      
+      const converted = await convertToJpeg(selectedFile);
+      setFile(converted);
+      setPreview(URL.createObjectURL(converted));
+    } catch {
       setError('Erro ao carregar imagem. Tente outro arquivo.');
     }
   };
