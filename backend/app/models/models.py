@@ -129,7 +129,7 @@ class CreditTransaction(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     credits_added = Column(Integer, nullable=False)
     credits_used = Column(Integer, default=0)
-    stripe_payment_id = Column(String(255), nullable=True)
+    payment_id = Column(String(255), nullable=True)
     description = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     

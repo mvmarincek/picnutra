@@ -6,14 +6,19 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "your-super-secret-key-change-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
-    STRIPE_SECRET_KEY: str = ""
-    STRIPE_WEBHOOK_SECRET: str = ""
     OPENAI_API_KEY: str = ""
     FRONTEND_URL: str = "http://localhost:3000"
     BACKEND_URL: str = "https://nutrivision-api-dcr0.onrender.com"
     UPLOAD_DIR: str = "./uploads"
     
-    CREDIT_COST_SIMPLE: int = 5
+    ASAAS_API_KEY: str = ""
+    ASAAS_WALLET_ID: str = ""
+    ASAAS_BASE_URL: str = "https://sandbox.asaas.com/api/v3"
+    ASAAS_WEBHOOK_TOKEN: str = ""
+    
+    RESEND_API_KEY: str = ""
+    
+    CREDIT_COST_SIMPLE: int = 1
     CREDIT_COST_FULL: int = 12
     PRO_MONTHLY_ANALYSES: int = 30
     

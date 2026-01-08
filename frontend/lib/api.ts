@@ -239,6 +239,19 @@ export const jobsApi = {
     api<JobResponse>(`/jobs/${jobId}`, { token })
 };
 
+export interface PixPaymentResponse {
+  payment_id: string;
+  pix_code: string;
+  pix_qr_code_base64: string;
+  value: number;
+  expiration_date: string;
+}
+
+export interface PaymentStatusResponse {
+  status: string;
+  confirmed: boolean;
+}
+
 export const billingApi = {
   getStatus: (token: string) =>
     api<BillingStatus>('/billing/status', { token }),
@@ -246,11 +259,11 @@ export const billingApi = {
   getPackages: () =>
     api<Record<string, CreditPackage>>('/billing/packages'),
   
-  createCreditCheckout: (token: string, packageId: string) =>
-    api<{ checkout_url: string }>('/billing/create-credit-checkout', { method: 'POST', body: { package: packageId }, token }),
+  createPixPayment: (token: string, packageId: string) =>
+    api<PixPaymentResponse>('/billing/create-pix-payment', { method: 'POST', body: { package: packageId }, token }),
   
-  createProCheckout: (token: string) =>
-    api<{ checkout_url: string }>('/billing/create-pro-subscription-checkout', { method: 'POST', token })
+  getPaymentStatus: (token: string, paymentId: string) =>
+    api<PaymentStatusResponse>(`/billing/payment-status/${paymentId}`, { token })
 };
 
 export const creditsApi = {
