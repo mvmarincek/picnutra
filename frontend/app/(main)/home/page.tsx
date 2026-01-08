@@ -73,36 +73,43 @@ export default function HomePage() {
 
     setError('');
 
+    const fileName = selectedFile.name.toLowerCase();
     const isImage = selectedFile.type.startsWith('image/') || 
-                    selectedFile.name.toLowerCase().endsWith('.heic') || 
-                    selectedFile.name.toLowerCase().endsWith('.heif');
+                    fileName.endsWith('.heic') || 
+                    fileName.endsWith('.heif') ||
+                    fileName.endsWith('.webp') ||
+                    fileName.endsWith('.png') ||
+                    fileName.endsWith('.jpg') ||
+                    fileName.endsWith('.jpeg');
     
     if (!isImage) {
       setError('Por favor, selecione uma imagem.');
       return;
     }
 
+    let fileToUse: File = selectedFile;
+    
     try {
-      let fileToUse: File = selectedFile;
-      
       if (selectedFile.size > 2 * 1024 * 1024) {
-        try {
-          const options = {
-            maxSizeMB: 1.5,
-            maxWidthOrHeight: 1920,
-            useWebWorker: false
-          };
-          const compressed = await imageCompression(selectedFile, options);
-          fileToUse = new File([compressed], selectedFile.name, { type: compressed.type || 'image/jpeg' });
-        } catch {
-          fileToUse = selectedFile;
-        }
+        const options = {
+          maxSizeMB: 1.5,
+          maxWidthOrHeight: 1920,
+          useWebWorker: false
+        };
+        const compressed = await imageCompression(selectedFile, options);
+        fileToUse = new File([compressed], selectedFile.name, { type: compressed.type || 'image/jpeg' });
       }
-      
+    } catch (compressionError) {
+      console.warn('Compression skipped:', compressionError);
+    }
+    
+    try {
+      const objectUrl = URL.createObjectURL(fileToUse);
       setFile(fileToUse);
-      setPreview(URL.createObjectURL(fileToUse));
-    } catch {
-      setError('Erro ao processar imagem. Tente outra foto.');
+      setPreview(objectUrl);
+    } catch (urlError) {
+      console.error('Failed to create object URL:', urlError);
+      setError('Erro ao carregar imagem. Tente outra foto.');
     }
   };
 
@@ -251,7 +258,15 @@ export default function HomePage() {
         {preview ? (
           <div className="mb-6">
             <div className="relative rounded-2xl overflow-hidden shadow-lg">
-              <img src={preview} alt="Preview" className="w-full" />
+              <img 
+                src={preview} 
+                alt="Preview" 
+                className="w-full"
+                onError={() => {
+                  setError('Erro ao carregar imagem. Tente outra foto.');
+                  clearImage();
+                }}
+              />
               <button
                 onClick={clearImage}
                 className="absolute top-3 right-3 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center transition-colors"
