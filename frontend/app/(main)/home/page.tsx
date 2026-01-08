@@ -53,55 +53,17 @@ export default function HomePage() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const loadAndValidateImage = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
+  const validateImage = (file: File): Promise<boolean> => {
+    return new Promise((resolve) => {
       const url = URL.createObjectURL(file);
       const img = new Image();
       img.onload = () => {
         URL.revokeObjectURL(url);
-        resolve(URL.createObjectURL(file));
+        resolve(true);
       };
       img.onerror = () => {
         URL.revokeObjectURL(url);
-        reject(new Error('Invalid image'));
-      };
-      img.src = url;
-    });
-  };
-
-  const convertViaCanvas = (file: File): Promise<{ file: File; url: string }> => {
-    return new Promise((resolve, reject) => {
-      const url = URL.createObjectURL(file);
-      const img = new Image();
-      img.onload = () => {
-        try {
-          const canvas = document.createElement('canvas');
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
-          const ctx = canvas.getContext('2d');
-          if (!ctx) throw new Error('No canvas context');
-          ctx.drawImage(img, 0, 0);
-          canvas.toBlob(
-            (blob) => {
-              URL.revokeObjectURL(url);
-              if (blob) {
-                const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.jpg'), { type: 'image/jpeg' });
-                resolve({ file: newFile, url: URL.createObjectURL(newFile) });
-              } else {
-                reject(new Error('Canvas conversion failed'));
-              }
-            },
-            'image/jpeg',
-            0.92
-          );
-        } catch (err) {
-          URL.revokeObjectURL(url);
-          reject(err);
-        }
-      };
-      img.onerror = () => {
-        URL.revokeObjectURL(url);
-        reject(new Error('Image load failed'));
+        resolve(false);
       };
       img.src = url;
     });
@@ -128,28 +90,19 @@ export default function HomePage() {
         setPreview(URL.createObjectURL(jpegFile));
         return;
       } catch {
-        setError('Não foi possível processar este arquivo HEIC.');
+        setError('Não foi possível processar este arquivo HEIC. Tire uma foto diretamente ou use outro formato.');
         return;
       }
     }
     
-    // Try direct load first
-    try {
-      const url = await loadAndValidateImage(f);
-      setFile(f);
-      setPreview(url);
-      return;
-    } catch {
-      // Direct load failed, try canvas conversion
-    }
+    // Validate image can be loaded
+    const isValid = await validateImage(f);
     
-    // Fallback: convert via canvas
-    try {
-      const { file: converted, url } = await convertViaCanvas(f);
-      setFile(converted);
-      setPreview(url);
-    } catch {
-      setError('Não foi possível carregar esta imagem. Tente outro arquivo.');
+    if (isValid) {
+      setFile(f);
+      setPreview(URL.createObjectURL(f));
+    } else {
+      setError('Formato de imagem não suportado. Tire uma foto diretamente ou use: JPG, PNG, GIF, WebP ou HEIC.');
     }
   };
 
