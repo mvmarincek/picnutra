@@ -73,36 +73,35 @@ export default function HomePage() {
 
     setError('');
 
-    if (!selectedFile.type.startsWith('image/') && !selectedFile.name.toLowerCase().endsWith('.heic') && !selectedFile.name.toLowerCase().endsWith('.heif')) {
+    const isImage = selectedFile.type.startsWith('image/') || 
+                    selectedFile.name.toLowerCase().endsWith('.heic') || 
+                    selectedFile.name.toLowerCase().endsWith('.heif');
+    
+    if (!isImage) {
       setError('Por favor, selecione uma imagem.');
       return;
     }
 
     try {
-      const options = {
-        maxSizeMB: 1.5,
-        maxWidthOrHeight: 1920,
-        useWebWorker: false,
-        fileType: 'image/jpeg' as const,
-        initialQuality: 0.85
-      };
+      let fileToUse: File = selectedFile;
       
-      let compressed: Blob;
-      try {
-        compressed = await imageCompression(selectedFile, options);
-      } catch (compressionErr) {
-        console.warn('Compression failed, trying with original:', compressionErr);
-        compressed = selectedFile;
+      if (selectedFile.size > 2 * 1024 * 1024) {
+        try {
+          const options = {
+            maxSizeMB: 1.5,
+            maxWidthOrHeight: 1920,
+            useWebWorker: false
+          };
+          const compressed = await imageCompression(selectedFile, options);
+          fileToUse = new File([compressed], selectedFile.name, { type: compressed.type || 'image/jpeg' });
+        } catch {
+          fileToUse = selectedFile;
+        }
       }
       
-      const fileToUse = new File([compressed], selectedFile.name.replace(/\.[^/.]+$/, '.jpg'), { type: 'image/jpeg' });
-      
       setFile(fileToUse);
-      const objectUrl = URL.createObjectURL(fileToUse);
-      setPreview(objectUrl);
-      
-    } catch (err) {
-      console.error('File select error:', err);
+      setPreview(URL.createObjectURL(fileToUse));
+    } catch {
       setError('Erro ao processar imagem. Tente outra foto.');
     }
   };
