@@ -3,6 +3,14 @@
 import { useAuth } from '@/lib/auth';
 import AdBanner from './AdBanner';
 
+const slotEnvMap: Record<string, string | undefined> = {
+  HOME_BANNER: process.env.NEXT_PUBLIC_ADSENSE_SLOT_HOME,
+  RESULT_BANNER: process.env.NEXT_PUBLIC_ADSENSE_SLOT_RESULT,
+  HISTORY_BANNER: process.env.NEXT_PUBLIC_ADSENSE_SLOT_HISTORY,
+  PROFILE_BANNER: process.env.NEXT_PUBLIC_ADSENSE_SLOT_PROFILE,
+  PROCESSING_BANNER: process.env.NEXT_PUBLIC_ADSENSE_SLOT_PROCESSING,
+};
+
 interface PageAdsProps {
   slot: string;
   position: 'top' | 'bottom';
@@ -10,6 +18,10 @@ interface PageAdsProps {
 
 export default function PageAds({ slot, position }: PageAdsProps) {
   const { user } = useAuth();
+  const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+  const slotId = slotEnvMap[slot] || slot;
+  
+  if (!clientId || !slotId) return null;
   
   if (position === 'top') {
     if (user?.plan !== 'free') return null;

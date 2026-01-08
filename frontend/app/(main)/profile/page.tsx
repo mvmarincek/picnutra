@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
-import { profileApi, feedbackApi } from '@/lib/api';
-import { Save, User, ArrowRight, Salad, Send, Lightbulb, Gift, Copy, Check, QrCode } from 'lucide-react';
+import { profileApi, feedbackApi, Profile } from '@/lib/api';
+import { Save, User, ArrowRight, Salad, Send, Lightbulb, Gift, Copy, Check, QrCode, Camera } from 'lucide-react';
 import AdBanner from '@/components/AdBanner';
 import PageAds from '@/components/PageAds';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const objetivos = [
   { id: 'emagrecer', label: 'Emagrecer', emoji: '🏃' },
@@ -28,6 +30,8 @@ export default function ProfilePage() {
   const [objetivo, setObjetivo] = useState('');
   const [restricoes, setRestricoes] = useState<string[]>([]);
   const [alergias, setAlergias] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -35,13 +39,33 @@ export default function ProfilePage() {
   const [enviandoSugestao, setEnviandoSugestao] = useState(false);
   const [sugestaoEnviada, setSugestaoEnviada] = useState(false);
   const [linkCopiado, setLinkCopiado] = useState(false);
-  const { token, user, updateUser } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { token, user, updateUser, refreshUser } = useAuth();
   const router = useRouter();
 
   const referralLink = user?.referral_code 
-    ? `https://nutrivision-drab.vercel.app/register?ref=${user.referral_code}` 
+    ? `https://nutrivision.ai8hub.com/register?ref=${user.referral_code}` 
     : '';
-  const appLink = 'https://nutrivision-drab.vercel.app';
+  const appLink = 'https://nutrivision.ai8hub.com';
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !token) return;
+    
+    setUploadingAvatar(true);
+    try {
+      const profile = await profileApi.uploadAvatar(token, file);
+      setAvatarUrl(profile.avatar_url);
+    } catch (err) {
+      console.error('Erro ao enviar foto:', err);
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   const handleCopyLink = () => {
     if (referralLink) {
@@ -72,10 +96,12 @@ export default function ProfilePage() {
 
     const fetchProfile = async () => {
       try {
+        await refreshUser();
         const profile = await profileApi.get(token);
         setObjetivo(profile.objetivo || '');
         setRestricoes(profile.restricoes || []);
         setAlergias((profile.alergias || []).join(', '));
+        setAvatarUrl(profile.avatar_url || null);
       } catch (err) {
       } finally {
         setLoading(false);
@@ -83,7 +109,7 @@ export default function ProfilePage() {
     };
 
     fetchProfile();
-  }, [token]);
+  }, [token, refreshUser]);
 
   const handleToggleRestricao = (id: string) => {
     if (restricoes.includes(id)) {
@@ -130,14 +156,42 @@ export default function ProfilePage() {
 
       <div className="bg-white rounded-3xl shadow-xl p-6 mb-6 border border-green-100">
         <div className="flex items-center mb-6">
-          <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-teal-100 rounded-2xl flex items-center justify-center">
-            <User className="w-8 h-8 text-green-600" />
-          </div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleAvatarChange}
+            accept="image/*"
+            className="hidden"
+          />
+          <button
+            onClick={handleAvatarClick}
+            disabled={uploadingAvatar}
+            className="relative w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center group"
+          >
+            {avatarUrl ? (
+              <img
+                src={`${API_URL}${avatarUrl}`}
+                alt="Foto de perfil"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-green-100 to-teal-100 flex items-center justify-center">
+                <User className="w-8 h-8 text-green-600" />
+              </div>
+            )}
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              {uploadingAvatar ? (
+                <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+              ) : (
+                <Camera className="w-5 h-5 text-white" />
+              )}
+            </div>
+          </button>
           <div className="ml-4 flex-1">
             <p className="font-semibold text-gray-900">{user?.email}</p>
             <p className="text-sm text-gray-500 capitalize">Plano {user?.plan || 'Free'}</p>
             {user?.credit_balance && user.credit_balance > 0 && (
-              <p className="text-xs text-green-600 font-medium">{user.credit_balance} créditos disponíveis</p>
+              <p className="text-xs text-green-600 font-medium">{user.credit_balance} creditos disponiveis</p>
             )}
           </div>
         </div>
@@ -297,7 +351,7 @@ export default function ProfilePage() {
           Compartilhe seu link ou QR Code. Quando seu amigo se cadastrar, voce ganha 12 creditos para analises PRO!
         </p>
 
-        {user?.referral_code && (
+        {user?.referral_code ? (
           <>
             <div className="bg-gray-50 rounded-2xl p-3 mb-4">
               <p className="text-xs text-gray-500 mb-1">Seu link de indicacao:</p>
@@ -342,6 +396,10 @@ export default function ProfilePage() {
               </div>
             </div>
           </>
+        ) : (
+          <div className="bg-gray-50 rounded-2xl p-4 text-center">
+            <p className="text-sm text-gray-500">Carregando seu codigo de indicacao...</p>
+          </div>
         )}
       </div>
 
@@ -363,7 +421,7 @@ export default function ProfilePage() {
               alt="QR Code do App"
               className="w-36 h-36"
             />
-            <p className="text-xs text-center text-gray-500 mt-2">nutrivision-drab.vercel.app</p>
+            <p className="text-xs text-center text-gray-500 mt-2">nutrivision.ai8hub.com</p>
           </div>
         </div>
       </div>

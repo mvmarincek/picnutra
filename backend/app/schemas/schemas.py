@@ -40,6 +40,7 @@ class ProfileResponse(BaseModel):
     objetivo: Optional[str]
     restricoes: List[str]
     alergias: List[str]
+    avatar_url: Optional[str] = None
     created_at: datetime
     
     class Config:
