@@ -31,7 +31,7 @@ export default function AdSenseAd({ slot, format = 'auto', className = '', style
           isAdPushed.current = true;
         }
       } catch (err) {
-        // AdSense error - silently ignore
+        console.log('AdSense push error');
       }
     }, 100);
 
@@ -46,9 +46,6 @@ export default function AdSenseAd({ slot, format = 'auto', className = '', style
       style={{ 
         minHeight: '100px',
         width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
         overflow: 'hidden',
         ...style
       }}
@@ -56,16 +53,10 @@ export default function AdSenseAd({ slot, format = 'auto', className = '', style
       <ins
         ref={adRef}
         className="adsbygoogle"
-        style={{ 
-          display: 'block',
-          width: '100%',
-          height: 'auto',
-          minHeight: '90px',
-          maxHeight: '250px'
-        }}
+        style={{ display: 'block' }}
         data-ad-client={ADSENSE_CLIENT_ID}
         data-ad-slot={slot}
-        data-ad-format={format}
+        data-ad-format="auto"
         data-full-width-responsive="true"
       />
     </div>

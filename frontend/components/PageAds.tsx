@@ -4,10 +4,10 @@ import { useAuth } from '@/lib/auth';
 import AdSenseAd from './AdSenseAd';
 
 const AD_SLOTS = {
-  HISTORY: '1234567890',
-  RESULT: '1234567891',
-  ABOUT: '1234567892',
-  PROFILE: '1234567893',
+  HISTORY: '5278243728',
+  RESULT: '5278243728',
+  ABOUT: '5278243728',
+  PROFILE: '5278243728',
 };
 
 type AllowedSlot = 'HISTORY' | 'RESULT' | 'ABOUT' | 'PROFILE';
