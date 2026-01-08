@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { mealsApi } from '@/lib/api';
 import { Upload, UtensilsCrossed, Cake, Coffee, Target, Heart, Crown, Zap, Sparkles, ArrowRight } from 'lucide-react';
+import heic2any from 'heic2any';
 import AdBanner from '@/components/AdBanner';
 import PageAds from '@/components/PageAds';
 
@@ -53,17 +54,36 @@ export default function HomePage() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
-    if (f) {
-      setError('');
-      setFile(f);
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        setPreview(ev.target?.result as string);
-      };
-      reader.readAsDataURL(f);
+    if (!f) return;
+    
+    setError('');
+    
+    let fileToUse = f;
+    
+    const isHeic = f.type === 'image/heic' || f.type === 'image/heif' || 
+                   f.name.toLowerCase().endsWith('.heic') || f.name.toLowerCase().endsWith('.heif');
+    
+    if (isHeic) {
+      try {
+        const converted = await heic2any({ blob: f, toType: 'image/jpeg', quality: 0.9 });
+        const blob = Array.isArray(converted) ? converted[0] : converted;
+        fileToUse = new File([blob], f.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+      } catch (err) {
+        console.warn('HEIC conversion failed:', err);
+      }
     }
+    
+    setFile(fileToUse);
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setPreview(ev.target?.result as string);
+    };
+    reader.onerror = () => {
+      setError('Erro ao carregar imagem. Tente outro arquivo.');
+    };
+    reader.readAsDataURL(fileToUse);
   };
 
   const handleAnalyze = async () => {
