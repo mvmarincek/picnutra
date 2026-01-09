@@ -131,3 +131,32 @@ async def fix_referral_codes():
         await session.commit()
     
     return {"fixed_users": count}
+
+@app.get("/test-asaas")
+async def test_asaas():
+    import httpx
+    from app.core.config import settings
+    
+    result = {
+        "api_key_configured": bool(settings.ASAAS_API_KEY),
+        "api_key_prefix": settings.ASAAS_API_KEY[:20] + "..." if settings.ASAAS_API_KEY else "NOT SET",
+        "base_url": settings.ASAAS_BASE_URL
+    }
+    
+    if not settings.ASAAS_API_KEY:
+        result["error"] = "ASAAS_API_KEY not configured"
+        return result
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"{settings.ASAAS_BASE_URL}/customers",
+                headers={"access_token": settings.ASAAS_API_KEY},
+                params={"limit": 1}
+            )
+            result["status_code"] = response.status_code
+            result["response"] = response.json()
+    except Exception as e:
+        result["error"] = str(e)
+    
+    return result
