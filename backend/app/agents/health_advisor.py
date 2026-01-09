@@ -6,6 +6,14 @@ HEALTH_ADVISOR_INSTRUCTIONS = """
 Você é um consultor nutricional amigável e motivador, como um personal trainer de alimentação. 
 Seu tom é sempre positivo, encorajador e prático.
 
+DISCLAIMER IMPORTANTE - COMPLIANCE GOOGLE ADS:
+- Este é um serviço EDUCATIVO e INFORMATIVO, NÃO é serviço médico
+- NUNCA use linguagem prescritiva ou diagnóstica
+- SEMPRE use termos de estimativa: "pode indicar", "sugere-se", "aproximadamente", "estima-se"
+- NUNCA use: "você deve", "você precisa", "faça isso", "diagnóstico", "tratamento", "cura"
+- PREFIRA: "considere", "pode ajudar", "uma opção seria", "sugere-se considerar"
+- Todas as análises são ESTIMATIVAS baseadas em reconhecimento de imagem
+
 PRINCÍPIOS BASEADOS EM NUTRIÇÃO MODERNA:
 - Dieta Mediterrânea: priorize azeite, peixes, vegetais, grãos integrais
 - Alimentação anti-inflamatória: evite ultraprocessados, açúcares refinados
@@ -28,18 +36,20 @@ FORMATO DAS RECOMENDAÇÕES:
 - Inclua o "porquê" de cada sugestão
 - Máximo 3 recomendações focadas
 
-IMPORTANTE:
+REGRAS DE COMPLIANCE:
 - NUNCA forneça diagnósticos médicos
 - NUNCA prescreva dietas restritivas
+- NUNCA sugira tratamentos para condições médicas
 - Sempre inclua aviso de que não substitui profissional
 - Celebre as boas escolhas do usuário
+- Use sempre linguagem de estimativa e sugestão
 
 Retorne SEMPRE um JSON válido no formato:
 {
   "beneficios": ["string - pontos positivos da refeição"],
   "pontos_de_atencao": ["string - o que pode ser melhorado, sem ser crítico"],
-  "recomendacoes_praticas": ["string - dicas acionáveis com explicação do benefício"],
-  "aviso": "string - lembrete amigável sobre consultar profissional"
+  "recomendacoes_praticas": ["string - sugestões usando linguagem não prescritiva"],
+  "aviso": "string - lembrete sobre natureza estimativa e consultar profissional"
 }
 """
 
@@ -107,17 +117,19 @@ Retorne APENAS o JSON, sem texto adicional."""
             content = response.choices[0].message.content
             result = parse_json_safe(content)
             if "aviso" not in result:
-                result["aviso"] = "Lembre-se: esta análise é informativa e complementar. Para orientações personalizadas, consulte um nutricionista."
+                result["aviso"] = "Esta análise é uma estimativa educativa baseada em reconhecimento de imagem. Os valores são aproximados e não substituem orientação de nutricionista ou médico."
+            result["is_estimate"] = True
             return result
         except Exception as e:
             return {
                 "beneficios": ["Parabéns por registrar sua refeição! O autoconhecimento alimentar é o primeiro passo para uma vida mais saudável."],
                 "pontos_de_atencao": [],
                 "recomendacoes_praticas": [
-                    "Continue registrando suas refeições para entender melhor seus padrões alimentares",
-                    "Tente incluir vegetais coloridos em pelo menos duas refeições por dia",
-                    "Mantenha-se hidratado - a água é essencial para o metabolismo"
+                    "Considere continuar registrando suas refeições para entender melhor seus padrões alimentares",
+                    "Uma opção seria incluir vegetais coloridos em pelo menos duas refeições por dia",
+                    "Manter-se hidratado pode ajudar no metabolismo e energia"
                 ],
-                "aviso": "Esta análise é informativa e não substitui orientação de nutricionista ou médico.",
+                "aviso": "Esta análise é uma estimativa educativa e não substitui orientação de nutricionista ou médico.",
+                "is_estimate": True,
                 "erro": str(e)
             }

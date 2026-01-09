@@ -318,6 +318,9 @@ async def asaas_webhook(
     request: Request,
     db: AsyncSession = Depends(get_db)
 ):
+    import logging
+    logger = logging.getLogger(__name__)
+    
     try:
         body = await request.json()
     except:
@@ -325,6 +328,9 @@ async def asaas_webhook(
     
     event_type = body.get("event")
     payment = body.get("payment", {})
+    subscription = body.get("subscription", {})
+    
+    logger.info(f"[webhook] Received event: {event_type}")
     
     if event_type in ["PAYMENT_CONFIRMED", "PAYMENT_RECEIVED"]:
         external_reference = payment.get("externalReference")
@@ -335,6 +341,8 @@ async def asaas_webhook(
                 user_id = ref_data.get("user_id")
                 credits = ref_data.get("credits")
                 payment_type = ref_data.get("type")
+                
+                logger.info(f"[webhook] Processing payment for user_id={user_id}, type={payment_type}")
                 
                 if user_id:
                     result = await db.execute(select(User).where(User.id == int(user_id)))
@@ -348,6 +356,7 @@ async def asaas_webhook(
                                 )
                             )
                             if existing.scalar_one_or_none():
+                                logger.info(f"[webhook] Payment {payment.get('id')} already processed")
                                 return {"status": "already_processed"}
                             
                             user.credit_balance += int(credits)
@@ -361,6 +370,7 @@ async def asaas_webhook(
                             db.add(transaction)
                             await db.commit()
                             
+                            logger.info(f"[webhook] Added {credits} credits to user_id={user_id}")
                             send_credits_purchased_email(user.email, int(credits), user.credit_balance)
                             return {"status": "credits_added", "credits": credits}
                         
@@ -369,14 +379,46 @@ async def asaas_webhook(
                                 user.plan = "pro"
                                 user.pro_analyses_remaining = settings.PRO_MONTHLY_ANALYSES
                                 await db.commit()
+                                logger.info(f"[webhook] PRO activated for user_id={user_id}")
                                 send_upgraded_to_pro_email(user.email)
                                 return {"status": "pro_activated"}
                             else:
                                 user.pro_analyses_remaining = settings.PRO_MONTHLY_ANALYSES
                                 await db.commit()
+                                logger.info(f"[webhook] PRO renewed for user_id={user_id}")
                                 return {"status": "pro_renewed"}
                             
             except json.JSONDecodeError:
+                logger.error(f"[webhook] Failed to parse externalReference: {external_reference}")
+    
+    elif event_type == "PAYMENT_OVERDUE":
+        external_reference = payment.get("externalReference")
+        if external_reference:
+            try:
+                ref_data = json.loads(external_reference)
+                user_id = ref_data.get("user_id")
+                payment_type = ref_data.get("type")
+                
+                if user_id and payment_type == "pro_subscription":
+                    result = await db.execute(select(User).where(User.id == int(user_id)))
+                    user = result.scalar_one_or_none()
+                    if user and user.plan == "pro":
+                        logger.warning(f"[webhook] Payment overdue for PRO user_id={user_id}")
+            except json.JSONDecodeError:
                 pass
+    
+    elif event_type in ["SUBSCRIPTION_DELETED", "SUBSCRIPTION_INACTIVE"]:
+        subscription_id = subscription.get("id") or body.get("id")
+        if subscription_id:
+            result = await db.execute(
+                select(User).where(User.asaas_subscription_id == subscription_id)
+            )
+            user = result.scalar_one_or_none()
+            if user:
+                user.plan = "free"
+                user.asaas_subscription_id = None
+                await db.commit()
+                logger.info(f"[webhook] Subscription cancelled for user_id={user.id}")
+                return {"status": "subscription_cancelled"}
     
     return {"status": "ok"}

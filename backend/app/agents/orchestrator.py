@@ -30,14 +30,25 @@ class NutriOrchestrator:
             return True, "credits"
         return False, f"Créditos insuficientes. Necessário: {cost}, Disponível: {user.credit_balance}"
     
-    async def deduct_credits(self, db: AsyncSession, user: User, mode: str, source: str):
+    async def deduct_credits(self, db: AsyncSession, user: User, mode: str, source: str) -> int:
         if source == "free_unlimited":
-            return
+            return 0
         cost = settings.CREDIT_COST_FULL if mode == "full" else settings.CREDIT_COST_SIMPLE
         if source == "pro_quota":
             user.pro_analyses_remaining -= 1
         else:
             user.credit_balance -= cost
+        await db.commit()
+        return cost
+    
+    async def refund_credits(self, db: AsyncSession, user: User, mode: str, source: str):
+        if source == "free_unlimited":
+            return
+        cost = settings.CREDIT_COST_FULL if mode == "full" else settings.CREDIT_COST_SIMPLE
+        if source == "pro_quota":
+            user.pro_analyses_remaining += 1
+        else:
+            user.credit_balance += cost
         await db.commit()
     
     async def run_analysis(
@@ -177,7 +188,8 @@ class NutriOrchestrator:
                 "beneficios": health_result.get("beneficios", []),
                 "pontos_de_atencao": health_result.get("pontos_de_atencao", []),
                 "recomendacoes_praticas": health_result.get("recomendacoes_praticas", []),
-                "aviso": health_result.get("aviso", ""),
+                "aviso": health_result.get("aviso", "Esta análise é uma estimativa educativa e não substitui orientação profissional."),
+                "is_estimate": True,
                 "sugestao_melhorada_texto": analysis.sugestao_melhorada_texto,
                 "sugestao_melhorada_imagem_url": analysis.sugestao_melhorada_imagem_url,
                 "mudancas_sugeridas": analysis.mudancas_sugeridas,

@@ -29,29 +29,61 @@ async def run_analysis_task(
     answers: Optional[dict] = None
 ):
     from app.db.database import async_session
+    import logging
+    logger = logging.getLogger(__name__)
+    
     async with async_session() as db:
+        job = None
+        user = None
+        source = None
+        credits_deducted = False
+        
         try:
             job = await db.get(Job, job_id)
             meal = await db.get(Meal, meal_id)
             user = await db.get(User, user_id)
             
+            logger.info(f"[job_id={job_id}] Starting analysis for meal_id={meal_id}, user_id={user_id}, mode={mode}")
+            
             orchestrator = NutriOrchestrator(settings.OPENAI_API_KEY)
             
             valid, source = await orchestrator.validate_credits(user, mode)
             if not valid:
+                logger.warning(f"[job_id={job_id}] Credit validation failed: {source}")
                 job.status = JobStatus.FAILED.value
                 job.erro = source
                 await db.commit()
                 return
             
             await orchestrator.deduct_credits(db, user, mode, source)
-            await orchestrator.run_analysis(db, job, meal, user, mode, answers)
+            credits_deducted = True
+            logger.info(f"[job_id={job_id}] Credits deducted (source={source})")
+            
+            result = await orchestrator.run_analysis(db, job, meal, user, mode, answers)
+            
+            if "erro" in result:
+                logger.error(f"[job_id={job_id}] Analysis failed: {result['erro']}")
+                if credits_deducted and source != "free_unlimited":
+                    await db.refresh(user)
+                    await orchestrator.refund_credits(db, user, mode, source)
+                    logger.info(f"[job_id={job_id}] Credits refunded due to analysis failure")
+            else:
+                logger.info(f"[job_id={job_id}] Analysis completed successfully")
             
         except Exception as e:
+            logger.error(f"[job_id={job_id}] Exception during analysis: {str(e)}")
             if job:
                 job.status = JobStatus.FAILED.value
                 job.erro = str(e)
                 await db.commit()
+            
+            if credits_deducted and user and source and source != "free_unlimited":
+                try:
+                    await db.refresh(user)
+                    await orchestrator.refund_credits(db, user, mode, source)
+                    logger.info(f"[job_id={job_id}] Credits refunded due to exception")
+                except Exception as refund_error:
+                    logger.error(f"[job_id={job_id}] Failed to refund credits: {str(refund_error)}")
 
 @router.post("/upload-image", response_model=MealUploadResponse)
 async def upload_image(
