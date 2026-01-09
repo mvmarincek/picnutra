@@ -139,7 +139,6 @@ class CreditTransaction(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    payment_id = Column(Integer, ForeignKey("payments.id"), nullable=True)
     credits_added = Column(Integer, default=0)
     credits_used = Column(Integer, default=0)
     balance_after = Column(Integer, nullable=True)
@@ -148,7 +147,6 @@ class CreditTransaction(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     user = relationship("User", back_populates="credit_transactions")
-    payment = relationship("Payment", back_populates="credit_transaction")
 
 class Payment(Base):
     __tablename__ = "payments"
@@ -171,7 +169,6 @@ class Payment(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     user = relationship("User", back_populates="payments")
-    credit_transaction = relationship("CreditTransaction", back_populates="payment", uselist=False)
 
 class Referral(Base):
     __tablename__ = "referrals"
