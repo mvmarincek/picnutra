@@ -169,6 +169,10 @@ export default function ProfilePage() {
                 src={avatarUrl.startsWith('data:') ? avatarUrl : `${API_URL}${avatarUrl}`}
                 alt="Foto de perfil"
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  setAvatarUrl(null);
+                }}
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-green-100 to-teal-100 flex items-center justify-center">
