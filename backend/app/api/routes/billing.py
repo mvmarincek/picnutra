@@ -475,3 +475,57 @@ async def asaas_webhook(
                 return {"status": "subscription_cancelled"}
     
     return {"status": "ok"}
+
+@router.get("/debug-pix/{cpf}")
+async def debug_pix_payment(
+    cpf: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    import traceback
+    result = {
+        "step": "start",
+        "user_id": current_user.id,
+        "user_email": current_user.email,
+        "cpf_received": cpf,
+        "cpf_cleaned": cpf.replace(".", "").replace("-", ""),
+        "asaas_customer_id": current_user.asaas_customer_id,
+    }
+    
+    try:
+        result["step"] = "get_or_create_customer"
+        clean_cpf = cpf.replace(".", "").replace("-", "")
+        customer_id = await get_or_create_customer(current_user, db, cpf=clean_cpf)
+        result["customer_id"] = customer_id
+        
+        result["step"] = "create_payment"
+        external_reference = json.dumps({
+            "user_id": current_user.id,
+            "credits": 10,
+            "type": "credits"
+        })
+        
+        payment = await asaas_service.create_pix_payment(
+            customer_id=customer_id,
+            value=9.90,
+            description="Teste PIX",
+            external_reference=external_reference
+        )
+        result["payment"] = payment
+        result["payment_id"] = payment.get("id")
+        
+        result["step"] = "get_qr_code"
+        pix_data = await asaas_service.get_pix_qr_code(payment["id"])
+        result["pix_payload"] = pix_data.get("payload", "")[:50] + "..." if pix_data.get("payload") else None
+        result["has_qr_code"] = bool(pix_data.get("encodedImage"))
+        
+        result["step"] = "success"
+        result["success"] = True
+        
+    except Exception as e:
+        result["error"] = str(e)
+        result["error_type"] = type(e).__name__
+        result["traceback"] = traceback.format_exc()
+        result["success"] = False
+    
+    return result
