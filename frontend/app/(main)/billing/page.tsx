@@ -493,8 +493,6 @@ export default function BillingPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <PageAds position="top" />
-      
       <h1 className="text-2xl font-bold mb-6">Creditos</h1>
 
       <div className="bg-white rounded-xl shadow-md p-6 mb-6">
@@ -527,6 +525,8 @@ export default function BillingPage() {
           </div>
         </div>
       </div>
+
+      <PageAds position="inline" />
 
       {!isPro && (
         <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl shadow-lg p-6 mb-6 text-white">
