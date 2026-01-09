@@ -166,7 +166,7 @@ export default function ProfilePage() {
           >
             {avatarUrl ? (
               <img
-                src={`${API_URL}${avatarUrl}`}
+                src={avatarUrl.startsWith('data:') ? avatarUrl : `${API_URL}${avatarUrl}`}
                 alt="Foto de perfil"
                 className="w-full h-full object-cover"
               />

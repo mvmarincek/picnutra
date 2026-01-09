@@ -8,9 +8,7 @@ from app.core.security import get_current_user
 from app.core.config import settings
 from PIL import Image
 from io import BytesIO
-import aiofiles
-import uuid
-import os
+import base64
 
 router = APIRouter(prefix="/profile", tags=["profile"])
 
@@ -81,20 +79,12 @@ async def upload_avatar(
         img = img.resize((256, 256), Image.Resampling.LANCZOS)
         
         output = BytesIO()
-        img.save(output, format="JPEG", quality=85, optimize=True)
+        img.save(output, format="JPEG", quality=80, optimize=True)
         content = output.getvalue()
     except Exception as e:
         raise HTTPException(status_code=400, detail="Erro ao processar imagem")
     
-    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
-    
-    filename = f"avatar_{current_user.id}_{uuid.uuid4()}.jpg"
-    filepath = os.path.join(settings.UPLOAD_DIR, filename)
-    
-    async with aiofiles.open(filepath, "wb") as f:
-        await f.write(content)
-    
-    avatar_url = f"/uploads/{filename}"
+    avatar_base64 = f"data:image/jpeg;base64,{base64.b64encode(content).decode('utf-8')}"
     
     result = await db.execute(
         select(Profile).where(Profile.user_id == current_user.id)
@@ -102,18 +92,11 @@ async def upload_avatar(
     profile = result.scalar_one_or_none()
     
     if profile:
-        if profile.avatar_url:
-            old_path = os.path.join(settings.UPLOAD_DIR, profile.avatar_url.replace("/uploads/", ""))
-            if os.path.exists(old_path):
-                try:
-                    os.remove(old_path)
-                except:
-                    pass
-        profile.avatar_url = avatar_url
+        profile.avatar_url = avatar_base64
     else:
         profile = Profile(
             user_id=current_user.id,
-            avatar_url=avatar_url
+            avatar_url=avatar_base64
         )
         db.add(profile)
     
