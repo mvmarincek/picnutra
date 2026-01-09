@@ -14,11 +14,15 @@ class UserLogin(BaseModel):
 class UserResponse(BaseModel):
     id: int
     email: str
+    name: Optional[str] = None
+    cpf: Optional[str] = None
+    phone: Optional[str] = None
     plan: str
     credit_balance: int
     pro_analyses_remaining: int
     referral_code: Optional[str] = None
     email_verified: bool = False
+    is_admin: bool = False
     created_at: datetime
     
     class Config:

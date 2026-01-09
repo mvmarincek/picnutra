@@ -11,7 +11,7 @@ import logging
 
 from app.db.database import init_db, async_session
 from app.core.config import settings
-from app.api.routes import auth, profile, meals, jobs, billing, credits, feedback
+from app.api.routes import auth, profile, meals, jobs, billing, credits, feedback, admin
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +53,7 @@ app.include_router(jobs.router)
 app.include_router(billing.router)
 app.include_router(credits.router)
 app.include_router(feedback.router)
+app.include_router(admin.router)
 
 app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 

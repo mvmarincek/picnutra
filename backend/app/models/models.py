@@ -32,21 +32,29 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(255), unique=True, index=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=True)
+    cpf = Column(String(14), nullable=True, index=True)
+    phone = Column(String(20), nullable=True)
     plan = Column(String(20), default=PlanType.FREE.value)
     credit_balance = Column(Integer, default=0)
     asaas_customer_id = Column(String(255), nullable=True)
     asaas_subscription_id = Column(String(255), nullable=True)
     pro_analyses_remaining = Column(Integer, default=0)
+    pro_started_at = Column(DateTime, nullable=True)
+    pro_expires_at = Column(DateTime, nullable=True)
     referral_code = Column(String(20), unique=True, nullable=True, index=True)
     referred_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     email_verified = Column(Boolean, default=False)
     email_verification_token = Column(String(64), nullable=True)
+    is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     profile = relationship("Profile", back_populates="user", uselist=False)
     meals = relationship("Meal", back_populates="user")
     jobs = relationship("Job", back_populates="user")
     credit_transactions = relationship("CreditTransaction", back_populates="user")
+    payments = relationship("Payment", back_populates="user")
     referrals = relationship("Referral", back_populates="referrer", foreign_keys="Referral.referrer_id")
 
 class Profile(Base):
@@ -131,13 +139,39 @@ class CreditTransaction(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    credits_added = Column(Integer, nullable=False)
+    payment_id = Column(Integer, ForeignKey("payments.id"), nullable=True)
+    credits_added = Column(Integer, default=0)
     credits_used = Column(Integer, default=0)
-    payment_id = Column(String(255), nullable=True)
+    balance_after = Column(Integer, nullable=True)
+    transaction_type = Column(String(50), nullable=True)
     description = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     user = relationship("User", back_populates="credit_transactions")
+    payment = relationship("Payment", back_populates="credit_transaction")
+
+class Payment(Base):
+    __tablename__ = "payments"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    asaas_payment_id = Column(String(255), nullable=True, index=True)
+    asaas_subscription_id = Column(String(255), nullable=True)
+    payment_type = Column(String(50), nullable=False)
+    billing_type = Column(String(20), nullable=True)
+    amount = Column(Float, nullable=False)
+    status = Column(String(50), default="pending")
+    description = Column(String(255), nullable=True)
+    credits_purchased = Column(Integer, nullable=True)
+    pix_code = Column(Text, nullable=True)
+    pix_qr_code_url = Column(String(500), nullable=True)
+    boleto_url = Column(String(500), nullable=True)
+    paid_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    user = relationship("User", back_populates="payments")
+    credit_transaction = relationship("CreditTransaction", back_populates="payment", uselist=False)
 
 class Referral(Base):
     __tablename__ = "referrals"

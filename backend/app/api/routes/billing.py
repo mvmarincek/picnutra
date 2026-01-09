@@ -6,11 +6,12 @@ from typing import Optional
 import json
 
 from app.db.database import get_db
-from app.models.models import User, CreditTransaction
+from app.models.models import User, CreditTransaction, Payment
 from app.core.security import get_current_user
 from app.core.config import settings
 from app.services.asaas_service import asaas_service
 from app.services.email_service import send_credits_purchased_email, send_upgraded_to_pro_email
+from datetime import datetime
 
 router = APIRouter(prefix="/billing", tags=["billing"])
 
@@ -73,6 +74,9 @@ async def get_billing_status(current_user: User = Depends(get_current_user)):
     )
 
 async def get_or_create_customer(user: User, db: AsyncSession, cpf: Optional[str] = None):
+    if cpf and not user.cpf:
+        user.cpf = cpf
+    
     if user.asaas_customer_id:
         if cpf:
             await asaas_service.update_customer(user.asaas_customer_id, cpf)
@@ -118,6 +122,21 @@ async def create_pix_payment(
         )
         
         pix_data = await asaas_service.get_pix_qr_code(payment["id"])
+        
+        db_payment = Payment(
+            user_id=current_user.id,
+            asaas_payment_id=payment["id"],
+            payment_type="credits",
+            billing_type="PIX",
+            amount=value,
+            status="pending",
+            description=f"Compra de {credits} creditos",
+            credits_purchased=credits,
+            pix_code=pix_data.get("payload", ""),
+            pix_qr_code_url=pix_data.get("encodedImage", "")
+        )
+        db.add(db_payment)
+        await db.commit()
         
         return CreatePixPaymentResponse(
             payment_id=payment["id"],
@@ -169,13 +188,29 @@ async def create_card_payment(
             address_number=request.address_number
         )
         
+        payment_status = "confirmed" if payment.get("status") == "CONFIRMED" else "pending"
+        
+        db_payment = Payment(
+            user_id=current_user.id,
+            asaas_payment_id=payment["id"],
+            payment_type="credits",
+            billing_type="CREDIT_CARD",
+            amount=value,
+            status=payment_status,
+            description=f"Compra de {credits} creditos (Cartao)",
+            credits_purchased=credits,
+            paid_at=datetime.utcnow() if payment_status == "confirmed" else None
+        )
+        db.add(db_payment)
+        
         if payment.get("status") == "CONFIRMED":
             current_user.credit_balance += credits
             
             transaction = CreditTransaction(
                 user_id=current_user.id,
                 credits_added=credits,
-                payment_id=payment["id"],
+                balance_after=current_user.credit_balance,
+                transaction_type="purchase",
                 description=f"Compra de {credits} creditos (Cartao)"
             )
             db.add(transaction)
@@ -185,6 +220,7 @@ async def create_card_payment(
             
             return {"status": "confirmed", "credits_added": credits, "new_balance": current_user.credit_balance}
         
+        await db.commit()
         return {"status": payment.get("status", "pending"), "payment_id": payment["id"]}
     
     except Exception as e:
@@ -339,6 +375,15 @@ async def asaas_webhook(
     
     if event_type in ["PAYMENT_CONFIRMED", "PAYMENT_RECEIVED"]:
         external_reference = payment.get("externalReference")
+        asaas_payment_id = payment.get("id")
+        
+        db_payment_result = await db.execute(
+            select(Payment).where(Payment.asaas_payment_id == asaas_payment_id)
+        )
+        db_payment = db_payment_result.scalar_one_or_none()
+        if db_payment:
+            db_payment.status = "confirmed"
+            db_payment.paid_at = datetime.utcnow()
         
         if external_reference:
             try:
@@ -357,11 +402,12 @@ async def asaas_webhook(
                         if payment_type == "credits" and credits:
                             existing = await db.execute(
                                 select(CreditTransaction).where(
-                                    CreditTransaction.payment_id == payment.get("id")
+                                    CreditTransaction.transaction_type == "purchase",
+                                    CreditTransaction.description.contains(asaas_payment_id) if asaas_payment_id else False
                                 )
                             )
                             if existing.scalar_one_or_none():
-                                logger.info(f"[webhook] Payment {payment.get('id')} already processed")
+                                logger.info(f"[webhook] Payment {asaas_payment_id} already processed")
                                 return {"status": "already_processed"}
                             
                             user.credit_balance += int(credits)
@@ -369,8 +415,9 @@ async def asaas_webhook(
                             transaction = CreditTransaction(
                                 user_id=user.id,
                                 credits_added=int(credits),
-                                payment_id=payment.get("id"),
-                                description=f"Compra de {credits} creditos"
+                                balance_after=user.credit_balance,
+                                transaction_type="purchase",
+                                description=f"Compra de {credits} creditos (PIX) - {asaas_payment_id}"
                             )
                             db.add(transaction)
                             await db.commit()
@@ -383,6 +430,7 @@ async def asaas_webhook(
                             if user.plan != "pro":
                                 user.plan = "pro"
                                 user.pro_analyses_remaining = settings.PRO_MONTHLY_ANALYSES
+                                user.pro_started_at = datetime.utcnow()
                                 await db.commit()
                                 logger.info(f"[webhook] PRO activated for user_id={user_id}")
                                 send_upgraded_to_pro_email(user.email)

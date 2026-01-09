@@ -177,11 +177,15 @@ export async function api<T>(endpoint: string, options: ApiOptions = {}): Promis
 export interface User {
   id: number;
   email: string;
+  name?: string;
+  cpf?: string;
+  phone?: string;
   plan: string;
   credit_balance: number;
   pro_analyses_remaining: number;
   referral_code?: string;
   email_verified: boolean;
+  is_admin: boolean;
   created_at: string;
 }
 
@@ -471,4 +475,95 @@ export const feedbackApi = {
       method: 'POST',
       body: { mensagem }
     })
+};
+
+export interface AdminStats {
+  users: { total: number; pro: number; verified: number; new_today: number; new_month: number };
+  revenue: { total: number; month: number };
+  meals: { total: number; today: number };
+  pending_payments: number;
+}
+
+export interface AdminUser {
+  id: number;
+  email: string;
+  name: string | null;
+  cpf: string | null;
+  phone: string | null;
+  plan: string;
+  credit_balance: number;
+  pro_analyses_remaining: number;
+  email_verified: boolean;
+  is_admin: boolean;
+  created_at: string | null;
+  pro_started_at: string | null;
+  pro_expires_at: string | null;
+}
+
+export interface AdminPayment {
+  id: number;
+  user_id: number;
+  user_email?: string;
+  asaas_payment_id: string | null;
+  payment_type: string;
+  billing_type: string | null;
+  amount: number;
+  status: string;
+  description: string | null;
+  credits_purchased: number | null;
+  paid_at: string | null;
+  created_at: string | null;
+}
+
+export interface AdminTransaction {
+  id: number;
+  credits_added: number;
+  credits_used: number;
+  balance_after: number | null;
+  transaction_type: string | null;
+  description: string | null;
+  created_at: string | null;
+}
+
+export interface UserDetails {
+  user: AdminUser & { asaas_customer_id: string | null; asaas_subscription_id: string | null; referral_code: string | null };
+  payments: AdminPayment[];
+  transactions: AdminTransaction[];
+  meals_count: number;
+  referrals_count: number;
+}
+
+export const adminApi = {
+  getStats: () =>
+    api<AdminStats>('/admin/stats'),
+  
+  getUsers: (params?: { search?: string; plan?: string; page?: number; limit?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.search) query.set('search', params.search);
+    if (params?.plan) query.set('plan', params.plan);
+    if (params?.page) query.set('page', params.page.toString());
+    if (params?.limit) query.set('limit', params.limit.toString());
+    return api<{ users: AdminUser[]; total: number; page: number; pages: number }>(`/admin/users?${query}`);
+  },
+  
+  getUserDetails: (userId: number) =>
+    api<UserDetails>(`/admin/users/${userId}`),
+  
+  getPayments: (params?: { status?: string; payment_type?: string; page?: number; limit?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.status) query.set('status', params.status);
+    if (params?.payment_type) query.set('payment_type', params.payment_type);
+    if (params?.page) query.set('page', params.page.toString());
+    if (params?.limit) query.set('limit', params.limit.toString());
+    return api<{ payments: AdminPayment[]; total: number; page: number; pages: number }>(`/admin/payments?${query}`);
+  },
+  
+  addCredits: (userId: number, credits: number, reason: string) =>
+    api<{ success: boolean; new_balance: number }>(`/admin/users/${userId}/add-credits?credits=${credits}&reason=${encodeURIComponent(reason)}`, { method: 'POST' }),
+  
+  toggleAdmin: (userId: number) =>
+    api<{ success: boolean; is_admin: boolean }>(`/admin/users/${userId}/toggle-admin`, { method: 'POST' }),
+  
+  setUserPro: (userId: number, months: number) =>
+    api<{ success: boolean; plan: string; pro_expires_at: string }>(`/admin/users/${userId}/set-pro?months=${months}`, { method: 'POST' })
 };
