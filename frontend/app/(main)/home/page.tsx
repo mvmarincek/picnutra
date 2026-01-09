@@ -329,7 +329,55 @@ export default function HomePage() {
             </button>
           </div>
           
+          {user?.plan !== 'pro' && (
+            <button
+              onClick={() => router.push('/billing')}
+              className="w-full mt-4 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-white font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-all"
+            >
+              <CreditCard className="w-5 h-5" />
+              Comprar mais créditos
+            </button>
+          )}
+          
           <PageAds position="inline" />
+          
+          {user?.plan !== 'pro' && (
+            <div className="mt-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-5 border border-purple-100">
+              <div className="flex items-center gap-2 mb-4">
+                <Crown className="w-6 h-6 text-purple-500" />
+                <h3 className="font-bold text-lg text-purple-800">Seja PRO</h3>
+              </div>
+              
+              <div className="space-y-3 mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <Ban className="w-4 h-4 text-green-600" />
+                  </div>
+                  <span className="text-sm text-gray-700">Sem propagandas no app</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <Check className="w-4 h-4 text-green-600" />
+                  </div>
+                  <span className="text-sm text-gray-700">Sem necessidade de comprar créditos</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <Sparkles className="w-4 h-4 text-green-600" />
+                  </div>
+                  <span className="text-sm text-gray-700">Análises ilimitadas todos os meses</span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => router.push('/billing')}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-purple-200 transition-all"
+              >
+                <Crown className="w-5 h-5" />
+                Assinar agora
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="mb-6">
@@ -445,55 +493,7 @@ export default function HomePage() {
             : `Custo: ${cost} créditos • Saldo: ${user?.credit_balance} créditos`
           }
         </p>
-
-        {user?.plan !== 'pro' && (
-          <button
-            onClick={() => router.push('/credits')}
-            className="w-full mt-4 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-white font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-all"
-          >
-            <CreditCard className="w-5 h-5" />
-            Comprar mais créditos
-          </button>
-        )}
       </div>
-
-      {user?.plan !== 'pro' && (
-        <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-5 border border-purple-100">
-          <div className="flex items-center gap-2 mb-4">
-            <Crown className="w-6 h-6 text-purple-500" />
-            <h3 className="font-bold text-lg text-purple-800">Seja PRO</h3>
-          </div>
-          
-          <div className="space-y-3 mb-5">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                <Ban className="w-4 h-4 text-green-600" />
-              </div>
-              <span className="text-sm text-gray-700">Sem propagandas no app</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                <Check className="w-4 h-4 text-green-600" />
-              </div>
-              <span className="text-sm text-gray-700">Sem necessidade de comprar créditos</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-4 h-4 text-green-600" />
-              </div>
-              <span className="text-sm text-gray-700">Análises ilimitadas todos os meses</span>
-            </div>
-          </div>
-
-          <button
-            onClick={() => router.push('/subscribe')}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-purple-200 transition-all"
-          >
-            <Crown className="w-5 h-5" />
-            Assinar agora
-          </button>
-        </div>
-      )}
 
       <PageAds position="bottom" />
     </div>
