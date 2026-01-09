@@ -171,8 +171,6 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-lg mx-auto">
-      <PageAds position="top" />
-
       <h1 className="text-2xl font-bold mb-6">Meu Perfil</h1>
 
       <div className="bg-white rounded-3xl shadow-xl p-6 mb-6 border border-green-100">
