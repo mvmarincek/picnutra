@@ -146,6 +146,49 @@ async def test_asaas():
     if not settings.ASAAS_API_KEY:
         result["error"] = "ASAAS_API_KEY not configured"
         return result
+
+@app.get("/test-pix")
+async def test_pix():
+    import httpx
+    from app.core.config import settings
+    from datetime import datetime, timedelta
+    
+    result = {}
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            due_date = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+            
+            payment_response = await client.post(
+                f"{settings.ASAAS_BASE_URL}/payments",
+                headers={
+                    "access_token": settings.ASAAS_API_KEY,
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "customer": "cus_000007423022",
+                    "billingType": "PIX",
+                    "value": 4.90,
+                    "dueDate": due_date,
+                    "description": "Teste PIX"
+                }
+            )
+            result["payment_status"] = payment_response.status_code
+            result["payment_response"] = payment_response.json()
+            
+            if payment_response.status_code == 200:
+                payment_id = payment_response.json().get("id")
+                if payment_id:
+                    pix_response = await client.get(
+                        f"{settings.ASAAS_BASE_URL}/payments/{payment_id}/pixQrCode",
+                        headers={"access_token": settings.ASAAS_API_KEY}
+                    )
+                    result["pix_status"] = pix_response.status_code
+                    result["pix_response"] = pix_response.json()
+    except Exception as e:
+        result["error"] = str(e)
+    
+    return result
     
     try:
         async with httpx.AsyncClient() as client:
@@ -156,6 +199,49 @@ async def test_asaas():
             )
             result["status_code"] = response.status_code
             result["response"] = response.json()
+    except Exception as e:
+        result["error"] = str(e)
+    
+    return result
+
+@app.get("/test-pix")
+async def test_pix():
+    import httpx
+    from app.core.config import settings
+    from datetime import datetime, timedelta
+    
+    result = {}
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            due_date = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+            
+            payment_response = await client.post(
+                f"{settings.ASAAS_BASE_URL}/payments",
+                headers={
+                    "access_token": settings.ASAAS_API_KEY,
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "customer": "cus_000007423022",
+                    "billingType": "PIX",
+                    "value": 4.90,
+                    "dueDate": due_date,
+                    "description": "Teste PIX"
+                }
+            )
+            result["payment_status"] = payment_response.status_code
+            result["payment_response"] = payment_response.json()
+            
+            if payment_response.status_code == 200:
+                payment_id = payment_response.json().get("id")
+                if payment_id:
+                    pix_response = await client.get(
+                        f"{settings.ASAAS_BASE_URL}/payments/{payment_id}/pixQrCode",
+                        headers={"access_token": settings.ASAAS_API_KEY}
+                    )
+                    result["pix_status"] = pix_response.status_code
+                    result["pix_response"] = pix_response.json()
     except Exception as e:
         result["error"] = str(e)
     
