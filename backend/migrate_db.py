@@ -24,6 +24,9 @@ async def migrate():
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE",
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verification_token VARCHAR(64)",
             "CREATE UNIQUE INDEX IF NOT EXISTS ix_users_referral_code ON users(referral_code)",
+            "ALTER TABLE meals ADD COLUMN IF NOT EXISTS user_notes TEXT",
+            "ALTER TABLE meals ADD COLUMN IF NOT EXISTS weight_grams FLOAT",
+            "ALTER TABLE meals ADD COLUMN IF NOT EXISTS volume_ml FLOAT",
         ]
         
         for sql in migrations:
