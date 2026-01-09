@@ -328,6 +328,8 @@ export default function HomePage() {
               </div>
             </button>
           </div>
+          
+          <PageAds position="inline" />
         </div>
 
         <div className="mb-6">
