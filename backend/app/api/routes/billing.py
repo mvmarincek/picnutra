@@ -407,7 +407,7 @@ async def asaas_webhook(
             except json.JSONDecodeError:
                 pass
     
-    elif event_type in ["SUBSCRIPTION_DELETED", "SUBSCRIPTION_INACTIVE"]:
+    elif event_type in ["SUBSCRIPTION_DELETED", "SUBSCRIPTION_INACTIVE", "SUBSCRIPTION_INACTIVATED"]:
         subscription_id = subscription.get("id") or body.get("id")
         if subscription_id:
             result = await db.execute(

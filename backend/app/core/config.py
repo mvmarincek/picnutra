@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     
     CREDIT_COST_SIMPLE: int = 1
     CREDIT_COST_FULL: int = 12
-    PRO_MONTHLY_ANALYSES: int = 30
+    PRO_MONTHLY_ANALYSES: int = 60
     
     CREDIT_PACKAGES: dict = {
         "12": {"credits": 12, "price": 490},
