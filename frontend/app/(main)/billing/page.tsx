@@ -764,12 +764,12 @@ export default function BillingPage() {
             {!proPaymentMethod && !proPixData && !proBoletoUrl && (
               <div className="space-y-3">
                 <button
-                  onClick={() => handleProSubscription('PIX')}
+                  onClick={() => setProPaymentMethod('PIX')}
                   disabled={processingPro}
                   className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-green-500 to-teal-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
                 >
                   <QrCode className="w-5 h-5" />
-                  {processingPro ? 'Gerando...' : 'Assinar com PIX'}
+                  Assinar com PIX
                 </button>
 
                 <button
@@ -792,6 +792,62 @@ export default function BillingPage() {
                   Cobranca mensal automatica. Cancele quando quiser.
                 </p>
               </div>
+            )}
+
+            {proPaymentMethod === 'PIX' && !proPixData && (
+              <>
+                <button
+                  onClick={() => setProPaymentMethod(null)}
+                  className="text-sm text-gray-500 hover:text-gray-700 mb-4"
+                >
+                  ← Voltar
+                </button>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      CPF (obrigatorio para PIX)
+                    </label>
+                    <input
+                      type="text"
+                      value={pixCpf}
+                      onChange={(e) => setPixCpf(formatCpf(e.target.value))}
+                      placeholder="000.000.000-00"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                  <button
+                    onClick={async () => {
+                      const cpfDigits = pixCpf.replace(/\D/g, '');
+                      if (cpfDigits.length !== 11) {
+                        showWarning('Por favor, informe um CPF válido com 11 dígitos.', 'CPF obrigatório', { label: 'Entendi', onClick: () => clearFeedback() });
+                        return;
+                      }
+                      setProcessingPro(true);
+                      try {
+                        const result = await billingApi.createProSubscription({ billing_type: 'PIX', holder_cpf: cpfDigits });
+                        if (result.pix_code && result.payment_id && result.pix_qr_code_base64) {
+                          setProPixData({
+                            payment_id: result.payment_id,
+                            pix_code: result.pix_code,
+                            pix_qr_code_base64: result.pix_qr_code_base64,
+                            value: 49.90
+                          });
+                        }
+                      } catch (err: any) {
+                        console.error(err);
+                        showError(err?.message || 'Não foi possível gerar o PIX. Tente novamente.', 'Erro', { label: 'Entendi', onClick: () => clearFeedback() });
+                      } finally {
+                        setProcessingPro(false);
+                      }
+                    }}
+                    disabled={processingPro}
+                    className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-green-500 to-teal-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+                  >
+                    <QrCode className="w-5 h-5" />
+                    {processingPro ? 'Gerando PIX...' : 'Gerar PIX'}
+                  </button>
+                </div>
+              </>
             )}
 
             {proPaymentMethod === 'CREDIT_CARD' && !proPixData && (

@@ -243,7 +243,7 @@ async def create_pro_subscription(
         raise HTTPException(status_code=400, detail="Tipo de pagamento invalido")
     
     try:
-        cpf = request.holder_cpf if request.billing_type in ["CREDIT_CARD", "BOLETO"] else None
+        cpf = request.holder_cpf if request.holder_cpf else None
         customer_id = await get_or_create_customer(current_user, db, cpf=cpf)
         
         if cpf:
