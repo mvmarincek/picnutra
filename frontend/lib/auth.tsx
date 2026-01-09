@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { User, TokenResponse, authApi, setAccessToken, clearAllTokens } from './api';
-import { isErrorModalOpen } from './feedback';
 
 interface AuthContextType {
   user: User | null;
@@ -39,11 +38,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const initializeAuth = useCallback(async () => {
-    if (isErrorModalOpen()) {
-      setIsLoading(false);
-      return;
-    }
-
     const refreshToken = localStorage.getItem('refreshToken');
     
     if (!refreshToken) {
@@ -54,11 +48,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await authApi.refresh(refreshToken);
       
-      if (isErrorModalOpen()) {
-        setIsLoading(false);
-        return;
-      }
-      
       setAccessToken(response.access_token);
       localStorage.setItem('refreshToken', response.refresh_token);
       localStorage.setItem('user', JSON.stringify(response.user));
@@ -67,9 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsAuthenticated(true);
     } catch (err) {
       console.error('Session initialization failed:', err);
-      if (!isErrorModalOpen()) {
-        clearAllTokens();
-      }
+      clearAllTokens();
     } finally {
       setIsLoading(false);
     }

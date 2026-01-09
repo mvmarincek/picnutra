@@ -1,7 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://nutrivision-api-dcr0.onrender.com';
 
-import { isErrorModalOpen } from './feedback';
-
 export async function logClientError(error: Error, fileInfo?: { name?: string; type?: string; size?: number }) {
   try {
     await fetch(`${API_URL}/log-error`, {
@@ -138,9 +136,6 @@ export async function api<T>(endpoint: string, options: ApiOptions = {}): Promis
           body: isFormData ? body : body ? JSON.stringify(body) : undefined
         });
       } else {
-        if (typeof window !== 'undefined' && !isErrorModalOpen()) {
-          window.location.href = '/login?expired=1';
-        }
         throw new Error('Sessao expirada. Faca login novamente.');
       }
     } else {
@@ -170,9 +165,6 @@ export async function api<T>(endpoint: string, options: ApiOptions = {}): Promis
   if (!response.ok) {
     if (response.status === 401) {
       clearAllTokens();
-      if (typeof window !== 'undefined' && !isErrorModalOpen()) {
-        window.location.href = '/login?expired=1';
-      }
       throw new Error('Sessao expirada. Faca login novamente.');
     }
     const error = await response.json().catch(() => ({ detail: 'Erro desconhecido' }));
