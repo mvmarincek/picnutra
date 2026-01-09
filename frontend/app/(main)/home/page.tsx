@@ -372,7 +372,7 @@ export default function HomePage() {
                   type="number"
                   value={weightGrams}
                   onChange={(e) => setWeightGrams(e.target.value)}
-                  placeholder="Ex: 600"
+                  placeholder={mealType === 'sobremesa' ? "Ex: 300" : "Ex: 600"}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none text-sm"
                 />
               </div>
