@@ -71,6 +71,9 @@ class Meal(Base):
     meal_type = Column(String(50), default="prato")
     status = Column(String(20), default=MealStatus.PENDING.value)
     mode = Column(String(20), default="simple")
+    user_notes = Column(Text, nullable=True)
+    weight_grams = Column(Float, nullable=True)
+    volume_ml = Column(Float, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     user = relationship("User", back_populates="meals")

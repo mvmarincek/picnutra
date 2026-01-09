@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/auth';
 import { useFeedback } from '@/lib/feedback';
 import { mealsApi } from '@/lib/api';
 import { normalizeImageOrientation } from '@/lib/image-utils';
-import { Upload, UtensilsCrossed, Cake, Coffee, Target, Heart, Crown, Zap, Sparkles, ArrowRight, X } from 'lucide-react';
+import { Upload, UtensilsCrossed, Cake, Coffee, Target, Heart, Crown, Zap, Sparkles, ArrowRight, X, FileText, Scale, Droplet, ChevronDown, ChevronUp } from 'lucide-react';
 import PageAds from '@/components/PageAds';
 
 type Phase = 'idle' | 'loading_image' | 'uploading';
@@ -40,6 +40,10 @@ export default function HomePage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [motivationalMessage, setMotivationalMessage] = useState('');
   const [tip, setTip] = useState('');
+  const [showOptionalFields, setShowOptionalFields] = useState(false);
+  const [userNotes, setUserNotes] = useState('');
+  const [weightGrams, setWeightGrams] = useState('');
+  const [volumeMl, setVolumeMl] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
   const { showError, showWarning, clearFeedback } = useFeedback();
@@ -85,6 +89,10 @@ export default function HomePage() {
     setImagePreview(null);
     setPhase('idle');
     clearFeedback();
+    setUserNotes('');
+    setWeightGrams('');
+    setVolumeMl('');
+    setShowOptionalFields(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -115,7 +123,16 @@ export default function HomePage() {
     clearFeedback();
 
     try {
-      const uploadResult = await mealsApi.upload(imageFile, mealType);
+      const uploadOptions: { userNotes?: string; weightGrams?: number; volumeMl?: number } = {};
+      if (userNotes.trim()) {
+        uploadOptions.userNotes = userNotes.trim();
+      }
+      if (mealType === 'bebida' && volumeMl) {
+        uploadOptions.volumeMl = parseFloat(volumeMl);
+      } else if (weightGrams) {
+        uploadOptions.weightGrams = parseFloat(weightGrams);
+      }
+      const uploadResult = await mealsApi.upload(imageFile, mealType, uploadOptions);
       const analyzeResult = await mealsApi.analyze(uploadResult.meal_id, mode);
       router.push(`/processing?jobId=${analyzeResult.job_id}&mealId=${uploadResult.meal_id}`);
     } catch (err: any) {
@@ -311,6 +328,64 @@ export default function HomePage() {
               </div>
             </button>
           </div>
+        </div>
+
+        <div className="mb-6">
+          <button
+            onClick={() => setShowOptionalFields(!showOptionalFields)}
+            className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            {showOptionalFields ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            <span className="font-medium">Informacoes adicionais (opcional)</span>
+          </button>
+          
+          {showOptionalFields && (
+            <div className="mt-4 space-y-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+              <div>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                  <FileText className="w-4 h-4 text-gray-400" />
+                  Observacoes
+                </label>
+                <textarea
+                  value={userNotes}
+                  onChange={(e) => setUserNotes(e.target.value)}
+                  placeholder="Ex: arroz integral, frango grelhado sem pele..."
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none resize-none text-sm"
+                  rows={2}
+                />
+              </div>
+              
+              {mealType === 'bebida' ? (
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                    <Droplet className="w-4 h-4 text-blue-400" />
+                    Volume maximo do copo (ml)
+                  </label>
+                  <input
+                    type="number"
+                    value={volumeMl}
+                    onChange={(e) => setVolumeMl(e.target.value)}
+                    placeholder="Ex: 300"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none text-sm"
+                  />
+                </div>
+              ) : (
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                    <Scale className="w-4 h-4 text-amber-400" />
+                    Peso aproximado (gramas)
+                  </label>
+                  <input
+                    type="number"
+                    value={weightGrams}
+                    onChange={(e) => setWeightGrams(e.target.value)}
+                    placeholder="Ex: 250"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none text-sm"
+                  />
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="mb-6">

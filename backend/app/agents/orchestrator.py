@@ -79,7 +79,10 @@ class NutriOrchestrator:
             
             recognition_result = await self.food_recognizer.identify(
                 meal.image_url, 
-                meal.meal_type
+                meal.meal_type,
+                user_notes=meal.user_notes,
+                weight_grams=meal.weight_grams,
+                volume_ml=meal.volume_ml
             )
             
             if "erro" in recognition_result:
@@ -132,7 +135,8 @@ class NutriOrchestrator:
                         portion_result.get("porcoes", []),
                         nutrition_result["calorias"],
                         nutrition_result["macros"],
-                        perfil
+                        perfil,
+                        meal_type=meal.meal_type
                     )
                 )
                 

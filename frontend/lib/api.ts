@@ -354,11 +354,26 @@ export const profileApi = {
   }
 };
 
+export interface MealUploadOptions {
+  userNotes?: string;
+  weightGrams?: number;
+  volumeMl?: number;
+}
+
 export const mealsApi = {
-  upload: (file: File, mealType: string) => {
+  upload: (file: File, mealType: string, options?: MealUploadOptions) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('meal_type', mealType);
+    if (options?.userNotes) {
+      formData.append('user_notes', options.userNotes);
+    }
+    if (options?.weightGrams) {
+      formData.append('weight_grams', options.weightGrams.toString());
+    }
+    if (options?.volumeMl) {
+      formData.append('volume_ml', options.volumeMl.toString());
+    }
     return api<MealUploadResponse>('/meals/upload-image', { method: 'POST', body: formData, isFormData: true });
   },
   

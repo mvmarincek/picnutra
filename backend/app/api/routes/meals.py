@@ -89,6 +89,9 @@ async def run_analysis_task(
 async def upload_image(
     file: UploadFile = File(...),
     meal_type: str = Form(default="prato"),
+    user_notes: Optional[str] = Form(default=None),
+    weight_grams: Optional[float] = Form(default=None),
+    volume_ml: Optional[float] = Form(default=None),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
@@ -126,7 +129,10 @@ async def upload_image(
         user_id=current_user.id,
         image_url=image_url,
         meal_type=meal_type,
-        status=MealStatus.PENDING.value
+        status=MealStatus.PENDING.value,
+        user_notes=user_notes,
+        weight_grams=weight_grams,
+        volume_ml=volume_ml
     )
     db.add(meal)
     await db.commit()
