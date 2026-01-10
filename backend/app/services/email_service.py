@@ -1,16 +1,46 @@
 import resend
 import os
-from typing import Optional
+from typing import Optional, Dict
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
-ADMIN_EMAIL = "mvmarincek@gmail.com"
-SUPPORT_EMAIL = "suporte@ai8hub.com"
-APP_URL = "https://nutrivision.ai8hub.com"
 resend.api_key = os.getenv("RESEND_API_KEY", "")
 
 _pending_emails = []
+_settings_cache: Dict[str, str] = {}
+_settings_loaded = False
+
+DEFAULT_SETTINGS = {
+    "admin_email": "mvmarincek@gmail.com",
+    "support_email": "suporte@ai8hub.com",
+    "app_url": "https://nutrivision.ai8hub.com",
+    "frontend_url": "https://nutrivision-drab.vercel.app",
+    "from_name": "Nutri-Vision",
+    "from_email": "nutrivision-noreply@ai8hub.com",
+    "welcome_credits": "36",
+    "referral_credits": "12"
+}
+
+def get_setting(key: str) -> str:
+    if key in _settings_cache:
+        return _settings_cache[key]
+    return DEFAULT_SETTINGS.get(key, "")
+
+async def load_email_settings(db: AsyncSession):
+    global _settings_cache, _settings_loaded
+    try:
+        from app.models.models import EmailSettings
+        result = await db.execute(select(EmailSettings))
+        settings = result.scalars().all()
+        for s in settings:
+            _settings_cache[s.key] = s.value
+        _settings_loaded = True
+    except Exception as e:
+        print(f"[EMAIL] Could not load settings from DB: {e}")
 
 def get_email_footer():
+    support_email = get_setting("support_email")
+    app_url = get_setting("app_url")
     return f"""
         <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; margin-top: 20px;">
             <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0 0 10px 0;">
@@ -18,14 +48,17 @@ def get_email_footer():
                 Equipe Nutri-Vision
             </p>
             <p style="color: #94a3b8; font-size: 11px; text-align: center; margin: 0;">
-                Duvidas? Entre em contato: <a href="mailto:{SUPPORT_EMAIL}" style="color: #22c55e;">{SUPPORT_EMAIL}</a><br>
-                <a href="{APP_URL}/privacy" style="color: #94a3b8;">Politica de Privacidade</a> | 
-                <a href="{APP_URL}/terms" style="color: #94a3b8;">Termos de Uso</a>
+                Duvidas? Entre em contato: <a href="mailto:{support_email}" style="color: #22c55e;">{support_email}</a><br>
+                <a href="{app_url}/privacy" style="color: #94a3b8;">Politica de Privacidade</a> | 
+                <a href="{app_url}/terms" style="color: #94a3b8;">Termos de Uso</a>
             </p>
         </div>
     """
 
 def send_email(to: str, subject: str, html_content: str, email_type: str = "generic", user_id: Optional[int] = None):
+    from_name = get_setting("from_name")
+    from_email = get_setting("from_email")
+    
     log_entry = {
         "to_email": to,
         "subject": subject,
@@ -47,7 +80,7 @@ def send_email(to: str, subject: str, html_content: str, email_type: str = "gene
     
     try:
         result = resend.Emails.send({
-            "from": "Nutri-Vision <nutrivision-noreply@ai8hub.com>",
+            "from": f"{from_name} <{from_email}>",
             "to": to,
             "subject": subject,
             "html": html_content
@@ -90,8 +123,10 @@ async def flush_email_logs(db: AsyncSession):
         print(f"[EMAIL] Error saving logs: {e}")
         await db.rollback()
 
-def send_welcome_email(user_email: str):
-    subject = "Bem-vindo ao Nutri-Vision! Voce ganhou 36 creditos!"
+def send_welcome_email(user_email: str, user_id: Optional[int] = None):
+    frontend_url = get_setting("frontend_url")
+    welcome_credits = get_setting("welcome_credits")
+    subject = f"Bem-vindo ao Nutri-Vision! Voce ganhou {welcome_credits} creditos!"
     html = f"""
     <html>
     <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
@@ -104,12 +139,12 @@ def send_welcome_email(user_email: str):
             <div style="text-align: center; margin-bottom: 20px;">
                 <span style="font-size: 48px;">🎁</span>
             </div>
-            <h2 style="color: #22c55e; margin: 0 0 20px 0; text-align: center;">Voce ganhou 36 creditos de bonus!</h2>
+            <h2 style="color: #22c55e; margin: 0 0 20px 0; text-align: center;">Voce ganhou {welcome_credits} creditos de bonus!</h2>
             <p style="color: #334155; line-height: 1.8; margin: 0 0 15px 0;">
                 Parabens por dar o primeiro passo em direcao a uma alimentacao mais consciente!
             </p>
             <p style="color: #334155; line-height: 1.8; margin: 0 0 20px 0;">
-                Com seus <strong style="color: #22c55e;">36 creditos de bonus</strong>, voce pode fazer <strong>3 analises completas</strong> com:
+                Com seus <strong style="color: #22c55e;">{welcome_credits} creditos de bonus</strong>, voce pode fazer <strong>{int(welcome_credits) // 12} analises completas</strong> com:
             </p>
             <ul style="color: #334155; line-height: 2; padding-left: 20px; margin: 0 0 20px 0;">
                 <li>Analise detalhada de calorias, proteinas, carboidratos e gorduras</li>
@@ -127,7 +162,7 @@ def send_welcome_email(user_email: str):
         </div>
         
         <div style="text-align: center; margin-bottom: 20px;">
-            <a href="https://nutrivision-drab.vercel.app/home" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
+            <a href="{frontend_url}/home" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
                 Usar meus creditos
             </a>
         </div>
@@ -136,10 +171,11 @@ def send_welcome_email(user_email: str):
     </body>
     </html>
     """
-    return send_email(user_email, subject, html, email_type="welcome")
+    return send_email(user_email, subject, html, email_type="welcome", user_id=user_id)
 
-def send_password_reset_email(user_email: str, reset_token: str):
-    reset_url = f"https://nutrivision-drab.vercel.app/reset-password?token={reset_token}"
+def send_password_reset_email(user_email: str, reset_token: str, user_id: Optional[int] = None):
+    frontend_url = get_setting("frontend_url")
+    reset_url = f"{frontend_url}/reset-password?token={reset_token}"
     subject = "Recuperacao de Senha - Nutri-Vision"
     html = f"""
     <html>
@@ -169,9 +205,10 @@ def send_password_reset_email(user_email: str, reset_token: str):
     </body>
     </html>
     """
-    return send_email(user_email, subject, html, email_type="password_reset")
+    return send_email(user_email, subject, html, email_type="password_reset", user_id=user_id)
 
 def send_suggestion_email(user_email: str, user_id: int, mensagem: str):
+    admin_email = get_setting("admin_email")
     subject = "Nova Sugestao - Nutri-Vision"
     html = f"""
     <html>
@@ -193,9 +230,10 @@ def send_suggestion_email(user_email: str, user_id: int, mensagem: str):
     </body>
     </html>
     """
-    return send_email(ADMIN_EMAIL, subject, html, email_type="suggestion", user_id=user_id)
+    return send_email(admin_email, subject, html, email_type="suggestion", user_id=user_id)
 
-def send_referral_activated_email(referrer_email: str, referred_email: str, credits_earned: int, new_balance: int):
+def send_referral_activated_email(referrer_email: str, referred_email: str, credits_earned: int, new_balance: int, referrer_id: Optional[int] = None):
+    frontend_url = get_setting("frontend_url")
     subject = "Voce ganhou creditos! - Nutri-Vision"
     html = f"""
     <html>
@@ -224,7 +262,7 @@ def send_referral_activated_email(referrer_email: str, referred_email: str, cred
         </div>
         
         <div style="text-align: center; margin-bottom: 20px;">
-            <a href="https://nutrivision-drab.vercel.app/home" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
+            <a href="{frontend_url}/home" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
                 Usar meus creditos
             </a>
         </div>
@@ -233,9 +271,10 @@ def send_referral_activated_email(referrer_email: str, referred_email: str, cred
     </body>
     </html>
     """
-    return send_email(referrer_email, subject, html, email_type="referral")
+    return send_email(referrer_email, subject, html, email_type="referral", user_id=referrer_id)
 
-def send_upgraded_to_pro_email(user_email: str):
+def send_upgraded_to_pro_email(user_email: str, user_id: Optional[int] = None):
+    frontend_url = get_setting("frontend_url")
     subject = "Bem-vindo ao Nutri-Vision PRO!"
     html = f"""
     <html>
@@ -267,7 +306,7 @@ def send_upgraded_to_pro_email(user_email: str):
         </div>
         
         <div style="text-align: center; margin-bottom: 20px;">
-            <a href="https://nutrivision-drab.vercel.app/home" style="display: inline-block; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
+            <a href="{frontend_url}/home" style="display: inline-block; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
                 Comecar a usar
             </a>
         </div>
@@ -276,9 +315,10 @@ def send_upgraded_to_pro_email(user_email: str):
     </body>
     </html>
     """
-    return send_email(user_email, subject, html, email_type="pro_upgrade")
+    return send_email(user_email, subject, html, email_type="pro_upgrade", user_id=user_id)
 
-def send_credits_purchased_email(user_email: str, credits_purchased: int, new_balance: int):
+def send_credits_purchased_email(user_email: str, credits_purchased: int, new_balance: int, user_id: Optional[int] = None):
+    frontend_url = get_setting("frontend_url")
     subject = f"Compra confirmada: +{credits_purchased} creditos - Nutri-Vision"
     html = f"""
     <html>
@@ -306,7 +346,7 @@ def send_credits_purchased_email(user_email: str, credits_purchased: int, new_ba
         </div>
         
         <div style="text-align: center; margin-bottom: 20px;">
-            <a href="https://nutrivision-drab.vercel.app/home" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
+            <a href="{frontend_url}/home" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
                 Usar meus creditos
             </a>
         </div>
@@ -315,9 +355,10 @@ def send_credits_purchased_email(user_email: str, credits_purchased: int, new_ba
     </body>
     </html>
     """
-    return send_email(user_email, subject, html, email_type="credits_purchase")
+    return send_email(user_email, subject, html, email_type="credits_purchase", user_id=user_id)
 
-def send_subscription_cancelled_email(user_email: str):
+def send_subscription_cancelled_email(user_email: str, user_id: Optional[int] = None):
+    frontend_url = get_setting("frontend_url")
     subject = "Assinatura PRO cancelada - Nutri-Vision"
     html = f"""
     <html>
@@ -344,7 +385,7 @@ def send_subscription_cancelled_email(user_email: str):
         </div>
         
         <div style="text-align: center; margin-bottom: 20px;">
-            <a href="https://nutrivision-drab.vercel.app/billing" style="display: inline-block; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
+            <a href="{frontend_url}/billing" style="display: inline-block; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
                 Voltar ao PRO
             </a>
         </div>
@@ -353,10 +394,11 @@ def send_subscription_cancelled_email(user_email: str):
     </body>
     </html>
     """
-    return send_email(user_email, subject, html, email_type="subscription_cancelled")
+    return send_email(user_email, subject, html, email_type="subscription_cancelled", user_id=user_id)
 
-def send_email_verification(user_email: str, verification_token: str):
-    verify_url = f"https://nutrivision-drab.vercel.app/verify-email?token={verification_token}"
+def send_email_verification(user_email: str, verification_token: str, user_id: Optional[int] = None):
+    frontend_url = get_setting("frontend_url")
+    verify_url = f"{frontend_url}/verify-email?token={verification_token}"
     subject = "Confirme seu email - Nutri-Vision"
     html = f"""
     <html>
@@ -390,9 +432,11 @@ def send_email_verification(user_email: str, verification_token: str):
     </body>
     </html>
     """
-    return send_email(user_email, subject, html, email_type="email_verification")
+    return send_email(user_email, subject, html, email_type="email_verification", user_id=user_id)
 
-def send_email_verified_success(user_email: str):
+def send_email_verified_success(user_email: str, user_id: Optional[int] = None):
+    frontend_url = get_setting("frontend_url")
+    welcome_credits = get_setting("welcome_credits")
     subject = "Email confirmado! Bem-vindo ao Nutri-Vision!"
     html = f"""
     <html>
@@ -412,13 +456,13 @@ def send_email_verified_success(user_email: str):
             </p>
             <div style="background: #f0fdf4; border-radius: 15px; padding: 15px; margin-bottom: 15px;">
                 <p style="color: #166534; margin: 0; text-align: center;">
-                    <strong>Voce tem 36 creditos de bonus para comecar!</strong>
+                    <strong>Voce tem {welcome_credits} creditos de bonus para comecar!</strong>
                 </p>
             </div>
         </div>
         
         <div style="text-align: center; margin-bottom: 20px;">
-            <a href="https://nutrivision-drab.vercel.app/home" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
+            <a href="{frontend_url}/home" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
                 Comecar a usar
             </a>
         </div>
@@ -427,9 +471,10 @@ def send_email_verified_success(user_email: str):
     </body>
     </html>
     """
-    return send_email(user_email, subject, html, email_type="email_verified")
+    return send_email(user_email, subject, html, email_type="email_verified", user_id=user_id)
 
-def send_subscription_renewed_email(user_email: str):
+def send_subscription_renewed_email(user_email: str, user_id: Optional[int] = None):
+    frontend_url = get_setting("frontend_url")
     subject = "Assinatura PRO renovada - Nutri-Vision"
     html = f"""
     <html>
@@ -453,21 +498,20 @@ def send_subscription_renewed_email(user_email: str):
         </div>
         
         <div style="text-align: center; margin-bottom: 20px;">
-            <a href="https://nutrivision-drab.vercel.app/home" style="display: inline-block; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
+            <a href="{frontend_url}/home" style="display: inline-block; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
                 Continuar usando
             </a>
         </div>
         
-        <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">
-            Obrigado por continuar com o Nutri-Vision PRO!<br>
-            Equipe Nutri-Vision
-        </p>
+        {get_email_footer()}
     </body>
     </html>
     """
-    return send_email(user_email, subject, html, email_type="subscription_renewed")
+    return send_email(user_email, subject, html, email_type="subscription_renewed", user_id=user_id)
 
-def send_payment_failed_email(user_email: str):
+def send_payment_failed_email(user_email: str, user_id: Optional[int] = None):
+    frontend_url = get_setting("frontend_url")
+    support_email = get_setting("support_email")
     subject = "Problema com seu pagamento - Nutri-Vision"
     html = f"""
     <html>
@@ -496,16 +540,16 @@ def send_payment_failed_email(user_email: str):
         </div>
         
         <div style="text-align: center; margin-bottom: 20px;">
-            <a href="https://nutrivision-drab.vercel.app/billing" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
+            <a href="{frontend_url}/billing" style="display: inline-block; background: linear-gradient(135deg, #22c55e, #14b8a6); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px;">
                 Atualizar pagamento
             </a>
         </div>
         
         <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">
-            Precisa de ajuda? Responda este email.<br>
+            Precisa de ajuda? Entre em contato: <a href="mailto:{support_email}" style="color: #22c55e;">{support_email}</a><br>
             Equipe Nutri-Vision
         </p>
     </body>
     </html>
     """
-    return send_email(user_email, subject, html, email_type="payment_failed")
+    return send_email(user_email, subject, html, email_type="payment_failed", user_id=user_id)

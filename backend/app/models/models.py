@@ -195,3 +195,12 @@ class EmailLog(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     user = relationship("User", backref="email_logs")
+
+class EmailSettings(Base):
+    __tablename__ = "email_settings"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    key = Column(String(100), unique=True, nullable=False, index=True)
+    value = Column(Text, nullable=False)
+    description = Column(String(255), nullable=True)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

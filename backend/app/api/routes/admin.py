@@ -6,7 +6,7 @@ from typing import Optional
 from datetime import datetime, timedelta
 from app.db.database import get_db
 from app.core.security import get_current_user
-from app.models.models import User, Payment, CreditTransaction, Meal, Referral, EmailLog
+from app.models.models import User, Payment, CreditTransaction, Meal, Referral, EmailLog, EmailSettings
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -425,4 +425,95 @@ async def get_email_stats(
         "total_sent": total_sent,
         "total_failed": total_failed,
         "by_type": by_type
+    }
+
+@router.get("/email-settings")
+async def get_email_settings(
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(select(EmailSettings).order_by(EmailSettings.key))
+    settings = result.scalars().all()
+    
+    return {
+        "settings": [
+            {
+                "id": s.id,
+                "key": s.key,
+                "value": s.value,
+                "description": s.description,
+                "updated_at": s.updated_at.isoformat() if s.updated_at else None
+            }
+            for s in settings
+        ]
+    }
+
+@router.put("/email-settings/{key}")
+async def update_email_setting(
+    key: str,
+    value: str,
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(select(EmailSettings).where(EmailSettings.key == key))
+    setting = result.scalar_one_or_none()
+    
+    if not setting:
+        setting = EmailSettings(key=key, value=value)
+        db.add(setting)
+    else:
+        setting.value = value
+        setting.updated_at = datetime.utcnow()
+    
+    await db.commit()
+    
+    from app.services.email_service import _settings_cache
+    _settings_cache[key] = value
+    
+    return {"success": True, "key": key, "value": value}
+
+@router.post("/email-settings/reload")
+async def reload_email_settings(
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    from app.services.email_service import load_email_settings
+    await load_email_settings(db)
+    return {"success": True, "message": "Configuracoes de email recarregadas"}
+
+@router.get("/users/{user_id}/email-logs")
+async def get_user_email_logs(
+    user_id: int,
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    query = select(EmailLog).where(EmailLog.user_id == user_id).order_by(desc(EmailLog.created_at))
+    
+    total = await db.scalar(
+        select(func.count(EmailLog.id)).where(EmailLog.user_id == user_id)
+    )
+    
+    offset = (page - 1) * limit
+    result = await db.execute(query.offset(offset).limit(limit))
+    logs = result.scalars().all()
+    
+    return {
+        "email_logs": [
+            {
+                "id": log.id,
+                "to_email": log.to_email,
+                "subject": log.subject,
+                "email_type": log.email_type,
+                "status": log.status,
+                "error_message": log.error_message,
+                "resend_id": log.resend_id,
+                "created_at": log.created_at.isoformat() if log.created_at else None
+            }
+            for log in logs
+        ],
+        "total": total or 0,
+        "page": page,
+        "pages": ((total or 0) + limit - 1) // limit if total else 1
     }

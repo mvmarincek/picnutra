@@ -221,7 +221,7 @@ async def create_card_payment(
             db.add(transaction)
             await db.commit()
             
-            send_credits_purchased_email(current_user.email, credits, current_user.credit_balance)
+            send_credits_purchased_email(current_user.email, credits, current_user.credit_balance, current_user.id)
             
             return {"status": "confirmed", "credits_added": credits, "new_balance": current_user.credit_balance}
         
@@ -319,7 +319,7 @@ async def create_pro_subscription(
             current_user.pro_analyses_remaining = settings.PRO_MONTHLY_ANALYSES
             current_user.pro_started_at = datetime.utcnow()
             await db.commit()
-            send_upgraded_to_pro_email(current_user.email)
+            send_upgraded_to_pro_email(current_user.email, current_user.id)
             await flush_email_logs(db)
             return {"status": "active", "message": "Assinatura PRO ativada com sucesso!"}
         
@@ -344,7 +344,7 @@ async def cancel_subscription(
         current_user.pro_analyses_remaining = 0
         await db.commit()
         
-        send_subscription_cancelled_email(user_email)
+        send_subscription_cancelled_email(user_email, current_user.id)
         await flush_email_logs(db)
         
         return {"status": "cancelled", "message": "Assinatura cancelada com sucesso"}
@@ -435,7 +435,7 @@ async def asaas_webhook(
                             await db.commit()
                             
                             logger.info(f"[webhook] Added {credits} credits to user_id={user_id}")
-                            send_credits_purchased_email(user.email, int(credits), user.credit_balance)
+                            send_credits_purchased_email(user.email, int(credits), user.credit_balance, user.id)
                             await flush_email_logs(db)
                             return {"status": "credits_added", "credits": credits}
                         
@@ -467,7 +467,7 @@ async def asaas_webhook(
                                 
                                 await db.commit()
                                 logger.info(f"[webhook] PRO activated for user_id={user_id}")
-                                send_upgraded_to_pro_email(user.email)
+                                send_upgraded_to_pro_email(user.email, user.id)
                                 await flush_email_logs(db)
                                 return {"status": "pro_activated"}
                             else:

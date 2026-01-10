@@ -90,10 +90,11 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks, db:
             referrer.email,
             user.email,
             12,
-            referrer.credit_balance
+            referrer.credit_balance,
+            referrer.id
         )
     
-    background_tasks.add_task(send_email_verification, user.email, verification_token)
+    background_tasks.add_task(send_email_verification, user.email, verification_token, user.id)
     
     access_token = create_access_token(data={"sub": str(user.id)})
     refresh_token = create_refresh_token(user.id)
@@ -174,7 +175,7 @@ async def forgot_password(request: ForgotPasswordRequest, background_tasks: Back
         "expires": datetime.utcnow() + timedelta(hours=1)
     }
     
-    background_tasks.add_task(send_password_reset_email, user.email, token)
+    background_tasks.add_task(send_password_reset_email, user.email, token, user.id)
     
     return {"exists": True, "message": "Email de recuperação enviado!"}
 
@@ -222,8 +223,8 @@ async def verify_email(request: VerifyEmailRequest, background_tasks: Background
     user.email_verification_token = None
     await db.commit()
     
-    background_tasks.add_task(send_email_verified_success, user.email)
-    background_tasks.add_task(send_welcome_email, user.email)
+    background_tasks.add_task(send_email_verified_success, user.email, user.id)
+    background_tasks.add_task(send_welcome_email, user.email, user.id)
     
     return {"message": "Email verificado com sucesso!", "already_verified": False}
 
@@ -242,7 +243,7 @@ async def resend_verification(request: ResendVerificationRequest, background_tas
     user.email_verification_token = new_token
     await db.commit()
     
-    background_tasks.add_task(send_email_verification, user.email, new_token)
+    background_tasks.add_task(send_email_verification, user.email, new_token, user.id)
     
     return {"message": "Email de verificação reenviado!"}
 

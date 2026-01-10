@@ -96,6 +96,22 @@ async def run_migration():
         "ALTER TABLE meals ADD COLUMN IF NOT EXISTS user_notes TEXT",
         "ALTER TABLE meals ADD COLUMN IF NOT EXISTS weight_grams FLOAT",
         "ALTER TABLE meals ADD COLUMN IF NOT EXISTS volume_ml FLOAT",
+        """CREATE TABLE IF NOT EXISTS email_settings (
+            id SERIAL PRIMARY KEY,
+            key VARCHAR(100) UNIQUE NOT NULL,
+            value TEXT NOT NULL,
+            description VARCHAR(255),
+            updated_at TIMESTAMP DEFAULT NOW()
+        )""",
+        "CREATE UNIQUE INDEX IF NOT EXISTS ix_email_settings_key ON email_settings(key)",
+        "INSERT INTO email_settings (key, value, description) VALUES ('admin_email', 'mvmarincek@gmail.com', 'Email do administrador') ON CONFLICT (key) DO NOTHING",
+        "INSERT INTO email_settings (key, value, description) VALUES ('support_email', 'suporte@ai8hub.com', 'Email de suporte') ON CONFLICT (key) DO NOTHING",
+        "INSERT INTO email_settings (key, value, description) VALUES ('app_url', 'https://nutrivision.ai8hub.com', 'URL base da aplicacao') ON CONFLICT (key) DO NOTHING",
+        "INSERT INTO email_settings (key, value, description) VALUES ('frontend_url', 'https://nutrivision-drab.vercel.app', 'URL do frontend') ON CONFLICT (key) DO NOTHING",
+        "INSERT INTO email_settings (key, value, description) VALUES ('from_name', 'Nutri-Vision', 'Nome do remetente') ON CONFLICT (key) DO NOTHING",
+        "INSERT INTO email_settings (key, value, description) VALUES ('from_email', 'nutrivision-noreply@ai8hub.com', 'Email do remetente') ON CONFLICT (key) DO NOTHING",
+        "INSERT INTO email_settings (key, value, description) VALUES ('welcome_credits', '36', 'Creditos de bonus para novos usuarios') ON CONFLICT (key) DO NOTHING",
+        "INSERT INTO email_settings (key, value, description) VALUES ('referral_credits', '12', 'Creditos por indicacao') ON CONFLICT (key) DO NOTHING",
     ]
     
     results = []
