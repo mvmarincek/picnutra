@@ -11,7 +11,7 @@ from app.models.models import User, CreditTransaction, Payment
 from app.core.security import get_current_user
 from app.core.config import settings
 from app.services.asaas_service import asaas_service
-from app.services.email_service import send_credits_purchased_email, send_upgraded_to_pro_email, send_subscription_cancelled_email
+from app.services.email_service import send_credits_purchased_email, send_upgraded_to_pro_email, send_subscription_cancelled_email, flush_email_logs
 from datetime import datetime
 
 router = APIRouter(prefix="/billing", tags=["billing"])
@@ -320,6 +320,7 @@ async def create_pro_subscription(
             current_user.pro_started_at = datetime.utcnow()
             await db.commit()
             send_upgraded_to_pro_email(current_user.email)
+            await flush_email_logs(db)
             return {"status": "active", "message": "Assinatura PRO ativada com sucesso!"}
         
         return {"status": "error", "message": "Tipo de pagamento nao suportado"}
@@ -344,6 +345,7 @@ async def cancel_subscription(
         await db.commit()
         
         send_subscription_cancelled_email(user_email)
+        await flush_email_logs(db)
         
         return {"status": "cancelled", "message": "Assinatura cancelada com sucesso"}
     
@@ -434,6 +436,7 @@ async def asaas_webhook(
                             
                             logger.info(f"[webhook] Added {credits} credits to user_id={user_id}")
                             send_credits_purchased_email(user.email, int(credits), user.credit_balance)
+                            await flush_email_logs(db)
                             return {"status": "credits_added", "credits": credits}
                         
                         elif payment_type == "pro_subscription":
@@ -465,6 +468,7 @@ async def asaas_webhook(
                                 await db.commit()
                                 logger.info(f"[webhook] PRO activated for user_id={user_id}")
                                 send_upgraded_to_pro_email(user.email)
+                                await flush_email_logs(db)
                                 return {"status": "pro_activated"}
                             else:
                                 user.pro_analyses_remaining = settings.PRO_MONTHLY_ANALYSES
@@ -611,6 +615,7 @@ async def test_confirm_payment(
         
         await db.commit()
         send_upgraded_to_pro_email(current_user.email)
+        await flush_email_logs(db)
         
         return {
             "status": "success",
@@ -642,6 +647,7 @@ async def test_confirm_payment(
         await db.commit()
         
         send_credits_purchased_email(current_user.email, credits, current_user.credit_balance)
+        await flush_email_logs(db)
         
         return {
             "status": "success",
@@ -651,4 +657,5 @@ async def test_confirm_payment(
         }
     
     await db.commit()
+    await flush_email_logs(db)
     return {"status": "success", "message": "Pagamento confirmado"}

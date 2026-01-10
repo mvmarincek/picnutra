@@ -180,3 +180,18 @@ class Referral(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     referrer = relationship("User", back_populates="referrals", foreign_keys=[referrer_id])
+
+class EmailLog(Base):
+    __tablename__ = "email_logs"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    to_email = Column(String(255), nullable=False, index=True)
+    subject = Column(String(500), nullable=False)
+    email_type = Column(String(50), nullable=False)
+    status = Column(String(20), default="pending")
+    error_message = Column(Text, nullable=True)
+    resend_id = Column(String(255), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    user = relationship("User", backref="email_logs")

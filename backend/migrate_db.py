@@ -60,6 +60,20 @@ async def migrate():
             "ALTER TABLE credit_transactions ADD COLUMN IF NOT EXISTS balance_after INTEGER",
             "ALTER TABLE credit_transactions ADD COLUMN IF NOT EXISTS transaction_type VARCHAR(50)",
             "UPDATE users SET is_admin = TRUE WHERE email = 'mvmarincek@gmail.com'",
+            """CREATE TABLE IF NOT EXISTS email_logs (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id),
+                to_email VARCHAR(255) NOT NULL,
+                subject VARCHAR(500) NOT NULL,
+                email_type VARCHAR(50) NOT NULL,
+                status VARCHAR(20) DEFAULT 'pending',
+                error_message TEXT,
+                resend_id VARCHAR(255),
+                created_at TIMESTAMP DEFAULT NOW()
+            )""",
+            "CREATE INDEX IF NOT EXISTS ix_email_logs_to_email ON email_logs(to_email)",
+            "CREATE INDEX IF NOT EXISTS ix_email_logs_email_type ON email_logs(email_type)",
+            "CREATE INDEX IF NOT EXISTS ix_email_logs_status ON email_logs(status)",
         ]
         
         for sql in migrations:

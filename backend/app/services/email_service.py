@@ -1,10 +1,14 @@
 import resend
 import os
+from typing import Optional
+from sqlalchemy.ext.asyncio import AsyncSession
 
 ADMIN_EMAIL = "mvmarincek@gmail.com"
 SUPPORT_EMAIL = "suporte@ai8hub.com"
 APP_URL = "https://nutrivision.ai8hub.com"
 resend.api_key = os.getenv("RESEND_API_KEY", "")
+
+_pending_emails = []
 
 def get_email_footer():
     return f"""
@@ -21,11 +25,24 @@ def get_email_footer():
         </div>
     """
 
-def send_email(to: str, subject: str, html_content: str):
+def send_email(to: str, subject: str, html_content: str, email_type: str = "generic", user_id: Optional[int] = None):
+    log_entry = {
+        "to_email": to,
+        "subject": subject,
+        "email_type": email_type,
+        "user_id": user_id,
+        "status": "pending",
+        "error_message": None,
+        "resend_id": None
+    }
+    
     if not resend.api_key:
         print(f"[EMAIL] RESEND_API_KEY not configured!")
         print(f"[EMAIL] Would send to: {to}")
         print(f"[EMAIL] Subject: {subject}")
+        log_entry["status"] = "failed"
+        log_entry["error_message"] = "RESEND_API_KEY not configured"
+        _pending_emails.append(log_entry)
         return False
     
     try:
@@ -36,10 +53,42 @@ def send_email(to: str, subject: str, html_content: str):
             "html": html_content
         })
         print(f"[EMAIL] Sent successfully to {to}: {result}")
+        log_entry["status"] = "sent"
+        log_entry["resend_id"] = result.get("id") if isinstance(result, dict) else str(result)
+        _pending_emails.append(log_entry)
         return True
     except Exception as e:
         print(f"[EMAIL] Error sending to {to}: {e}")
+        log_entry["status"] = "failed"
+        log_entry["error_message"] = str(e)
+        _pending_emails.append(log_entry)
         return False
+
+async def flush_email_logs(db: AsyncSession):
+    from app.models.models import EmailLog
+    global _pending_emails
+    
+    if not _pending_emails:
+        return
+    
+    for entry in _pending_emails:
+        email_log = EmailLog(
+            user_id=entry.get("user_id"),
+            to_email=entry["to_email"],
+            subject=entry["subject"],
+            email_type=entry["email_type"],
+            status=entry["status"],
+            error_message=entry.get("error_message"),
+            resend_id=entry.get("resend_id")
+        )
+        db.add(email_log)
+    
+    try:
+        await db.commit()
+        _pending_emails = []
+    except Exception as e:
+        print(f"[EMAIL] Error saving logs: {e}")
+        await db.rollback()
 
 def send_welcome_email(user_email: str):
     subject = "Bem-vindo ao Nutri-Vision! Voce ganhou 36 creditos!"
@@ -87,7 +136,7 @@ def send_welcome_email(user_email: str):
     </body>
     </html>
     """
-    return send_email(user_email, subject, html)
+    return send_email(user_email, subject, html, email_type="welcome")
 
 def send_password_reset_email(user_email: str, reset_token: str):
     reset_url = f"https://nutrivision-drab.vercel.app/reset-password?token={reset_token}"
@@ -120,7 +169,7 @@ def send_password_reset_email(user_email: str, reset_token: str):
     </body>
     </html>
     """
-    return send_email(user_email, subject, html)
+    return send_email(user_email, subject, html, email_type="password_reset")
 
 def send_suggestion_email(user_email: str, user_id: int, mensagem: str):
     subject = "Nova Sugestao - Nutri-Vision"
@@ -144,7 +193,7 @@ def send_suggestion_email(user_email: str, user_id: int, mensagem: str):
     </body>
     </html>
     """
-    return send_email(ADMIN_EMAIL, subject, html)
+    return send_email(ADMIN_EMAIL, subject, html, email_type="suggestion", user_id=user_id)
 
 def send_referral_activated_email(referrer_email: str, referred_email: str, credits_earned: int, new_balance: int):
     subject = "Voce ganhou creditos! - Nutri-Vision"
@@ -184,7 +233,7 @@ def send_referral_activated_email(referrer_email: str, referred_email: str, cred
     </body>
     </html>
     """
-    return send_email(referrer_email, subject, html)
+    return send_email(referrer_email, subject, html, email_type="referral")
 
 def send_upgraded_to_pro_email(user_email: str):
     subject = "Bem-vindo ao Nutri-Vision PRO!"
@@ -227,7 +276,7 @@ def send_upgraded_to_pro_email(user_email: str):
     </body>
     </html>
     """
-    return send_email(user_email, subject, html)
+    return send_email(user_email, subject, html, email_type="pro_upgrade")
 
 def send_credits_purchased_email(user_email: str, credits_purchased: int, new_balance: int):
     subject = f"Compra confirmada: +{credits_purchased} creditos - Nutri-Vision"
@@ -266,7 +315,7 @@ def send_credits_purchased_email(user_email: str, credits_purchased: int, new_ba
     </body>
     </html>
     """
-    return send_email(user_email, subject, html)
+    return send_email(user_email, subject, html, email_type="credits_purchase")
 
 def send_subscription_cancelled_email(user_email: str):
     subject = "Assinatura PRO cancelada - Nutri-Vision"
@@ -304,7 +353,7 @@ def send_subscription_cancelled_email(user_email: str):
     </body>
     </html>
     """
-    return send_email(user_email, subject, html)
+    return send_email(user_email, subject, html, email_type="subscription_cancelled")
 
 def send_email_verification(user_email: str, verification_token: str):
     verify_url = f"https://nutrivision-drab.vercel.app/verify-email?token={verification_token}"
@@ -341,7 +390,7 @@ def send_email_verification(user_email: str, verification_token: str):
     </body>
     </html>
     """
-    return send_email(user_email, subject, html)
+    return send_email(user_email, subject, html, email_type="email_verification")
 
 def send_email_verified_success(user_email: str):
     subject = "Email confirmado! Bem-vindo ao Nutri-Vision!"
@@ -378,7 +427,7 @@ def send_email_verified_success(user_email: str):
     </body>
     </html>
     """
-    return send_email(user_email, subject, html)
+    return send_email(user_email, subject, html, email_type="email_verified")
 
 def send_subscription_renewed_email(user_email: str):
     subject = "Assinatura PRO renovada - Nutri-Vision"
@@ -416,7 +465,7 @@ def send_subscription_renewed_email(user_email: str):
     </body>
     </html>
     """
-    return send_email(user_email, subject, html)
+    return send_email(user_email, subject, html, email_type="subscription_renewed")
 
 def send_payment_failed_email(user_email: str):
     subject = "Problema com seu pagamento - Nutri-Vision"
@@ -459,4 +508,4 @@ def send_payment_failed_email(user_email: str):
     </body>
     </html>
     """
-    return send_email(user_email, subject, html)
+    return send_email(user_email, subject, html, email_type="payment_failed")

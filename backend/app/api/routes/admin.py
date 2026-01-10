@@ -6,7 +6,7 @@ from typing import Optional
 from datetime import datetime, timedelta
 from app.db.database import get_db
 from app.core.security import get_current_user
-from app.models.models import User, Payment, CreditTransaction, Meal, Referral
+from app.models.models import User, Payment, CreditTransaction, Meal, Referral, EmailLog
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -347,4 +347,82 @@ async def set_user_pro(
         "success": True,
         "plan": user.plan,
         "pro_expires_at": user.pro_expires_at.isoformat()
+    }
+
+@router.get("/email-logs")
+async def list_email_logs(
+    email_type: Optional[str] = None,
+    status: Optional[str] = None,
+    search: Optional[str] = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    query = select(EmailLog).order_by(desc(EmailLog.created_at))
+    
+    if email_type:
+        query = query.where(EmailLog.email_type == email_type)
+    if status:
+        query = query.where(EmailLog.status == status)
+    if search:
+        query = query.where(EmailLog.to_email.ilike(f"%{search}%"))
+    
+    count_query = select(func.count(EmailLog.id))
+    if email_type:
+        count_query = count_query.where(EmailLog.email_type == email_type)
+    if status:
+        count_query = count_query.where(EmailLog.status == status)
+    if search:
+        count_query = count_query.where(EmailLog.to_email.ilike(f"%{search}%"))
+    
+    total = await db.scalar(count_query)
+    
+    offset = (page - 1) * limit
+    result = await db.execute(query.offset(offset).limit(limit))
+    logs = result.scalars().all()
+    
+    return {
+        "email_logs": [
+            {
+                "id": log.id,
+                "user_id": log.user_id,
+                "to_email": log.to_email,
+                "subject": log.subject,
+                "email_type": log.email_type,
+                "status": log.status,
+                "error_message": log.error_message,
+                "resend_id": log.resend_id,
+                "created_at": log.created_at.isoformat() if log.created_at else None
+            }
+            for log in logs
+        ],
+        "total": total or 0,
+        "page": page,
+        "pages": ((total or 0) + limit - 1) // limit if total else 1
+    }
+
+@router.get("/email-stats")
+async def get_email_stats(
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    total_sent = await db.scalar(
+        select(func.count(EmailLog.id)).where(EmailLog.status == "sent")
+    ) or 0
+    
+    total_failed = await db.scalar(
+        select(func.count(EmailLog.id)).where(EmailLog.status == "failed")
+    ) or 0
+    
+    by_type_result = await db.execute(
+        select(EmailLog.email_type, func.count(EmailLog.id))
+        .group_by(EmailLog.email_type)
+    )
+    by_type = {row[0]: row[1] for row in by_type_result.all()}
+    
+    return {
+        "total_sent": total_sent,
+        "total_failed": total_failed,
+        "by_type": by_type
     }
