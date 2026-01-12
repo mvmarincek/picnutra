@@ -24,7 +24,7 @@ const mealTypes = [
 export default function HomePage() {
   const [phase, setPhase] = useState<Phase>('idle');
   const [mealType, setMealType] = useState('prato');
-  const [mode, setMode] = useState<'simple' | 'full'>('simple');
+  const [mode, setMode] = useState<'simple' | 'full'>('full');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [userNotes, setUserNotes] = useState('');
@@ -214,12 +214,12 @@ export default function HomePage() {
                   <Crown className="w-5 h-5" />
                   <span className="font-semibold">Analises PRO restantes</span>
                 </div>
-                <span className="font-bold text-lg">{user.pro_analyses_remaining}/90</span>
+                <span className="font-bold text-lg">{Math.min(user.pro_analyses_remaining, 90)}/90</span>
               </div>
               <div className="w-full bg-white/20 rounded-full h-2">
                 <div 
                   className="bg-white rounded-full h-2 transition-all" 
-                  style={{ width: `${(user.pro_analyses_remaining / 90) * 100}%` }}
+                  style={{ width: `${Math.min((user.pro_analyses_remaining / 90) * 100, 100)}%` }}
                 />
               </div>
             </div>
@@ -264,39 +264,35 @@ export default function HomePage() {
               Tipo de analise
             </h3>
             <div className="space-y-3">
-              <button
-                onClick={() => setMode('simple')}
-                className={`w-full p-4 rounded-2xl border-2 text-left transition-all ${
-                  mode === 'simple'
-                    ? 'border-emerald-400 bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg shadow-emerald-100'
-                    : 'border-gray-100 hover:border-gray-200 bg-white'
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
-                    mode === 'simple' ? 'bg-gradient-to-br from-amber-400 to-orange-400 shadow-md shadow-amber-200' : 'bg-gray-100'
-                  }`}>
-                    <Zap className={`w-7 h-7 ${mode === 'simple' ? 'text-white' : 'text-gray-400'}`} />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className={`font-bold text-lg ${mode === 'simple' ? 'text-emerald-700' : 'text-gray-700'}`}>
-                        Analise Rapida
-                      </span>
-                      {user?.plan === 'free' ? (
+              {user?.plan !== 'pro' && (
+                <button
+                  onClick={() => setMode('simple')}
+                  className={`w-full p-4 rounded-2xl border-2 text-left transition-all ${
+                    mode === 'simple'
+                      ? 'border-emerald-400 bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg shadow-emerald-100'
+                      : 'border-gray-100 hover:border-gray-200 bg-white'
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
+                      mode === 'simple' ? 'bg-gradient-to-br from-amber-400 to-orange-400 shadow-md shadow-amber-200' : 'bg-gray-100'
+                    }`}>
+                      <Zap className={`w-7 h-7 ${mode === 'simple' ? 'text-white' : 'text-gray-400'}`} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className={`font-bold text-lg ${mode === 'simple' ? 'text-emerald-700' : 'text-gray-700'}`}>
+                          Analise Rapida
+                        </span>
                         <span className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
                           GRATIS
                         </span>
-                      ) : (
-                        <span className="bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">
-                          5 creditos
-                        </span>
-                      )}
+                      </div>
+                      <p className="text-sm text-gray-500">Calorias, macros e observacoes nutricionais</p>
                     </div>
-                    <p className="text-sm text-gray-500">Calorias, macros e observacoes nutricionais</p>
                   </div>
-                </div>
-              </button>
+                </button>
+              )}
               
               <button
                 onClick={() => setMode('full')}
@@ -317,9 +313,11 @@ export default function HomePage() {
                       <span className={`font-bold text-lg ${mode === 'full' ? 'text-purple-700' : 'text-gray-700'}`}>
                         Analise Completa
                       </span>
-                      <span className="bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
-                        12 creditos
-                      </span>
+                      {user?.plan !== 'pro' && (
+                        <span className="bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
+                          12 creditos
+                        </span>
+                      )}
                     </div>
                     <p className="text-sm text-gray-500">Tudo + sugestao visual de prato otimizado</p>
                   </div>
@@ -458,9 +456,11 @@ export default function HomePage() {
           </button>
 
           <p className="text-center text-sm text-gray-400 mt-4">
-            {user?.plan === 'free' && mode === 'simple' 
-              ? 'Analise rapida gratuita' 
-              : `Custo: ${cost} creditos - Saldo: ${user?.credit_balance || 0} creditos`
+            {user?.plan === 'pro' 
+              ? 'Analise PRO inclusa no seu plano'
+              : user?.plan === 'free' && mode === 'simple' 
+                ? 'Analise rapida gratuita' 
+                : `Custo: ${cost} creditos - Saldo: ${user?.credit_balance || 0} creditos`
             }
           </p>
         </div>
@@ -475,7 +475,7 @@ export default function HomePage() {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-white">Seja PRO</h3>
-                <p className="text-purple-100">Analises ilimitadas por R$ 14,90/mes</p>
+                <p className="text-purple-100">90 analises completas por R$ 49,90/mes</p>
               </div>
             </div>
           </div>

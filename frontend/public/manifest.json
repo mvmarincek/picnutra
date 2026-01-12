@@ -1,24 +1,24 @@
 {
   "name": "Nutri-Vision",
   "short_name": "NutriVision",
-  "description": "Analise suas refeições com IA e receba sugestões nutricionais personalizadas",
+  "description": "Analise suas refeicoes com IA e receba sugestoes nutricionais personalizadas",
   "start_url": "/home",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#22c55e",
+  "theme_color": "#10b981",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/icon-192.svg",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/svg+xml",
+      "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/icon-512.svg",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ]
 }

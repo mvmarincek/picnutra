@@ -25,14 +25,14 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  themeColor: '#22c55e'
+  themeColor: '#10b981'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
       <head>
-        <link rel="apple-touch-icon" href="/icon-192.png" />
+        <link rel="apple-touch-icon" href="/icon-192.svg" />
         <meta name="google-adsense-account" content={ADSENSE_CLIENT_ID} />
       </head>
       <body className={inter.className}>
