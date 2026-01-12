@@ -7,7 +7,7 @@ import { adminApi, AdminStats, AdminUser, AdminPayment, UserDetails } from '@/li
 import { useFeedback } from '@/lib/feedback';
 import { 
   Users, CreditCard, TrendingUp, Activity, Search, ChevronLeft, ChevronRight,
-  Crown, Shield, Plus, Eye, X, Calendar, Mail, Phone, Hash, Trash2
+  Crown, Shield, Plus, Eye, X, Calendar, Mail, Phone, Hash, Trash2, RefreshCw
 } from 'lucide-react';
 
 function formatPrice(cents: number) {
@@ -173,6 +173,17 @@ export default function AdminPage() {
       searchUsers();
     } catch (err) {
       showError('Erro ao remover PRO', 'Erro');
+    }
+  };
+
+  const handleResetProAnalyses = async (userId: number) => {
+    if (!confirm('Resetar analises PRO para 90?')) return;
+    try {
+      const result = await adminApi.resetProAnalyses(userId);
+      showSuccess(`Analises resetadas para ${result.pro_analyses_remaining}!`, 'Sucesso');
+      searchUsers();
+    } catch (err) {
+      showError('Erro ao resetar analises', 'Erro');
     }
   };
 
@@ -355,9 +366,14 @@ export default function AdminPage() {
                           <Plus className="w-4 h-4 text-emerald-600" />
                         </button>
                         {u.plan === 'pro' ? (
-                          <button onClick={() => handleRemovePro(u.id)} className="p-2 hover:bg-red-100 rounded-lg transition-colors" title="Remover PRO">
-                            <Crown className="w-4 h-4 text-red-600" />
-                          </button>
+                          <>
+                            <button onClick={() => handleResetProAnalyses(u.id)} className="p-2 hover:bg-blue-100 rounded-lg transition-colors" title="Resetar analises para 90">
+                              <RefreshCw className="w-4 h-4 text-blue-600" />
+                            </button>
+                            <button onClick={() => handleRemovePro(u.id)} className="p-2 hover:bg-red-100 rounded-lg transition-colors" title="Remover PRO">
+                              <Crown className="w-4 h-4 text-red-600" />
+                            </button>
+                          </>
                         ) : (
                           <button onClick={() => handleSetPro(u.id)} className="p-2 hover:bg-violet-100 rounded-lg transition-colors" title="Ativar PRO">
                             <Crown className="w-4 h-4 text-violet-600" />
