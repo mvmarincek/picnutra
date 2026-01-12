@@ -247,12 +247,24 @@ async def resend_verification(request: ResendVerificationRequest, background_tas
     
     return {"message": "Email de verificação reenviado!"}
 
+@router.get("/debug-pro")
+async def debug_pro_status(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).where(User.id == current_user.id))
+    fresh_user = result.scalar_one()
+    return {
+        "user_id": fresh_user.id,
+        "plan": fresh_user.plan,
+        "pro_analyses_remaining": fresh_user.pro_analyses_remaining,
+        "credit_balance": fresh_user.credit_balance
+    }
+
 @router.get("/check-email-verified")
 async def check_email_verified(current_user: User = Depends(get_current_user)):
     return {"email_verified": current_user.email_verified}
 
 @router.get("/me", response_model=UserResponse)
-async def get_current_user_info(current_user: User = Depends(get_current_user)):
+async def get_current_user_info(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    await db.refresh(current_user)
     return UserResponse.model_validate(current_user)
 
 @router.post("/downgrade-to-free", response_model=UserResponse)
