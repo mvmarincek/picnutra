@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     
     ASAAS_API_KEY: str = ""
     ASAAS_WALLET_ID: str = ""
-    ASAAS_BASE_URL: str = "https://sandbox.asaas.com/api/v3"
+    ASAAS_BASE_URL: str = "https://api.asaas.com/api/v3"
     ASAAS_WEBHOOK_TOKEN: str = ""
     
     RESEND_API_KEY: str = ""
