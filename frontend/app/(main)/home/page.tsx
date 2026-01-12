@@ -31,6 +31,7 @@ export default function HomePage() {
   const [weightGrams, setWeightGrams] = useState('');
   const [volumeMl, setVolumeMl] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const analyzeButtonRef = useRef<HTMLButtonElement>(null);
   const { user } = useAuth();
   const { showError, showWarning, clearFeedback } = useFeedback();
   const router = useRouter();
@@ -49,6 +50,9 @@ export default function HomePage() {
       setImageFile(normalizedFile);
       setImagePreview(previewBase64);
       setPhase('idle');
+      setTimeout(() => {
+        analyzeButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
     } catch {
       setPhase('idle');
       showError(
@@ -443,6 +447,7 @@ export default function HomePage() {
           </div>
 
           <button
+            ref={analyzeButtonRef}
             onClick={handleAnalyze}
             disabled={!imageFile}
             className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${

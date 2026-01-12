@@ -178,28 +178,28 @@ export default function HistoryPage() {
             <div className="grid grid-cols-5 gap-2">
               <div className="text-center">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-100 to-rose-100 flex items-center justify-center mx-auto mb-1">
-                  <span className="text-xs font-bold text-red-600">P</span>
+                  <span className="text-sm">🥩</span>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{stats.avg_proteina}g</p>
                 <p className="text-xs text-gray-400">prot</p>
               </div>
               <div className="text-center">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-100 to-yellow-100 flex items-center justify-center mx-auto mb-1">
-                  <span className="text-xs font-bold text-amber-600">C</span>
+                  <span className="text-sm">🍞</span>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{stats.avg_carbo}g</p>
                 <p className="text-xs text-gray-400">carbo</p>
               </div>
               <div className="text-center">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-100 to-orange-100 flex items-center justify-center mx-auto mb-1">
-                  <span className="text-xs font-bold text-yellow-600">G</span>
+                  <span className="text-sm">🧈</span>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{stats.avg_gordura}g</p>
                 <p className="text-xs text-gray-400">gord</p>
               </div>
               <div className="text-center">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-100 to-green-100 flex items-center justify-center mx-auto mb-1">
-                  <span className="text-xs font-bold text-emerald-600">F</span>
+                  <span className="text-sm">🌾</span>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{stats.avg_fibra}g</p>
                 <p className="text-xs text-gray-400">fibra</p>

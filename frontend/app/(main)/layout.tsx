@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Home, History, Sparkles, User, LogOut, Crown } from 'lucide-react';
 import Footer from '@/components/Footer';
 import BowlLogo from '@/components/BowlLogo';
+import InstallPWAButton from '@/components/InstallPWAButton';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading, logout } = useAuth();
@@ -91,6 +92,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       </header>
 
       <main className="container mx-auto px-4 py-6">
+        <div className="mb-4">
+          <InstallPWAButton />
+        </div>
         {children}
       </main>
 
