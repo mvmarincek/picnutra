@@ -49,7 +49,7 @@ function ResultContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex flex-col items-center justify-center py-12">
+      <div className="flex flex-col items-center justify-center py-16">
         <div className="relative">
           <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center animate-pulse shadow-xl shadow-emerald-200">
             <Salad className="w-10 h-10 text-white" />
@@ -63,7 +63,7 @@ function ResultContent() {
 
   if (error || !meal) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 to-orange-50 flex flex-col items-center justify-center text-center py-12 px-4">
+      <div className="flex flex-col items-center justify-center text-center py-16 px-4">
         <div className="w-20 h-20 bg-gradient-to-br from-rose-100 to-rose-200 rounded-full flex items-center justify-center mb-4 shadow-lg">
           <span className="text-4xl">😕</span>
         </div>
@@ -81,7 +81,7 @@ function ResultContent() {
   const analysis = meal.analysis;
   if (!analysis) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-slate-100 flex flex-col items-center justify-center text-center py-12 px-4">
+      <div className="flex flex-col items-center justify-center text-center py-16 px-4">
         <p className="text-gray-600 mb-4">Analise nao disponivel</p>
         <button 
           onClick={() => router.push('/home')} 
@@ -106,7 +106,7 @@ function ResultContent() {
   const confiancaInfo = getConfiancaInfo(analysis.confianca);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 pb-8">
+    <div className="pb-8 -mx-4 -mt-6">
       <div className="max-w-2xl mx-auto px-4 pt-4">
         <div className="relative bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-3xl p-5 mb-6 overflow-hidden shadow-xl shadow-emerald-200/50">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
@@ -399,7 +399,7 @@ function ResultContent() {
 export default function ResultPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex flex-col items-center justify-center py-12">
+      <div className="flex flex-col items-center justify-center py-16">
         <div className="relative">
           <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center animate-pulse shadow-xl shadow-emerald-200">
             <Salad className="w-10 h-10 text-white" />

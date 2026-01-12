@@ -1,309 +1,384 @@
 'use client';
 
 import Link from 'next/link';
-import { Sparkles, Heart, TrendingUp, Shield, Apple, Salad, Flame, Star, ArrowRight, CheckCircle2 } from 'lucide-react';
-
-const motivationalQuotes = [
-  "Cada refeição é uma oportunidade de nutrir seu corpo",
-  "Pequenas escolhas diárias criam grandes transformações",
-  "Alimentação consciente é autocuidado em ação"
-];
+import { 
+  Sparkles, Heart, TrendingUp, Shield, Apple, Salad, Flame, Star, ArrowRight, 
+  CheckCircle2, Camera, Brain, BarChart3, Zap, Crown, Infinity, Ban, ChefHat,
+  Image as ImageIcon, Leaf, Target, Award, Users
+} from 'lucide-react';
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen">
-      <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-sm z-50 border-b border-green-100">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
+      <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md z-50 border-b border-emerald-100">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl gradient-fresh flex items-center justify-center">
-              <Salad className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+              <Salad className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-teal-500 bg-clip-text text-transparent">
+            <span className="text-lg font-bold bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
               Nutri-Vision
             </span>
           </div>
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-gray-600 hover:text-green-600 font-medium">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Link href="/login" className="text-gray-600 hover:text-emerald-600 font-medium text-sm sm:text-base">
               Entrar
             </Link>
             <Link 
               href="/register" 
-              className="gradient-fresh text-white px-5 py-2.5 rounded-full font-medium hover:shadow-lg hover:shadow-green-200 transition-all"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 sm:px-6 py-2 rounded-full font-medium text-sm sm:text-base hover:shadow-lg transition-all"
             >
-              Começar Grátis
+              Comecar Gratis
             </Link>
           </div>
         </div>
       </header>
 
-      <section className="gradient-hero pt-28 pb-20 overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full mb-6 shadow-sm">
-              <Sparkles className="w-4 h-4 text-yellow-500" />
-              <span className="text-sm font-medium text-gray-700">Powered by AI - Análise em segundos</span>
-            </div>
-            
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              Transforme sua relação com a 
-              <span className="bg-gradient-to-r from-green-500 to-teal-500 bg-clip-text text-transparent"> alimentação</span>
-            </h1>
-            
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Fotografe sua refeição e descubra exatamente o que está nutrindo seu corpo. 
-              Receba orientações personalizadas para alcançar seus objetivos de saúde.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-              <Link 
-                href="/register"
-                className="group gradient-fresh text-white text-lg px-8 py-4 rounded-full font-semibold hover:shadow-xl hover:shadow-green-200 transition-all flex items-center gap-2"
-              >
-                Começar Jornada Gratuita
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-            
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
-                <span>36 créditos grátis</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
-                <span>Sem cartão de crédito</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
-                <span>Resultados em segundos</span>
-              </div>
-            </div>
+      <section className="relative pt-20 pb-12 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500" />
+        <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-56 h-56 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+        <div className="absolute top-1/3 right-1/4 w-40 h-40 bg-white/5 rounded-full" />
+        
+        <div className="relative max-w-lg mx-auto px-4 pt-8 pb-4 text-center">
+          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+            <Sparkles className="w-4 h-4 text-yellow-300" />
+            <span className="text-white text-sm font-medium">Powered by AI</span>
           </div>
           
-          <div className="mt-12 flex justify-center gap-4">
-            <div className="animate-float" style={{ animationDelay: '0s' }}>
-              <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center shadow-lg">
-                <Apple className="w-8 h-8 text-orange-500" />
-              </div>
-            </div>
-            <div className="animate-float" style={{ animationDelay: '0.5s' }}>
-              <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center shadow-lg">
-                <Salad className="w-10 h-10 text-green-500" />
-              </div>
-            </div>
-            <div className="animate-float" style={{ animationDelay: '1s' }}>
-              <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center shadow-lg">
-                <Heart className="w-8 h-8 text-red-500" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Por que cuidar da sua alimentação?
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Uma alimentação equilibrada é a base para uma vida plena e saudável
-            </p>
-          </div>
+          <h1 className="text-3xl sm:text-4xl font-black text-white mb-4 leading-tight">
+            Descubra os nutrientes da sua refeicao
+          </h1>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="bg-gradient-to-br from-orange-50 to-yellow-50 p-8 rounded-3xl card-hover">
-              <div className="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center mb-6">
-                <Flame className="w-7 h-7 text-orange-500" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Mais Energia</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Alimentos nutritivos fornecem combustível de qualidade para seu dia a dia, 
-                aumentando disposição e foco.
-              </p>
-            </div>
-            
-            <div className="bg-gradient-to-br from-green-50 to-teal-50 p-8 rounded-3xl card-hover">
-              <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mb-6">
-                <Heart className="w-7 h-7 text-green-500" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Saúde Duradoura</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Previna doenças crônicas e fortaleça seu sistema imunológico com 
-                escolhas alimentares inteligentes.
-              </p>
-            </div>
-            
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-3xl card-hover">
-              <div className="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center mb-6">
-                <Star className="w-7 h-7 text-purple-500" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Bem-estar Mental</h3>
-              <p className="text-gray-600 leading-relaxed">
-                A alimentação impacta diretamente seu humor e clareza mental. 
-                Cuide do corpo, cuide da mente.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 bg-gradient-to-br from-green-50 via-white to-teal-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Como funciona
-            </h2>
-            <p className="text-lg text-gray-600">Simples como 1, 2, 3</p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full gradient-warm flex items-center justify-center shadow-lg shadow-orange-200">
-                <span className="text-3xl font-bold text-white">1</span>
-              </div>
-              <h3 className="text-xl font-bold mb-3">Fotografe</h3>
-              <p className="text-gray-600">
-                Tire uma foto do seu prato, lanche ou bebida
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full gradient-fresh flex items-center justify-center shadow-lg shadow-green-200">
-                <span className="text-3xl font-bold text-white">2</span>
-              </div>
-              <h3 className="text-xl font-bold mb-3">Analise</h3>
-              <p className="text-gray-600">
-                Nossa IA identifica alimentos e calcula nutrientes
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full gradient-vitality flex items-center justify-center shadow-lg shadow-purple-200">
-                <span className="text-3xl font-bold text-white">3</span>
-              </div>
-              <h3 className="text-xl font-bold mb-3">Evolua</h3>
-              <p className="text-gray-600">
-                Receba dicas personalizadas e acompanhe seu progresso
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Invista em você
-            </h2>
-            <p className="text-lg text-gray-600">Escolha o plano ideal para sua jornada</p>
-          </div>
-          
-          <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            <div className="bg-white border-2 border-gray-100 rounded-3xl p-6 text-center card-hover">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl mx-auto mb-4 flex items-center justify-center">
-                <span className="text-xl">🌱</span>
-              </div>
-              <h3 className="font-bold text-lg mb-2">Inicial</h3>
-              <p className="text-4xl font-bold text-gray-900 mb-1">12</p>
-              <p className="text-gray-500 mb-4">créditos</p>
-              <p className="text-2xl font-bold text-green-600">R$ 4,90</p>
-              <p className="text-xs text-gray-400 mt-2">1 análise completa</p>
-            </div>
-            
-            <div className="bg-gradient-to-br from-green-500 to-teal-500 rounded-3xl p-6 text-center card-hover relative transform scale-105 shadow-xl shadow-green-200">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 text-xs font-bold px-4 py-1 rounded-full">
-                MAIS POPULAR
-              </div>
-              <div className="w-12 h-12 bg-white/20 rounded-xl mx-auto mb-4 flex items-center justify-center">
-                <span className="text-xl">🌿</span>
-              </div>
-              <h3 className="font-bold text-lg mb-2 text-white">Básico</h3>
-              <p className="text-4xl font-bold text-white mb-1">36</p>
-              <p className="text-green-100 mb-4">créditos</p>
-              <p className="text-2xl font-bold text-white">R$ 12,90</p>
-              <p className="text-xs text-green-100 mt-2">3 análises completas</p>
-            </div>
-            
-            <div className="bg-white border-2 border-gray-100 rounded-3xl p-6 text-center card-hover">
-              <div className="w-12 h-12 bg-purple-100 rounded-xl mx-auto mb-4 flex items-center justify-center">
-                <span className="text-xl">🌳</span>
-              </div>
-              <h3 className="font-bold text-lg mb-2">Avançado</h3>
-              <p className="text-4xl font-bold text-gray-900 mb-1">60</p>
-              <p className="text-gray-500 mb-4">créditos</p>
-              <p className="text-2xl font-bold text-green-600">R$ 19,90</p>
-              <p className="text-xs text-gray-400 mt-2">5 análises completas</p>
-            </div>
-            
-            <div className="bg-white border-2 border-gray-100 rounded-3xl p-6 text-center card-hover">
-              <div className="w-12 h-12 bg-orange-100 rounded-xl mx-auto mb-4 flex items-center justify-center">
-                <span className="text-xl">🌟</span>
-              </div>
-              <h3 className="font-bold text-lg mb-2">Pro</h3>
-              <p className="text-4xl font-bold text-gray-900 mb-1">120</p>
-              <p className="text-gray-500 mb-4">créditos</p>
-              <p className="text-2xl font-bold text-green-600">R$ 34,90</p>
-              <p className="text-xs text-gray-400 mt-2">10 análises completas</p>
-            </div>
-          </div>
-          
-          <p className="text-center text-gray-500 mt-8">
-            Análise simples: 1 crédito | Análise completa com sugestão visual: 12 créditos
+          <p className="text-emerald-100 text-base sm:text-lg mb-8 max-w-md mx-auto">
+            Tire uma foto e receba uma analise nutricional completa em segundos com inteligencia artificial
           </p>
+          
+          <Link 
+            href="/register"
+            className="inline-flex items-center gap-3 bg-white text-emerald-600 px-8 py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all mb-6"
+          >
+            <Camera className="w-6 h-6" />
+            Comecar Gratis
+          </Link>
+          
+          <div className="flex flex-wrap justify-center gap-4 text-sm text-emerald-100">
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Analise gratis</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Sem cartao</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Em segundos</span>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="py-20 gradient-fresh">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Pronto para transformar sua alimentação?
+      <div className="max-w-lg mx-auto px-4 -mt-4">
+        <div className="bg-white rounded-3xl shadow-xl p-6 mb-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+              <Brain className="w-5 h-5 text-white" />
+            </div>
+            Como funciona
           </h2>
-          <p className="text-xl text-green-100 mb-8 max-w-2xl mx-auto">
-            Comece agora com 36 créditos gratuitos e descubra uma nova forma de se alimentar
+          
+          <div className="space-y-4">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center flex-shrink-0">
+                <Camera className="w-6 h-6 text-emerald-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900">1. Tire uma foto</h3>
+                <p className="text-gray-500 text-sm">Fotografe seu prato, sobremesa ou bebida</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center flex-shrink-0">
+                <Brain className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900">2. IA analisa</h3>
+                <p className="text-gray-500 text-sm">Nossa inteligencia artificial identifica os alimentos</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center flex-shrink-0">
+                <BarChart3 className="w-6 h-6 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900">3. Receba os resultados</h3>
+                <p className="text-gray-500 text-sm">Calorias, proteinas, carboidratos, gorduras e dicas</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="bg-white rounded-3xl shadow-lg p-5 border-2 border-emerald-100">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                <Zap className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 text-sm">FREE</h3>
+                <p className="text-xs text-emerald-600 font-medium">Gratis</p>
+              </div>
+            </div>
+            
+            <ul className="space-y-2">
+              <li className="flex items-center gap-2 text-xs text-gray-700">
+                <div className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" />
+                </div>
+                Analise rapida
+              </li>
+              <li className="flex items-center gap-2 text-xs text-gray-700">
+                <div className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" />
+                </div>
+                Calorias e macros
+              </li>
+              <li className="flex items-center gap-2 text-xs text-gray-700">
+                <div className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" />
+                </div>
+                Dicas nutricionais
+              </li>
+              <li className="flex items-center gap-2 text-xs text-gray-700">
+                <div className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" />
+                </div>
+                Historico
+              </li>
+            </ul>
+          </div>
+          
+          <div className="bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 rounded-3xl shadow-lg p-5 text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-white/10 rounded-full" />
+            
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <Crown className="w-5 h-5 text-yellow-300" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm">PRO</h3>
+                  <p className="text-xs text-purple-200">R$ 14,90/mes</p>
+                </div>
+              </div>
+              
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2 text-xs">
+                  <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <Infinity className="w-2.5 h-2.5 text-white" />
+                  </div>
+                  Analises ilimitadas
+                </li>
+                <li className="flex items-center gap-2 text-xs">
+                  <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <ImageIcon className="w-2.5 h-2.5 text-white" />
+                  </div>
+                  Imagem otimizada
+                </li>
+                <li className="flex items-center gap-2 text-xs">
+                  <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <ChefHat className="w-2.5 h-2.5 text-white" />
+                  </div>
+                  Sugestoes de prato
+                </li>
+                <li className="flex items-center gap-2 text-xs">
+                  <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <Ban className="w-2.5 h-2.5 text-white" />
+                  </div>
+                  Sem anuncios
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-xl p-6 mb-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+              <Star className="w-5 h-5 text-white" />
+            </div>
+            O que voce recebe
+          </h2>
+          
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-gradient-to-br from-rose-50 to-orange-50 rounded-2xl p-3 text-center border border-rose-100">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center mx-auto mb-2">
+                <Flame className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="font-bold text-gray-900 text-xs">Calorias</h3>
+            </div>
+            
+            <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-2xl p-3 text-center border border-red-100">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-400 to-rose-400 flex items-center justify-center mx-auto mb-2">
+                <span className="text-white font-bold text-sm">P</span>
+              </div>
+              <h3 className="font-bold text-gray-900 text-xs">Proteinas</h3>
+            </div>
+            
+            <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-3 text-center border border-amber-100">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-400 flex items-center justify-center mx-auto mb-2">
+                <span className="text-white font-bold text-sm">C</span>
+              </div>
+              <h3 className="font-bold text-gray-900 text-xs">Carbos</h3>
+            </div>
+            
+            <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl p-3 text-center border border-yellow-100">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-400 flex items-center justify-center mx-auto mb-2">
+                <span className="text-white font-bold text-sm">G</span>
+              </div>
+              <h3 className="font-bold text-gray-900 text-xs">Gorduras</h3>
+            </div>
+            
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-3 text-center border border-green-100">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-400 to-emerald-400 flex items-center justify-center mx-auto mb-2">
+                <Leaf className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="font-bold text-gray-900 text-xs">Fibras</h3>
+            </div>
+            
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-3 text-center border border-blue-100">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-400 flex items-center justify-center mx-auto mb-2">
+                <TrendingUp className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="font-bold text-gray-900 text-xs">Dicas</h3>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-3xl p-5 mb-6 border border-purple-100">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+              <ImageIcon className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="font-bold text-purple-900">Analise Completa</h3>
+              <p className="text-sm text-purple-600">Exclusivo PRO</p>
+            </div>
+          </div>
+          
+          <p className="text-gray-700 text-sm mb-4">
+            Alem dos nutrientes, gera uma <strong>imagem do prato otimizado</strong> com sugestoes para tornar sua refeicao mais saudavel.
+          </p>
+          
+          <div className="bg-white rounded-2xl p-3 flex items-center gap-3">
+            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-200 to-purple-200 flex items-center justify-center flex-shrink-0">
+              <ChefHat className="w-7 h-7 text-purple-600" />
+            </div>
+            <p className="text-purple-700 font-medium text-xs">
+              "Adicione mais vegetais e reduza o arroz para um prato equilibrado"
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-xl p-6 mb-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center">
+              <Heart className="w-5 h-5 text-white" />
+            </div>
+            Por que cuidar da alimentacao?
+          </h2>
+          
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center flex-shrink-0">
+                <Flame className="w-5 h-5 text-orange-500" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 text-sm">Mais Energia</h3>
+                <p className="text-gray-500 text-xs">Alimentos nutritivos dao mais disposicao para o dia</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center flex-shrink-0">
+                <Shield className="w-5 h-5 text-green-500" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 text-sm">Saude Duradoura</h3>
+                <p className="text-gray-500 text-xs">Previna doencas e fortaleca seu sistema imunologico</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center flex-shrink-0">
+                <Star className="w-5 h-5 text-purple-500" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 text-sm">Bem-estar Mental</h3>
+                <p className="text-gray-500 text-xs">Alimentacao impacta humor e clareza mental</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <Link 
+          href="/register"
+          className="block w-full bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white py-4 rounded-2xl font-bold text-lg text-center shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all mb-6"
+        >
+          Comecar Jornada Gratuita
+          <ArrowRight className="w-5 h-5 inline ml-2" />
+        </Link>
+
+        <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-3xl p-6 mb-6 text-center">
+          <h2 className="text-xl font-bold text-white mb-2">
+            Pronto para transformar sua alimentacao?
+          </h2>
+          <p className="text-emerald-100 text-sm mb-4">
+            Comece agora e descubra uma nova forma de se alimentar
           </p>
           <Link 
             href="/register"
-            className="inline-flex items-center gap-2 bg-white text-green-600 text-lg px-8 py-4 rounded-full font-bold hover:shadow-xl transition-all"
+            className="inline-flex items-center gap-2 bg-white text-emerald-600 px-6 py-3 rounded-xl font-bold hover:shadow-xl transition-all"
           >
             Criar Conta Gratuita
             <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
-      </section>
+      </div>
 
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col gap-8">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-xl gradient-fresh flex items-center justify-center">
-                  <Salad className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-xl font-bold">Nutri-Vision</span>
+      <footer className="bg-gray-900 text-white py-8 mt-8">
+        <div className="max-w-lg mx-auto px-4">
+          <div className="flex flex-col items-center gap-6">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                <Salad className="w-5 h-5 text-white" />
               </div>
-              <nav className="flex flex-wrap justify-center gap-6 text-sm">
-                <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
-                  Privacidade
-                </Link>
-                <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
-                  Termos de Uso
-                </Link>
-                <Link href="/about" className="text-gray-400 hover:text-white transition-colors">
-                  Sobre
-                </Link>
-                <a href="mailto:contato@nutrivision.app" className="text-gray-400 hover:text-white transition-colors">
-                  Contato
-                </a>
-              </nav>
+              <span className="text-lg font-bold">Nutri-Vision</span>
             </div>
-            <div className="border-t border-gray-800 pt-6 text-center">
-              <p className="text-gray-400 text-sm">
-                Esta ferramenta oferece estimativas aproximadas baseadas em imagem. Nao substitui orientacao de nutricionista ou medico.
+            
+            <nav className="flex flex-wrap justify-center gap-4 text-sm">
+              <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
+                Privacidade
+              </Link>
+              <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
+                Termos
+              </Link>
+              <Link href="/about" className="text-gray-400 hover:text-white transition-colors">
+                Sobre
+              </Link>
+            </nav>
+            
+            <div className="text-center">
+              <p className="text-gray-500 text-xs">
+                Estimativas aproximadas baseadas em imagem.
+                <br/>Nao substitui orientacao de nutricionista.
               </p>
-              <p className="text-gray-500 text-xs mt-2">
-                © {new Date().getFullYear()} Nutri-Vision. Todos os direitos reservados.
+              <p className="text-gray-600 text-xs mt-2">
+                © {new Date().getFullYear()} Nutri-Vision
               </p>
             </div>
           </div>

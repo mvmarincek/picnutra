@@ -168,7 +168,7 @@ export default function HomePage() {
 
   if (phase === 'loading_image' || phase === 'uploading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex items-center justify-center p-4">
+      <div className="flex items-center justify-center py-16">
         <div className="bg-white rounded-3xl shadow-2xl p-8 text-center max-w-sm w-full">
           <div className="relative mx-auto w-24 h-24 mb-6">
             <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-500 animate-pulse" />
@@ -198,7 +198,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
+    <div className="-mx-4 -mt-6">
       <div className="relative overflow-hidden bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 pt-8 pb-16">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
