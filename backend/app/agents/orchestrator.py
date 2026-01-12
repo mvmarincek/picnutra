@@ -36,10 +36,12 @@ class NutriOrchestrator:
         if source == "pro_quota":
             user.pro_analyses_remaining -= 1
             await db.commit()
+            await db.refresh(user)
             return 0
         cost = settings.CREDIT_COST_FULL
         user.credit_balance -= cost
         await db.commit()
+        await db.refresh(user)
         return cost
     
     async def refund_credits(self, db: AsyncSession, user: User, mode: str, source: str):
