@@ -21,9 +21,10 @@ IMPORTANT RULES:
 Style: Professional food photography, natural daylight, shallow depth of field, top-down 45-degree angle view, on a clean white ceramic plate, minimal garnish, photorealistic, high resolution."""
 
             response = await self.client.images.generate(
-                model="dall-e-2",
+                model="dall-e-3",
                 prompt=full_prompt,
-                size="512x512",
+                size="1024x1024",
+                quality="standard",
                 n=1
             )
             return response.data[0].url
