@@ -1,6 +1,6 @@
 {
-  "name": "Nutri-Vision",
-  "short_name": "NutriVision",
+  "name": "Nutrivision",
+  "short_name": "Nutrivision",
   "description": "Analise suas refeicoes com IA e receba sugestoes nutricionais personalizadas",
   "start_url": "/home",
   "display": "standalone",

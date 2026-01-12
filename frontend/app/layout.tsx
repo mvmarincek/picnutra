@@ -11,13 +11,13 @@ const inter = Inter({ subsets: ['latin'] });
 const ADSENSE_CLIENT_ID = 'ca-pub-3364979853180818';
 
 export const metadata: Metadata = {
-  title: 'Nutri-Vision Web',
+  title: 'Nutrivision Web',
   description: 'Analise suas refeições com IA e receba sugestões nutricionais personalizadas',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Nutri-Vision'
+    title: 'Nutrivision'
   }
 };
 

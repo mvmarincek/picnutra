@@ -5,17 +5,21 @@
       <stop offset="50%" style="stop-color:#14b8a6"/>
       <stop offset="100%" style="stop-color:#06b6d4"/>
     </linearGradient>
+    <linearGradient id="steamGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.3"/>
+    </linearGradient>
   </defs>
   <rect width="512" height="512" rx="100" fill="url(#bgGrad)"/>
-  <ellipse cx="256" cy="310" rx="130" ry="80" fill="white"/>
-  <path d="M126 310 Q126 230 256 230 Q386 230 386 310" fill="white"/>
-  <ellipse cx="256" cy="230" rx="130" ry="32" fill="rgba(255,255,255,0.3)"/>
-  <path d="M190 200 Q200 150 210 200" stroke="white" stroke-width="10" fill="none" stroke-linecap="round"/>
-  <path d="M246 185 Q256 125 266 185" stroke="white" stroke-width="10" fill="none" stroke-linecap="round"/>
-  <path d="M300 200 Q310 150 320 200" stroke="white" stroke-width="10" fill="none" stroke-linecap="round"/>
-  <ellipse cx="200" cy="270" rx="22" ry="14" fill="#10b981"/>
-  <ellipse cx="256" cy="285" rx="28" ry="16" fill="#14b8a6"/>
-  <ellipse cx="315" cy="270" rx="22" ry="14" fill="#06b6d4"/>
-  <circle cx="225" cy="255" r="10" fill="#10b981" opacity="0.7"/>
-  <circle cx="290" cy="255" r="10" fill="#06b6d4" opacity="0.7"/>
+  <ellipse cx="256" cy="335" rx="140" ry="75" fill="white"/>
+  <path d="M116 335 Q116 240 256 240 Q396 240 396 335" fill="white"/>
+  <ellipse cx="256" cy="240" rx="140" ry="38" fill="rgba(255,255,255,0.4)"/>
+  <path d="M186 218 Q192 175 208 218" stroke="url(#steamGrad)" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M246 205 Q256 155 266 205" stroke="url(#steamGrad)" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M304 218 Q320 175 326 218" stroke="url(#steamGrad)" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <ellipse cx="192" cy="295" rx="32" ry="22" fill="#10b981" opacity="0.5"/>
+  <ellipse cx="256" cy="310" rx="38" ry="24" fill="#14b8a6" opacity="0.45"/>
+  <ellipse cx="320" cy="295" rx="32" ry="22" fill="#06b6d4" opacity="0.5"/>
+  <circle cx="220" cy="272" r="16" fill="#10b981" opacity="0.35"/>
+  <circle cx="292" cy="272" r="16" fill="#06b6d4" opacity="0.35"/>
 </svg>

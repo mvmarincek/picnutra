@@ -5,17 +5,21 @@
       <stop offset="50%" style="stop-color:#14b8a6"/>
       <stop offset="100%" style="stop-color:#06b6d4"/>
     </linearGradient>
+    <linearGradient id="steamGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.3"/>
+    </linearGradient>
   </defs>
   <rect width="192" height="192" rx="40" fill="url(#bgGrad)"/>
-  <ellipse cx="96" cy="115" rx="50" ry="30" fill="white"/>
-  <path d="M46 115 Q46 85 96 85 Q146 85 146 115" fill="white"/>
-  <ellipse cx="96" cy="85" rx="50" ry="12" fill="rgba(255,255,255,0.3)"/>
-  <path d="M70 75 Q75 55 80 75" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M90 70 Q95 45 100 70" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M110 75 Q115 55 120 75" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <ellipse cx="75" cy="100" rx="8" ry="5" fill="#10b981"/>
-  <ellipse cx="96" cy="105" rx="10" ry="6" fill="#14b8a6"/>
-  <ellipse cx="118" cy="100" rx="8" ry="5" fill="#06b6d4"/>
-  <circle cx="85" cy="95" r="4" fill="#10b981" opacity="0.7"/>
-  <circle cx="108" cy="95" r="4" fill="#06b6d4" opacity="0.7"/>
+  <ellipse cx="96" cy="125" rx="52" ry="28" fill="white"/>
+  <path d="M44 125 Q44 90 96 90 Q148 90 148 125" fill="white"/>
+  <ellipse cx="96" cy="90" rx="52" ry="14" fill="rgba(255,255,255,0.4)"/>
+  <path d="M70 82 Q72 65 78 82" stroke="url(#steamGrad)" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M92 78 Q96 58 100 78" stroke="url(#steamGrad)" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M114 82 Q120 65 122 82" stroke="url(#steamGrad)" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="72" cy="110" rx="12" ry="8" fill="#10b981" opacity="0.5"/>
+  <ellipse cx="96" cy="115" rx="14" ry="9" fill="#14b8a6" opacity="0.45"/>
+  <ellipse cx="120" cy="110" rx="12" ry="8" fill="#06b6d4" opacity="0.5"/>
+  <circle cx="82" cy="102" r="6" fill="#10b981" opacity="0.35"/>
+  <circle cx="110" cy="102" r="6" fill="#06b6d4" opacity="0.35"/>
 </svg>

@@ -471,7 +471,7 @@ export default function ProfilePage() {
           </div>
           <div>
             <h3 className="font-bold text-gray-900">Tem uma sugestao?</h3>
-            <p className="text-sm text-gray-500">Ajude-nos a melhorar o Nutri-Vision</p>
+            <p className="text-sm text-gray-500">Ajude-nos a melhorar o Nutrivision</p>
           </div>
         </div>
 

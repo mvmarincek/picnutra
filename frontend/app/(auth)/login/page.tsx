@@ -161,7 +161,7 @@ export default function LoginPage() {
               <BowlLogo className="w-10 h-10 text-white" />
             </div>
             <span className="text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
-              Nutri-Vision
+              Nutrivision
             </span>
           </Link>
           <p className="text-gray-500 mt-2">Entre na sua conta</p>

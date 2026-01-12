@@ -53,7 +53,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 <BowlLogo className="w-5 h-5 text-white" />
               </div>
               <span className="text-lg font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                Nutri-Vision
+                Nutrivision
               </span>
             </div>
           ) : (
@@ -62,7 +62,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 <BowlLogo className="w-5 h-5 text-white" />
               </div>
               <span className="text-lg font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                Nutri-Vision
+                Nutrivision
               </span>
             </Link>
           )}
