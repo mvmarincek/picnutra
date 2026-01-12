@@ -180,7 +180,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-sm">PRO</h3>
-                  <p className="text-xs text-purple-200">R$ 14,90/mes</p>
+                  <p className="text-xs text-purple-200">R$ 49,90/mes</p>
                 </div>
               </div>
               

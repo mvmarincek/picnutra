@@ -7,8 +7,15 @@
     </linearGradient>
   </defs>
   <rect width="192" height="192" rx="40" fill="url(#bgGrad)"/>
-  <circle cx="96" cy="75" r="35" fill="rgba(255,255,255,0.2)"/>
-  <circle cx="96" cy="75" r="25" fill="rgba(255,255,255,0.3)"/>
-  <text x="96" y="135" text-anchor="middle" font-size="90" font-family="Arial, sans-serif" fill="white" font-weight="bold">N</text>
-  <path d="M60 155 L80 145 L100 160 L120 140 L140 155" stroke="#fbbf24" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <ellipse cx="96" cy="115" rx="50" ry="30" fill="white"/>
+  <path d="M46 115 Q46 85 96 85 Q146 85 146 115" fill="white"/>
+  <ellipse cx="96" cy="85" rx="50" ry="12" fill="rgba(255,255,255,0.3)"/>
+  <path d="M70 75 Q75 55 80 75" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M90 70 Q95 45 100 70" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M110 75 Q115 55 120 75" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <ellipse cx="75" cy="100" rx="8" ry="5" fill="#10b981"/>
+  <ellipse cx="96" cy="105" rx="10" ry="6" fill="#14b8a6"/>
+  <ellipse cx="118" cy="100" rx="8" ry="5" fill="#06b6d4"/>
+  <circle cx="85" cy="95" r="4" fill="#10b981" opacity="0.7"/>
+  <circle cx="108" cy="95" r="4" fill="#06b6d4" opacity="0.7"/>
 </svg>
