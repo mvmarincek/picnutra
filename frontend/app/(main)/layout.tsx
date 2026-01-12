@@ -68,9 +68,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           )}
           <div className="flex items-center gap-4">
             {user.plan === 'pro' && (
-              <div className="flex items-center gap-1 bg-gradient-to-r from-violet-500 to-purple-500 px-3 py-1.5 rounded-full shadow-md shadow-violet-200/50">
-                <Crown className="w-4 h-4 text-white" />
-                <span className="text-sm font-medium text-white">PRO</span>
+              <div className="flex items-center gap-1 bg-gradient-to-r from-violet-500 to-purple-500 px-2 py-1 rounded-full shadow-sm">
+                <Crown className="w-3 h-3 text-white" />
+                <span className="text-xs font-medium text-white">PRO</span>
               </div>
             )}
             <div className="flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-teal-50 px-3 py-1.5 rounded-full border border-emerald-100">

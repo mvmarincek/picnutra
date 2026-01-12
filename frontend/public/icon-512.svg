@@ -5,21 +5,34 @@
       <stop offset="50%" style="stop-color:#14b8a6"/>
       <stop offset="100%" style="stop-color:#06b6d4"/>
     </linearGradient>
-    <linearGradient id="steamGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9"/>
-      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.3"/>
-    </linearGradient>
   </defs>
   <rect width="512" height="512" rx="100" fill="url(#bgGrad)"/>
-  <ellipse cx="256" cy="335" rx="140" ry="75" fill="white"/>
-  <path d="M116 335 Q116 240 256 240 Q396 240 396 335" fill="white"/>
-  <ellipse cx="256" cy="240" rx="140" ry="38" fill="rgba(255,255,255,0.4)"/>
-  <path d="M186 218 Q192 175 208 218" stroke="url(#steamGrad)" stroke-width="12" fill="none" stroke-linecap="round"/>
-  <path d="M246 205 Q256 155 266 205" stroke="url(#steamGrad)" stroke-width="12" fill="none" stroke-linecap="round"/>
-  <path d="M304 218 Q320 175 326 218" stroke="url(#steamGrad)" stroke-width="12" fill="none" stroke-linecap="round"/>
-  <ellipse cx="192" cy="295" rx="32" ry="22" fill="#10b981" opacity="0.5"/>
-  <ellipse cx="256" cy="310" rx="38" ry="24" fill="#14b8a6" opacity="0.45"/>
-  <ellipse cx="320" cy="295" rx="32" ry="22" fill="#06b6d4" opacity="0.5"/>
-  <circle cx="220" cy="272" r="16" fill="#10b981" opacity="0.35"/>
-  <circle cx="292" cy="272" r="16" fill="#06b6d4" opacity="0.35"/>
+  <!-- Camera body -->
+  <rect x="56" y="130" width="400" height="310" rx="60" fill="white"/>
+  <!-- Camera bump -->
+  <rect x="120" y="66" width="130" height="72" rx="24" fill="white"/>
+  <!-- Camera button -->
+  <circle cx="390" cy="175" r="32" fill="white"/>
+  <circle cx="390" cy="175" r="20" fill="#e5e7eb"/>
+  <!-- Lens outer -->
+  <circle cx="256" cy="290" r="130" fill="white"/>
+  <circle cx="256" cy="290" r="115" fill="#e5e7eb" opacity="0.5"/>
+  <circle cx="256" cy="290" r="105" fill="white"/>
+  <!-- Bowl colorido -->
+  <circle cx="256" cy="290" r="92" fill="#faf5ff"/>
+  <!-- Secao salmao -->
+  <path d="M256 290L256 198A92 92 0 0 1 334 249Z" fill="#fb923c"/>
+  <!-- Secao abacate -->
+  <path d="M256 290L334 249A92 92 0 0 1 348 290L348 322A92 92 0 0 1 308 363Z" fill="#22c55e"/>
+  <!-- Secao arroz -->
+  <path d="M256 290L308 363A92 92 0 0 1 204 363Z" fill="#fef3c7"/>
+  <!-- Secao beterraba -->
+  <path d="M256 290L204 363A92 92 0 0 1 164 322L164 290A92 92 0 0 1 180 249Z" fill="#c084fc"/>
+  <!-- Secao pepino -->
+  <path d="M256 290L180 249A92 92 0 0 1 256 198Z" fill="#86efac"/>
+  <!-- Centro ovo -->
+  <circle cx="256" cy="290" r="32" fill="#fef3c7"/>
+  <circle cx="256" cy="290" r="16" fill="#fb923c"/>
+  <!-- Brilho -->
+  <ellipse cx="200" cy="225" rx="32" ry="16" fill="white" opacity="0.5" transform="rotate(-40 200 225)"/>
 </svg>
