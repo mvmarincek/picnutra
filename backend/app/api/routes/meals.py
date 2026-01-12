@@ -37,7 +37,6 @@ async def run_analysis_task(
         job = None
         user = None
         source = None
-        credits_deducted = False
         
         try:
             job = await db.get(Job, job_id)
@@ -45,6 +44,7 @@ async def run_analysis_task(
             user = await db.get(User, user_id)
             
             logger.info(f"[job_id={job_id}] Starting analysis for meal_id={meal_id}, user_id={user_id}, mode={mode}")
+            logger.info(f"[job_id={job_id}] User plan={user.plan}, pro_remaining={user.pro_analyses_remaining}, credits={user.credit_balance}")
             
             orchestrator = NutriOrchestrator(settings.OPENAI_API_KEY)
             
@@ -56,35 +56,35 @@ async def run_analysis_task(
                 await db.commit()
                 return
             
-            await orchestrator.deduct_credits(db, user, mode, source)
-            credits_deducted = True
-            logger.info(f"[job_id={job_id}] Credits deducted (source={source})")
+            logger.info(f"[job_id={job_id}] Credit source: {source}")
+            
+            if source == "pro_quota":
+                user.pro_analyses_remaining -= 1
+                await db.commit()
+                await db.refresh(user)
+                logger.info(f"[job_id={job_id}] PRO analyses decremented to {user.pro_analyses_remaining}")
+            elif source == "credits":
+                cost = settings.CREDIT_COST_FULL
+                user.credit_balance -= cost
+                await db.commit()
+                await db.refresh(user)
+                logger.info(f"[job_id={job_id}] Credits deducted, new balance: {user.credit_balance}")
             
             result = await orchestrator.run_analysis(db, job, meal, user, mode, answers)
             
             if "erro" in result:
                 logger.error(f"[job_id={job_id}] Analysis failed: {result['erro']}")
-                if credits_deducted and source != "free_unlimited":
-                    await db.refresh(user)
-                    await orchestrator.refund_credits(db, user, mode, source)
-                    logger.info(f"[job_id={job_id}] Credits refunded due to analysis failure")
             else:
                 logger.info(f"[job_id={job_id}] Analysis completed successfully")
             
         except Exception as e:
             logger.error(f"[job_id={job_id}] Exception during analysis: {str(e)}")
+            import traceback
+            logger.error(f"[job_id={job_id}] Traceback: {traceback.format_exc()}")
             if job:
                 job.status = JobStatus.FAILED.value
                 job.erro = str(e)
                 await db.commit()
-            
-            if credits_deducted and user and source and source != "free_unlimited":
-                try:
-                    await db.refresh(user)
-                    await orchestrator.refund_credits(db, user, mode, source)
-                    logger.info(f"[job_id={job_id}] Credits refunded due to exception")
-                except Exception as refund_error:
-                    logger.error(f"[job_id={job_id}] Failed to refund credits: {str(refund_error)}")
 
 @router.post("/upload-image", response_model=MealUploadResponse)
 async def upload_image(
