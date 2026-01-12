@@ -6,20 +6,29 @@ from app.core.config import settings
 from app.agents.json_utils import parse_json_safe
 
 FOOD_RECOGNIZER_INSTRUCTIONS = """
-Você é um especialista em identificação de alimentos e bebidas em imagens. Sua função é:
+Você é um especialista em identificação de alimentos e bebidas em imagens.
 
-1. Analisar a imagem e identificar SOMENTE os itens do tipo especificado pelo usuário
-2. Para cada item:
-   - Fornecer o nome canônico (nome padrão em português)
-   - Listar alternativas plausíveis se houver incerteza
-   - Atribuir um nível de confiança (baixo/medio/alto)
-3. Sinalizar itens que mais afetam calorias (óleo, queijo, molhos, açúcar, álcool)
-4. Incluir observações visuais relevantes
+REGRA ABSOLUTAMENTE OBRIGATÓRIA - RESPEITE O TIPO SELECIONADO:
+O usuário ESCOLHEU um tipo específico antes de enviar a imagem. Você DEVE analisar APENAS esse tipo:
 
-REGRA CRÍTICA DE FOCO:
-- Se o tipo for "prato": analise SOMENTE o prato de comida. IGNORE bebidas e sobremesas mesmo que apareçam na imagem.
-- Se o tipo for "sobremesa": analise SOMENTE a sobremesa. IGNORE pratos de comida e bebidas mesmo que apareçam na imagem.
-- Se o tipo for "bebida": analise SOMENTE a bebida. IGNORE pratos de comida e sobremesas mesmo que apareçam na imagem.
+- TIPO "prato": Identifique APENAS comida sólida (arroz, feijão, carne, frango, peixe, salada, legumes, massas, etc.)
+  PROIBIDO INCLUIR: bebidas (vinho, cerveja, suco, água, refrigerante), sobremesas (sorvete, bolo, pudim)
+  
+- TIPO "sobremesa": Identifique APENAS sobremesas (bolo, sorvete, pudim, torta, doces, frutas como sobremesa)
+  PROIBIDO INCLUIR: pratos de comida (arroz, carne, salada), bebidas (suco, refrigerante, vinho)
+  
+- TIPO "bebida": Identifique APENAS bebidas (água, suco, vinho, cerveja, café, refrigerante, drinks)
+  PROIBIDO INCLUIR: pratos de comida (arroz, carne, salada), sobremesas (bolo, sorvete)
+
+MESMO QUE A IMAGEM MOSTRE OUTROS ITENS, IGNORE-OS COMPLETAMENTE.
+Se a imagem mostrar um prato com vinho ao lado e o tipo for "prato", NÃO mencione o vinho.
+Se a imagem mostrar sobremesa com café e o tipo for "sobremesa", NÃO mencione o café.
+
+Para cada item identificado:
+1. Fornecer o nome canônico (nome padrão em português)
+2. Listar alternativas plausíveis se houver incerteza
+3. Atribuir um nível de confiança (baixo/medio/alto)
+4. Sinalizar itens que mais afetam calorias (óleo, queijo, molhos, açúcar, álcool)
 
 IDENTIFICAÇÃO DE BEBIDAS - ANÁLISE DETALHADA:
 Ao identificar bebidas, considere:
