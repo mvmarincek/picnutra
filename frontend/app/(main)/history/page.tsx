@@ -78,22 +78,42 @@ export default function HistoryPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
+      <div className="flex flex-col items-center justify-center py-16">
+        <div className="relative">
+          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center animate-pulse shadow-xl shadow-emerald-200">
+            <Calendar className="w-10 h-10 text-white" />
+          </div>
+          <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full animate-bounce" />
+        </div>
+        <p className="text-emerald-700 font-medium mt-4">Carregando historico...</p>
       </div>
     );
   }
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Historico de Analises</h1>
+      <div className="bg-white rounded-3xl shadow-2xl shadow-gray-200/50 overflow-hidden mb-6">
+        <div className="relative bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 p-6 overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+          <div className="relative flex items-center gap-4">
+            <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+              <Calendar className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Historico de Analises</h1>
+              <p className="text-emerald-100">Acompanhe sua jornada nutricional</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {stats && stats.total_meals > 0 && (
         <div className="mb-6">
-          <div className="bg-gradient-to-br from-green-500 via-teal-500 to-emerald-600 rounded-2xl p-5 text-white mb-4 shadow-lg">
+          <div className="bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 rounded-2xl p-5 text-white mb-4 shadow-lg shadow-emerald-200/50">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
                   <Trophy className="w-6 h-6" />
                 </div>
                 <div>
@@ -106,7 +126,7 @@ export default function HistoryPage() {
                 <p className="text-sm opacity-90">analises</p>
               </div>
             </div>
-            <div className="bg-white/20 rounded-full h-2 mb-2">
+            <div className="bg-white/20 backdrop-blur-sm rounded-full h-2 mb-2">
               <div 
                 className="bg-white rounded-full h-2 transition-all duration-500" 
                 style={{ width: `${stats.progress_to_next}%` }}
@@ -118,69 +138,74 @@ export default function HistoryPage() {
           </div>
 
           <div className="grid grid-cols-4 gap-3 mb-4">
-            <div className="bg-white rounded-xl p-3 shadow-sm border text-center">
-              <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center mx-auto mb-2">
+            <div className="bg-white rounded-xl p-3 shadow-lg shadow-gray-100/50 border border-gray-100 text-center">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center mx-auto mb-2">
                 <Flame className="w-4 h-4 text-orange-500" />
               </div>
               <p className="text-xl font-bold text-gray-900">{stats.streak}</p>
               <p className="text-xs text-gray-500">dias seguidos</p>
             </div>
-            <div className="bg-white rounded-xl p-3 shadow-sm border text-center">
-              <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center mx-auto mb-2">
+            <div className="bg-white rounded-xl p-3 shadow-lg shadow-gray-100/50 border border-gray-100 text-center">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center mx-auto mb-2">
                 <Zap className="w-4 h-4 text-blue-500" />
               </div>
               <p className="text-xl font-bold text-gray-900">{stats.meals_this_week}</p>
               <p className="text-xs text-gray-500">esta semana</p>
             </div>
-            <div className="bg-white rounded-xl p-3 shadow-sm border text-center">
-              <div className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center mx-auto mb-2">
+            <div className="bg-white rounded-xl p-3 shadow-lg shadow-gray-100/50 border border-gray-100 text-center">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-100 to-pink-100 flex items-center justify-center mx-auto mb-2">
                 <Target className="w-4 h-4 text-rose-500" />
               </div>
               <p className="text-xl font-bold text-gray-900">{stats.avg_calorias}</p>
               <p className="text-xs text-gray-500">kcal media</p>
             </div>
-            <div className="bg-white rounded-xl p-3 shadow-sm border text-center">
-              <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center mx-auto mb-2">
-                <TrendingUp className="w-4 h-4 text-green-500" />
+            <div className="bg-white rounded-xl p-3 shadow-lg shadow-gray-100/50 border border-gray-100 text-center">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center mx-auto mb-2">
+                <TrendingUp className="w-4 h-4 text-emerald-500" />
               </div>
               <p className="text-xl font-bold text-gray-900">{stats.days_using}</p>
               <p className="text-xs text-gray-500">dias usando</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-4 shadow-sm border mb-4">
-            <p className="text-sm font-semibold text-gray-700 mb-3">Medias nutricionais</p>
+          <div className="bg-white rounded-xl p-4 shadow-lg shadow-gray-100/50 border border-gray-100 mb-4">
+            <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <div className="w-6 h-6 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center">
+                <span className="text-xs">📊</span>
+              </div>
+              Medias nutricionais
+            </p>
             <div className="grid grid-cols-5 gap-2">
               <div className="text-center">
-                <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center mx-auto mb-1">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-100 to-rose-100 flex items-center justify-center mx-auto mb-1">
                   <span className="text-xs font-bold text-red-600">P</span>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{stats.avg_proteina}g</p>
                 <p className="text-xs text-gray-400">prot</p>
               </div>
               <div className="text-center">
-                <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center mx-auto mb-1">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-100 to-yellow-100 flex items-center justify-center mx-auto mb-1">
                   <span className="text-xs font-bold text-amber-600">C</span>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{stats.avg_carbo}g</p>
                 <p className="text-xs text-gray-400">carbo</p>
               </div>
               <div className="text-center">
-                <div className="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center mx-auto mb-1">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-100 to-orange-100 flex items-center justify-center mx-auto mb-1">
                   <span className="text-xs font-bold text-yellow-600">G</span>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{stats.avg_gordura}g</p>
                 <p className="text-xs text-gray-400">gord</p>
               </div>
               <div className="text-center">
-                <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center mx-auto mb-1">
-                  <span className="text-xs font-bold text-green-600">F</span>
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-100 to-green-100 flex items-center justify-center mx-auto mb-1">
+                  <span className="text-xs font-bold text-emerald-600">F</span>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{stats.avg_fibra}g</p>
                 <p className="text-xs text-gray-400">fibra</p>
               </div>
               <div className="text-center">
-                <div className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center mx-auto mb-1">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-100 to-red-100 flex items-center justify-center mx-auto mb-1">
                   <Flame className="w-4 h-4 text-rose-500" />
                 </div>
                 <p className="text-sm font-bold text-gray-900">{stats.avg_calorias}</p>
@@ -190,10 +215,10 @@ export default function HistoryPage() {
           </div>
 
           {stats.best_day && (
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200 flex items-center justify-between shadow-lg shadow-amber-50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
-                  <Award className="w-5 h-5 text-amber-600" />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md shadow-amber-200">
+                  <Award className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">Seu melhor dia</p>
@@ -207,31 +232,31 @@ export default function HistoryPage() {
       )}
 
       {meals.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-md p-8 text-center">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-green-100 to-teal-100 flex items-center justify-center">
-            <Camera className="w-10 h-10 text-green-600" />
+        <div className="bg-white rounded-3xl shadow-2xl shadow-gray-200/50 p-8 text-center">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-xl shadow-emerald-200">
+            <Camera className="w-10 h-10 text-white" />
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">Comece sua jornada nutricional</h2>
           <p className="text-gray-600 mb-6">Voce ainda nao tem analises. Tire uma foto da sua refeicao e descubra informacoes nutricionais detalhadas!</p>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 text-left">
-            <div className="bg-green-50 rounded-xl p-4">
-              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mb-2">
-                <Camera className="w-5 h-5 text-green-600" />
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center mb-2 shadow-md shadow-emerald-200">
+                <Camera className="w-5 h-5 text-white" />
               </div>
               <h3 className="font-semibold text-gray-900 text-sm">Fotografe</h3>
               <p className="text-xs text-gray-600">Tire uma foto do seu prato</p>
             </div>
-            <div className="bg-teal-50 rounded-xl p-4">
-              <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center mb-2">
-                <TrendingUp className="w-5 h-5 text-teal-600" />
+            <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl p-4 border border-cyan-100">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center mb-2 shadow-md shadow-cyan-200">
+                <TrendingUp className="w-5 h-5 text-white" />
               </div>
               <h3 className="font-semibold text-gray-900 text-sm">Analise</h3>
               <p className="text-xs text-gray-600">IA identifica nutrientes</p>
             </div>
-            <div className="bg-amber-50 rounded-xl p-4">
-              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center mb-2">
-                <Award className="w-5 h-5 text-amber-600" />
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-100">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mb-2 shadow-md shadow-amber-200">
+                <Award className="w-5 h-5 text-white" />
               </div>
               <h3 className="font-semibold text-gray-900 text-sm">Melhore</h3>
               <p className="text-xs text-gray-600">Receba dicas personalizadas</p>
@@ -240,7 +265,7 @@ export default function HistoryPage() {
           
           <button
             onClick={() => router.push('/home')}
-            className="gradient-fresh text-white px-8 py-3 rounded-full font-semibold hover:shadow-lg transition-all"
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-8 py-3 rounded-2xl font-semibold hover:shadow-lg hover:shadow-emerald-200 hover:scale-[1.02] transition-all"
           >
             Fazer primeira analise
           </button>
@@ -259,7 +284,7 @@ export default function HistoryPage() {
                     </div>
                   )}
                   <div
-                    className="bg-white rounded-xl shadow-md overflow-hidden flex"
+                    className="bg-white rounded-2xl shadow-lg shadow-gray-100/50 overflow-hidden flex border border-gray-100 hover:shadow-xl hover:scale-[1.01] transition-all"
                   >
                     <div
                       className="relative w-24 h-24 flex-shrink-0 cursor-pointer"
@@ -267,7 +292,7 @@ export default function HistoryPage() {
                     >
                       <Image
                         src={`${apiUrl}${meal.image_url}`}
-                        alt="Refeição"
+                        alt="Refeicao"
                         fill
                         className="object-cover"
                       />
@@ -275,19 +300,19 @@ export default function HistoryPage() {
                     <div className="flex-1 p-4">
                       <div className="flex items-start justify-between">
                         <div>
-                          <p className="font-medium">{getMealTypeLabel(meal.meal_type)}</p>
+                          <p className="font-medium text-gray-900">{getMealTypeLabel(meal.meal_type)}</p>
                           <p className="text-sm text-gray-500 flex items-center mt-1">
                             <Calendar className="w-4 h-4 mr-1" />
                             {formatDate(meal.created_at)}
                           </p>
                         </div>
-                        <span className={`text-xs px-2 py-1 rounded ${status.color}`}>
+                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${status.color}`}>
                           {status.label}
                         </span>
                       </div>
                       <div className="flex items-center justify-between mt-2">
                         {meal.calorias_central && (
-                          <p className="text-sm text-primary-600 font-medium">
+                          <p className="text-sm font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                             {meal.calorias_central.toFixed(0)} kcal
                           </p>
                         )}
@@ -295,14 +320,14 @@ export default function HistoryPage() {
                           {meal.status === 'completed' && (
                             <button
                               onClick={() => router.push(`/result?mealId=${meal.id}`)}
-                              className="text-sm text-primary-600 hover:underline"
+                              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium hover:underline"
                             >
                               Ver detalhes
                             </button>
                           )}
                           <button
                             onClick={() => handleDelete(meal.id)}
-                            className="text-red-500 hover:text-red-700"
+                            className="text-red-400 hover:text-red-600 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth';
 import { useFeedback } from '@/lib/feedback';
 import { billingApi, BillingStatus, CreditPackage } from '@/lib/api';
-import { CreditCard, Star, Zap, QrCode, Copy, Check, X, Crown, Loader2 } from 'lucide-react';
+import { CreditCard, Star, Zap, QrCode, Copy, Check, X, Crown, Loader2, ChevronLeft } from 'lucide-react';
 import PageAds from '@/components/PageAds';
 
 interface PixPaymentData {
@@ -361,8 +361,14 @@ export default function BillingPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-green-500 border-t-transparent"></div>
+      <div className="flex flex-col items-center justify-center py-16">
+        <div className="relative">
+          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center animate-pulse shadow-xl shadow-emerald-200">
+            <CreditCard className="w-10 h-10 text-white" />
+          </div>
+          <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full animate-bounce" />
+        </div>
+        <p className="text-emerald-700 font-medium mt-4">Carregando...</p>
       </div>
     );
   }
@@ -417,14 +423,14 @@ export default function BillingPage() {
         placeholder="Nome no cartao"
         value={cardForm.card_holder_name}
         onChange={handleCardInputChange('card_holder_name')}
-        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+        className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
       />
       <input
         type="text"
         placeholder="Numero do cartao"
         value={cardForm.card_number}
         onChange={handleCardInputChange('card_number')}
-        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+        className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
       />
       <div className="grid grid-cols-3 gap-3">
         <input
@@ -432,21 +438,21 @@ export default function BillingPage() {
           placeholder="Mes (MM)"
           value={cardForm.expiry_month}
           onChange={handleCardInputChange('expiry_month')}
-          className="px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          className="px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
         />
         <input
           type="text"
           placeholder="Ano (YYYY)"
           value={cardForm.expiry_year}
           onChange={handleCardInputChange('expiry_year')}
-          className="px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          className="px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
         />
         <input
           type="text"
           placeholder="CVV"
           value={cardForm.cvv}
           onChange={handleCardInputChange('cvv')}
-          className="px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          className="px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
         />
       </div>
       <input
@@ -454,14 +460,14 @@ export default function BillingPage() {
         placeholder="CPF (somente numeros)"
         value={cardForm.holder_cpf}
         onChange={handleCardInputChange('holder_cpf')}
-        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+        className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
       />
       <input
         type="text"
         placeholder="Telefone (somente numeros)"
         value={cardForm.holder_phone}
         onChange={handleCardInputChange('holder_phone')}
-        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+        className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
       />
       <div className="grid grid-cols-2 gap-3">
         <input
@@ -469,20 +475,20 @@ export default function BillingPage() {
           placeholder="CEP"
           value={cardForm.postal_code}
           onChange={handleCardInputChange('postal_code')}
-          className="px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          className="px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
         />
         <input
           type="text"
           placeholder="Numero"
           value={cardForm.address_number}
           onChange={handleCardInputChange('address_number')}
-          className="px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          className="px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
         />
       </div>
       <button
         onClick={() => forSubscription ? handleProSubscription('CREDIT_CARD') : handleCardPayment()}
         disabled={processingCard || processingPro}
-        className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+        className="w-full bg-gradient-to-r from-violet-500 to-purple-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-purple-200"
       >
         {(processingCard || processingPro) ? (
           <>
@@ -502,13 +508,13 @@ export default function BillingPage() {
   const PixDisplay = ({ data, onCopy, checking }: { data: PixPaymentData; onCopy: () => void; checking: boolean }) => (
     <>
       <div className="text-center mb-4">
-        <p className="text-2xl font-bold text-green-600">
+        <p className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
           {data.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
         </p>
       </div>
 
       <div className="flex justify-center mb-4">
-        <div className="bg-white p-4 rounded-xl border-2 border-green-100">
+        <div className="bg-white p-4 rounded-2xl border-2 border-emerald-100 shadow-lg shadow-emerald-50">
           <img
             src={`data:image/png;base64,${data.pix_qr_code_base64}`}
             alt="QR Code PIX"
@@ -524,14 +530,14 @@ export default function BillingPage() {
             type="text"
             readOnly
             value={data.pix_code}
-            className="flex-1 bg-gray-50 px-3 py-2 rounded-lg border text-xs truncate"
+            className="flex-1 bg-gray-50 px-3 py-2 rounded-xl border-2 border-gray-100 text-xs truncate"
           />
           <button
             onClick={onCopy}
-            className={`px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-all ${
+            className={`px-4 py-2 rounded-xl font-medium flex items-center gap-2 transition-all ${
               pixCopied
-                ? 'bg-green-500 text-white'
-                : 'bg-green-100 text-green-700 hover:bg-green-200'
+                ? 'bg-emerald-500 text-white'
+                : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
             }`}
           >
             {pixCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -539,14 +545,14 @@ export default function BillingPage() {
         </div>
       </div>
 
-      <div className="bg-yellow-50 rounded-lg p-3 text-center">
+      <div className="bg-amber-50 rounded-xl p-3 text-center border border-amber-100">
         {checking ? (
-          <p className="text-sm text-yellow-700 flex items-center justify-center gap-2">
-            <span className="animate-spin rounded-full h-4 w-4 border-2 border-yellow-500 border-t-transparent"></span>
+          <p className="text-sm text-amber-700 flex items-center justify-center gap-2">
+            <span className="animate-spin rounded-full h-4 w-4 border-2 border-amber-500 border-t-transparent"></span>
             Verificando pagamento...
           </p>
         ) : (
-          <p className="text-sm text-yellow-700">
+          <p className="text-sm text-amber-700">
             Aguardando pagamento... A pagina atualizara automaticamente.
           </p>
         )}
@@ -557,7 +563,7 @@ export default function BillingPage() {
         <button
           onClick={() => handleTestConfirmPayment(data.payment_id)}
           disabled={testingPayment}
-          className="w-full bg-purple-600 text-white py-2 rounded-lg font-medium hover:bg-purple-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full bg-gradient-to-r from-violet-600 to-purple-600 text-white py-2 rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {testingPayment ? (
             <>
@@ -574,23 +580,37 @@ export default function BillingPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">{isPro ? 'Meu Plano' : 'Créditos'}</h1>
+      <div className="bg-white rounded-3xl shadow-2xl shadow-gray-200/50 overflow-hidden mb-6">
+        <div className="relative bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 p-6 overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+          <div className="relative flex items-center gap-4">
+            <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+              <CreditCard className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">{isPro ? 'Meu Plano' : 'Creditos'}</h1>
+              <p className="text-emerald-100">Gerencie seu plano e creditos</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {isPro && billingStatus?.has_subscription && (
-        <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl shadow-lg p-6 mb-6 text-white">
+        <div className="bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 rounded-2xl shadow-xl shadow-purple-200/50 p-6 mb-6 text-white">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
+            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
               <Crown className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold">Você é PRO!</h2>
-              <p className="text-sm text-white/90">Aproveite todos os benefícios exclusivos</p>
+              <h2 className="text-2xl font-bold">Voce e PRO!</h2>
+              <p className="text-sm text-white/90">Aproveite todos os beneficios exclusivos</p>
             </div>
           </div>
           
-          <div className="bg-white/10 rounded-xl p-4 mb-4">
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm">Análises completas restantes</span>
+              <span className="text-sm">Analises completas restantes</span>
               <span className="font-bold text-lg">{billingStatus.pro_analyses_remaining}/90</span>
             </div>
             <div className="w-full bg-white/20 rounded-full h-2">
@@ -599,26 +619,26 @@ export default function BillingPage() {
                 style={{ width: `${(billingStatus.pro_analyses_remaining / 90) * 100}%` }}
               />
             </div>
-            <p className="text-xs text-white/70 mt-2">Renova todo mês automaticamente</p>
+            <p className="text-xs text-white/70 mt-2">Renova todo mes automaticamente</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="bg-white/10 rounded-xl p-3 text-center">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
               <Zap className="w-5 h-5 mx-auto mb-1" />
-              <p className="text-xs">Análises simples</p>
+              <p className="text-xs">Analises simples</p>
               <p className="font-bold">Ilimitadas</p>
             </div>
-            <div className="bg-white/10 rounded-xl p-3 text-center">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
               <Star className="w-5 h-5 mx-auto mb-1" />
               <p className="text-xs">Suporte</p>
-              <p className="font-bold">Prioritário</p>
+              <p className="font-bold">Prioritario</p>
             </div>
           </div>
           
           <button
             onClick={handleCancelSubscription}
             disabled={cancelingSubscription}
-            className="w-full py-3 rounded-xl bg-red-600/80 text-white text-sm font-medium hover:bg-red-700 transition-all disabled:opacity-50"
+            className="w-full py-3 rounded-xl bg-red-500/80 text-white text-sm font-medium hover:bg-red-600 transition-all disabled:opacity-50"
           >
             {cancelingSubscription ? 'Cancelando...' : 'Cancelar assinatura'}
           </button>
@@ -626,67 +646,67 @@ export default function BillingPage() {
       )}
 
       {isPro && (
-        <div className="bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 rounded-2xl p-6 mb-6 border border-yellow-200 shadow-lg">
+        <div className="bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 rounded-2xl p-6 mb-6 border border-purple-200 shadow-lg shadow-purple-100/50">
           <div className="flex items-center gap-4 mb-5">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-200">
               <Crown className="w-7 h-7 text-white" />
             </div>
             <div>
               <h3 className="text-xl font-bold text-gray-900">Assinante PRO</h3>
-              <p className="text-sm text-gray-600">Aproveite todos os benefícios exclusivos</p>
+              <p className="text-sm text-gray-600">Aproveite todos os beneficios exclusivos</p>
             </div>
           </div>
           
           <div className="grid grid-cols-2 gap-4 mb-5">
-            <div className="bg-white/80 rounded-xl p-4 border border-yellow-100">
+            <div className="bg-white/80 rounded-xl p-4 border border-purple-100 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
-                <Zap className="w-5 h-5 text-green-500" />
-                <span className="font-semibold text-gray-800">Análises Simples</span>
+                <Zap className="w-5 h-5 text-emerald-500" />
+                <span className="font-semibold text-gray-800">Analises Simples</span>
               </div>
-              <p className="text-2xl font-bold text-green-600">Ilimitadas</p>
+              <p className="text-2xl font-bold text-emerald-600">Ilimitadas</p>
             </div>
-            <div className="bg-white/80 rounded-xl p-4 border border-yellow-100">
+            <div className="bg-white/80 rounded-xl p-4 border border-purple-100 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
-                <Star className="w-5 h-5 text-yellow-500" />
-                <span className="font-semibold text-gray-800">Análises PRO</span>
+                <Star className="w-5 h-5 text-amber-500" />
+                <span className="font-semibold text-gray-800">Analises PRO</span>
               </div>
-              <p className="text-2xl font-bold text-orange-600">{billingStatus?.pro_analyses_remaining || 90}<span className="text-sm font-normal text-gray-500">/mês</span></p>
+              <p className="text-2xl font-bold text-purple-600">{billingStatus?.pro_analyses_remaining || 90}<span className="text-sm font-normal text-gray-500">/mes</span></p>
             </div>
           </div>
           
-          <div className="flex items-center gap-2 p-3 bg-green-50 rounded-xl border border-green-100">
-            <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
-            <p className="text-sm text-green-800">Você não precisa comprar créditos! Tudo está incluído no seu plano.</p>
+          <div className="flex items-center gap-2 p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+            <Check className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+            <p className="text-sm text-emerald-800">Voce nao precisa comprar creditos! Tudo esta incluido no seu plano.</p>
           </div>
         </div>
       )}
 
       {!isPro && (
         <>
-          <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+          <div className="bg-white rounded-2xl shadow-lg shadow-gray-100/50 p-6 mb-6 border border-gray-100">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-sm text-gray-600">Seu saldo</p>
-                <p className="text-3xl font-bold text-green-600">{billingStatus?.credit_balance || 0}</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">{billingStatus?.credit_balance || 0}</p>
                 <p className="text-sm text-gray-500">creditos</p>
               </div>
               <div className="text-right">
                 <p className="text-sm text-gray-600">Plano atual</p>
-                <p className="font-semibold capitalize">
+                <p className="font-semibold capitalize text-gray-900">
                   {billingStatus?.plan || 'Free'}
                 </p>
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
               <p className="text-sm text-gray-600 mb-2">Custo por analise:</p>
               <div className="flex gap-4">
                 <div className="flex items-center">
-                  <Zap className="w-4 h-4 text-green-500 mr-1" />
-                  <span className="text-sm font-medium text-green-600">Simples: Gratis</span>
+                  <Zap className="w-4 h-4 text-emerald-500 mr-1" />
+                  <span className="text-sm font-medium text-emerald-600">Simples: Gratis</span>
                 </div>
                 <div className="flex items-center">
-                  <Star className="w-4 h-4 text-yellow-500 mr-1" />
+                  <Star className="w-4 h-4 text-amber-500 mr-1" />
                   <span className="text-sm">Completa: 12 creditos</span>
                 </div>
               </div>
@@ -695,29 +715,36 @@ export default function BillingPage() {
 
           <PageAds position="inline" />
 
-          <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl shadow-lg p-6 mb-6 text-white">
+          <div className="bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 rounded-2xl shadow-xl shadow-purple-200/50 p-6 mb-6 text-white">
             <div className="flex items-center gap-3 mb-3">
-              <Crown className="w-8 h-8" />
+              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                <Crown className="w-6 h-6" />
+              </div>
               <div>
                 <h2 className="text-xl font-bold">Plano PRO</h2>
                 <p className="text-sm opacity-90">Analises simples ilimitadas</p>
               </div>
             </div>
             <p className="text-3xl font-bold mb-2">R$ 49,90<span className="text-lg font-normal">/mes</span></p>
-            <ul className="text-sm mb-4 space-y-1">
-              <li>- Analises simples ilimitadas</li>
-              <li>- 60 analises completas por mes</li>
-              <li>- Suporte prioritario</li>
+            <ul className="text-sm mb-4 space-y-1 text-white/90">
+              <li className="flex items-center gap-2"><Check className="w-4 h-4" /> Analises simples ilimitadas</li>
+              <li className="flex items-center gap-2"><Check className="w-4 h-4" /> 60 analises completas por mes</li>
+              <li className="flex items-center gap-2"><Check className="w-4 h-4" /> Suporte prioritario</li>
             </ul>
             <button
               onClick={() => setShowProModal(true)}
-              className="w-full bg-white text-orange-600 py-3 rounded-xl font-bold hover:bg-orange-50 transition-all"
+              className="w-full bg-white text-purple-600 py-3 rounded-xl font-bold hover:bg-purple-50 hover:scale-[1.02] transition-all shadow-lg"
             >
               Assinar PRO
             </button>
           </div>
 
-          <h2 className="text-lg font-semibold mb-4">Comprar Creditos</h2>
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg flex items-center justify-center">
+              <Zap className="w-4 h-4 text-amber-600" />
+            </div>
+            Comprar Creditos
+          </h2>
           <div className="grid grid-cols-2 gap-4 mb-8">
             {packageOrder.map((pkgId) => {
               const pkg = displayPackages[pkgId];
@@ -728,20 +755,20 @@ export default function BillingPage() {
                 <button
                   key={pkgId}
                   onClick={() => handleSelectPackage(pkgId)}
-                  className={`bg-white rounded-xl shadow-md p-4 relative text-left transition-all hover:shadow-lg ${
-                    isPopular ? 'border-2 border-green-500' : 'border border-gray-200'
-                  } ${selectedPackage === pkgId ? 'ring-2 ring-green-400' : ''}`}
+                  className={`bg-white rounded-2xl shadow-lg p-4 relative text-left transition-all hover:shadow-xl hover:scale-[1.02] ${
+                    isPopular ? 'border-2 border-emerald-400 shadow-emerald-100' : 'border border-gray-100'
+                  } ${selectedPackage === pkgId ? 'ring-2 ring-emerald-400 shadow-emerald-100' : ''}`}
                 >
                   {isPopular && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs px-3 py-1 rounded-full">
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs px-3 py-1 rounded-full font-semibold shadow-md">
                       Popular
                     </span>
                   )}
                   <div className="text-center mb-3">
-                    <p className="text-2xl font-bold">{pkg.credits}</p>
-                    <p className="text-gray-600 text-sm">creditos</p>
+                    <p className="text-2xl font-bold text-gray-900">{pkg.credits}</p>
+                    <p className="text-gray-500 text-sm">creditos</p>
                   </div>
-                  <p className="text-center text-xl font-semibold text-green-600 mb-1">
+                  <p className="text-center text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-1">
                     {formatPrice(pkg.price)}
                   </p>
                   <p className="text-center text-xs text-gray-500">
@@ -755,17 +782,17 @@ export default function BillingPage() {
       )}
 
       {!isPro && selectedPackage && !pixData && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">Forma de Pagamento</h3>
-              <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600">
+              <h3 className="text-lg font-bold text-gray-900">Forma de Pagamento</h3>
+              <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
             
             <p className="text-gray-600 mb-4">
-              Pacote: <strong>{displayPackages[selectedPackage]?.credits} creditos</strong> - {formatPrice(displayPackages[selectedPackage]?.price || 0)}
+              Pacote: <strong className="text-emerald-600">{displayPackages[selectedPackage]?.credits} creditos</strong> - {formatPrice(displayPackages[selectedPackage]?.price || 0)}
             </p>
 
             {!showCardForm ? (
@@ -779,14 +806,14 @@ export default function BillingPage() {
                     value={pixCpf}
                     onChange={(e) => setPixCpf(formatCpf(e.target.value))}
                     placeholder="000.000.000-00"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
                   />
                 </div>
                 
                 <button
                   onClick={handlePixPayment}
                   disabled={purchasing === selectedPackage}
-                  className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-green-500 to-teal-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 shadow-lg shadow-emerald-200"
                 >
                   <QrCode className="w-5 h-5" />
                   {purchasing === selectedPackage ? 'Gerando PIX...' : 'Pagar com PIX'}
@@ -800,7 +827,7 @@ export default function BillingPage() {
                 
                 <button
                   onClick={() => setShowCardForm(true)}
-                  className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all"
+                  className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-violet-500 to-purple-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all shadow-lg shadow-purple-200"
                 >
                   <CreditCard className="w-5 h-5" />
                   Pagar com Cartao
@@ -814,9 +841,9 @@ export default function BillingPage() {
               <>
                 <button
                   onClick={() => setShowCardForm(false)}
-                  className="text-sm text-gray-500 hover:text-gray-700 mb-4"
+                  className="text-sm text-gray-500 hover:text-gray-700 mb-4 flex items-center gap-1"
                 >
-                  ← Voltar
+                  <ChevronLeft className="w-4 h-4" /> Voltar
                 </button>
                 {renderCardFormFields(false)}
               </>
@@ -826,11 +853,11 @@ export default function BillingPage() {
       )}
 
       {!isPro && pixData && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">Pague com PIX</h3>
-              <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600">
+              <h3 className="text-lg font-bold text-gray-900">Pague com PIX</h3>
+              <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -840,19 +867,21 @@ export default function BillingPage() {
       )}
 
       {showProModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold flex items-center gap-2">
-                <Crown className="w-5 h-5 text-yellow-500" />
+              <h3 className="text-lg font-bold flex items-center gap-2 text-gray-900">
+                <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Crown className="w-4 h-4 text-white" />
+                </div>
                 Assinar PRO
               </h3>
-              <button onClick={handleCloseProModal} className="text-gray-400 hover:text-gray-600">
+              <button onClick={handleCloseProModal} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-center text-2xl font-bold text-orange-600 mb-4">
+            <p className="text-center text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mb-4">
               R$ 49,90<span className="text-base font-normal text-gray-500">/mes</span>
             </p>
 
@@ -861,7 +890,7 @@ export default function BillingPage() {
                 <button
                   onClick={() => setProPaymentMethod('PIX')}
                   disabled={processingPro}
-                  className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-green-500 to-teal-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 shadow-lg shadow-emerald-200"
                 >
                   <QrCode className="w-5 h-5" />
                   Assinar com PIX
@@ -869,14 +898,14 @@ export default function BillingPage() {
 
                 <button
                   onClick={() => setProPaymentMethod('CREDIT_CARD')}
-                  className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all"
+                  className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-violet-500 to-purple-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all shadow-lg shadow-purple-200"
                 >
                   <CreditCard className="w-5 h-5" />
-                  Assinar com Cartão
+                  Assinar com Cartao
                 </button>
 
                 <p className="text-center text-xs text-gray-400">
-                  Cobrança mensal automática. Cancele quando quiser.
+                  Cobranca mensal automatica. Cancele quando quiser.
                 </p>
               </div>
             )}
@@ -885,9 +914,9 @@ export default function BillingPage() {
               <>
                 <button
                   onClick={() => setProPaymentMethod(null)}
-                  className="text-sm text-gray-500 hover:text-gray-700 mb-4"
+                  className="text-sm text-gray-500 hover:text-gray-700 mb-4 flex items-center gap-1"
                 >
-                  ← Voltar
+                  <ChevronLeft className="w-4 h-4" /> Voltar
                 </button>
                 <div className="space-y-3">
                   <div>
@@ -899,14 +928,14 @@ export default function BillingPage() {
                       value={pixCpf}
                       onChange={(e) => setPixCpf(formatCpf(e.target.value))}
                       placeholder="000.000.000-00"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
                     />
                   </div>
                   <button
                     onClick={async () => {
                       const cpfDigits = pixCpf.replace(/\D/g, '');
                       if (cpfDigits.length !== 11) {
-                        showWarning('Por favor, informe um CPF válido com 11 dígitos.', 'CPF obrigatório', { label: 'Entendi', onClick: () => clearFeedback() });
+                        showWarning('Por favor, informe um CPF valido com 11 digitos.', 'CPF obrigatorio', { label: 'Entendi', onClick: () => clearFeedback() });
                         return;
                       }
                       setProcessingPro(true);
@@ -921,17 +950,17 @@ export default function BillingPage() {
                             value: 49.90
                           });
                         } else if (result.status === 'pending' && !result.pix_code) {
-                          showError('O PIX ainda está sendo gerado. Aguarde alguns segundos e tente novamente.', 'Aguarde', { label: 'Entendi', onClick: () => clearFeedback() });
+                          showError('O PIX ainda esta sendo gerado. Aguarde alguns segundos e tente novamente.', 'Aguarde', { label: 'Entendi', onClick: () => clearFeedback() });
                         }
                       } catch (err: any) {
                         console.error(err);
-                        showError(err?.message || 'Não foi possível gerar o PIX. Tente novamente.', 'Erro', { label: 'Entendi', onClick: () => clearFeedback() });
+                        showError(err?.message || 'Nao foi possivel gerar o PIX. Tente novamente.', 'Erro', { label: 'Entendi', onClick: () => clearFeedback() });
                       } finally {
                         setProcessingPro(false);
                       }
                     }}
                     disabled={processingPro}
-                    className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-green-500 to-teal-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 shadow-lg shadow-emerald-200"
                   >
                     <QrCode className="w-5 h-5" />
                     {processingPro ? 'Gerando PIX...' : 'Gerar PIX'}
@@ -944,9 +973,9 @@ export default function BillingPage() {
               <>
                 <button
                   onClick={() => setProPaymentMethod(null)}
-                  className="text-sm text-gray-500 hover:text-gray-700 mb-4"
+                  className="text-sm text-gray-500 hover:text-gray-700 mb-4 flex items-center gap-1"
                 >
-                  ← Voltar
+                  <ChevronLeft className="w-4 h-4" /> Voltar
                 </button>
                 {renderCardFormFields(true)}
               </>

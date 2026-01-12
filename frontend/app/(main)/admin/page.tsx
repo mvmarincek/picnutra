@@ -167,8 +167,14 @@ export default function AdminPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+      <div className="flex flex-col items-center justify-center py-16">
+        <div className="relative">
+          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center animate-pulse shadow-xl shadow-orange-200">
+            <Shield className="w-10 h-10 text-white" />
+          </div>
+          <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full animate-bounce" />
+        </div>
+        <p className="text-orange-600 font-medium mt-4">Carregando painel...</p>
       </div>
     );
   }
@@ -179,18 +185,31 @@ export default function AdminPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-        <Shield className="w-6 h-6 text-orange-500" />
-        Painel Administrativo
-      </h1>
+      <div className="bg-white rounded-3xl shadow-2xl shadow-gray-200/50 overflow-hidden mb-6">
+        <div className="relative bg-gradient-to-r from-orange-500 via-amber-500 to-orange-400 p-6 overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+          <div className="relative flex items-center gap-4">
+            <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+              <Shield className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Painel Administrativo</h1>
+              <p className="text-orange-100">Gerencie usuarios, pagamentos e metricas</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <div className="flex gap-2 mb-6 border-b">
+      <div className="flex gap-2 mb-6 bg-white rounded-2xl p-2 shadow-lg shadow-gray-100/50 border border-gray-100">
         {['dashboard', 'users', 'payments'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab as any)}
-            className={`px-4 py-2 font-medium border-b-2 transition-colors ${
-              activeTab === tab ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+            className={`px-6 py-3 font-medium rounded-xl transition-all ${
+              activeTab === tab 
+                ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md' 
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
             }`}
           >
             {tab === 'dashboard' ? 'Dashboard' : tab === 'users' ? 'Usuarios' : 'Pagamentos'}
@@ -200,56 +219,56 @@ export default function AdminPage() {
 
       {activeTab === 'dashboard' && stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl p-4 shadow-sm border">
+          <div className="bg-white rounded-2xl p-5 shadow-lg shadow-gray-100/50 border border-gray-100">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Users className="w-5 h-5 text-blue-600" />
+              <div className="p-3 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl">
+                <Users className="w-6 h-6 text-blue-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Total Usuarios</p>
-                <p className="text-xl font-bold">{stats.users.total}</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.users.total}</p>
               </div>
             </div>
-            <p className="text-xs text-gray-400 mt-2">+{stats.users.new_today} hoje | +{stats.users.new_month} mes</p>
+            <p className="text-xs text-gray-400 mt-3">+{stats.users.new_today} hoje | +{stats.users.new_month} mes</p>
           </div>
           
-          <div className="bg-white rounded-xl p-4 shadow-sm border">
+          <div className="bg-white rounded-2xl p-5 shadow-lg shadow-gray-100/50 border border-gray-100">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <Crown className="w-5 h-5 text-yellow-600" />
+              <div className="p-3 bg-gradient-to-br from-violet-100 to-purple-100 rounded-xl">
+                <Crown className="w-6 h-6 text-violet-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Usuarios PRO</p>
-                <p className="text-xl font-bold">{stats.users.pro}</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.users.pro}</p>
               </div>
             </div>
-            <p className="text-xs text-gray-400 mt-2">{stats.users.verified} verificados</p>
+            <p className="text-xs text-gray-400 mt-3">{stats.users.verified} verificados</p>
           </div>
           
-          <div className="bg-white rounded-xl p-4 shadow-sm border">
+          <div className="bg-white rounded-2xl p-5 shadow-lg shadow-gray-100/50 border border-gray-100">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-green-600" />
+              <div className="p-3 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-xl">
+                <TrendingUp className="w-6 h-6 text-emerald-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Receita Total</p>
-                <p className="text-xl font-bold">{formatPrice(stats.revenue.total * 100)}</p>
+                <p className="text-2xl font-bold text-gray-900">{formatPrice(stats.revenue.total * 100)}</p>
               </div>
             </div>
-            <p className="text-xs text-gray-400 mt-2">{formatPrice(stats.revenue.month * 100)} este mes</p>
+            <p className="text-xs text-gray-400 mt-3">{formatPrice(stats.revenue.month * 100)} este mes</p>
           </div>
           
-          <div className="bg-white rounded-xl p-4 shadow-sm border">
+          <div className="bg-white rounded-2xl p-5 shadow-lg shadow-gray-100/50 border border-gray-100">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Activity className="w-5 h-5 text-purple-600" />
+              <div className="p-3 bg-gradient-to-br from-fuchsia-100 to-pink-100 rounded-xl">
+                <Activity className="w-6 h-6 text-fuchsia-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Analises</p>
-                <p className="text-xl font-bold">{stats.meals.total}</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.meals.total}</p>
               </div>
             </div>
-            <p className="text-xs text-gray-400 mt-2">{stats.meals.today} hoje</p>
+            <p className="text-xs text-gray-400 mt-3">{stats.meals.today} hoje</p>
           </div>
         </div>
       )}
@@ -258,82 +277,82 @@ export default function AdminPage() {
         <div>
           <div className="flex gap-2 mb-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
                 placeholder="Buscar por email, nome ou CPF..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && searchUsers()}
-                className="w-full pl-10 pr-4 py-2 border rounded-lg"
+                className="w-full pl-11 pr-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-400 transition-all"
               />
             </div>
             <select
               value={planFilter}
               onChange={(e) => { setPlanFilter(e.target.value); setUserPage(1); }}
-              className="px-4 py-2 border rounded-lg"
+              className="px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-400 transition-all"
             >
               <option value="">Todos planos</option>
               <option value="free">Free</option>
               <option value="pro">PRO</option>
             </select>
-            <button onClick={searchUsers} className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600">
+            <button onClick={searchUsers} className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-orange-200 hover:scale-[1.02] transition-all">
               Buscar
             </button>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-lg shadow-gray-100/50 border border-gray-100 overflow-hidden">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usuario</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Plano</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Creditos</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cadastro</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acoes</th>
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Usuario</th>
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Plano</th>
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Creditos</th>
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Cadastro</th>
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Acoes</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-gray-100">
                 {users.map((u) => (
-                  <tr key={u.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3">
+                  <tr key={u.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-4">
                       <div className="flex items-center gap-2">
                         {u.is_admin && <Shield className="w-4 h-4 text-orange-500" />}
                         <div>
-                          <p className="font-medium">{u.email}</p>
+                          <p className="font-medium text-gray-900">{u.email}</p>
                           {u.name && <p className="text-xs text-gray-500">{u.name}</p>}
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        u.plan === 'pro' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'
+                    <td className="px-4 py-4">
+                      <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${
+                        u.plan === 'pro' ? 'bg-gradient-to-r from-violet-100 to-purple-100 text-violet-700' : 'bg-gray-100 text-gray-700'
                       }`}>
                         {u.plan.toUpperCase()}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-4 text-gray-700">
                       {u.plan === 'pro' ? `${u.pro_analyses_remaining} analises` : `${u.credit_balance} creditos`}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{formatDate(u.created_at)}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-4 text-sm text-gray-500">{formatDate(u.created_at)}</td>
+                    <td className="px-4 py-4">
                       <div className="flex gap-1">
-                        <button onClick={() => viewUserDetails(u.id)} className="p-1 hover:bg-gray-100 rounded" title="Ver detalhes">
+                        <button onClick={() => viewUserDetails(u.id)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Ver detalhes">
                           <Eye className="w-4 h-4 text-gray-600" />
                         </button>
-                        <button onClick={() => { setAddCreditsUserId(u.id); setShowAddCreditsModal(true); }} className="p-1 hover:bg-gray-100 rounded" title="Adicionar creditos">
-                          <Plus className="w-4 h-4 text-green-600" />
+                        <button onClick={() => { setAddCreditsUserId(u.id); setShowAddCreditsModal(true); }} className="p-2 hover:bg-emerald-100 rounded-lg transition-colors" title="Adicionar creditos">
+                          <Plus className="w-4 h-4 text-emerald-600" />
                         </button>
                         {u.plan === 'pro' ? (
-                          <button onClick={() => handleRemovePro(u.id)} className="p-1 hover:bg-red-100 rounded" title="Remover PRO">
+                          <button onClick={() => handleRemovePro(u.id)} className="p-2 hover:bg-red-100 rounded-lg transition-colors" title="Remover PRO">
                             <Crown className="w-4 h-4 text-red-600" />
                           </button>
                         ) : (
-                          <button onClick={() => handleSetPro(u.id)} className="p-1 hover:bg-yellow-100 rounded" title="Ativar PRO">
-                            <Crown className="w-4 h-4 text-yellow-600" />
+                          <button onClick={() => handleSetPro(u.id)} className="p-2 hover:bg-violet-100 rounded-lg transition-colors" title="Ativar PRO">
+                            <Crown className="w-4 h-4 text-violet-600" />
                           </button>
                         )}
-                        <button onClick={() => handleToggleAdmin(u.id)} className="p-1 hover:bg-gray-100 rounded" title="Toggle Admin">
+                        <button onClick={() => handleToggleAdmin(u.id)} className="p-2 hover:bg-orange-100 rounded-lg transition-colors" title="Toggle Admin">
                           <Shield className="w-4 h-4 text-orange-600" />
                         </button>
                       </div>
@@ -348,15 +367,15 @@ export default function AdminPage() {
             <button
               onClick={() => setUserPage(p => Math.max(1, p - 1))}
               disabled={userPage === 1}
-              className="flex items-center gap-1 px-3 py-1 border rounded disabled:opacity-50"
+              className="flex items-center gap-1 px-4 py-2 bg-white border-2 border-gray-100 rounded-xl disabled:opacity-50 hover:bg-gray-50 transition-all"
             >
               <ChevronLeft className="w-4 h-4" /> Anterior
             </button>
-            <span className="text-sm text-gray-500">Pagina {userPage} de {userPages}</span>
+            <span className="text-sm text-gray-500 font-medium">Pagina {userPage} de {userPages}</span>
             <button
               onClick={() => setUserPage(p => Math.min(userPages, p + 1))}
               disabled={userPage === userPages}
-              className="flex items-center gap-1 px-3 py-1 border rounded disabled:opacity-50"
+              className="flex items-center gap-1 px-4 py-2 bg-white border-2 border-gray-100 rounded-xl disabled:opacity-50 hover:bg-gray-50 transition-all"
             >
               Proxima <ChevronRight className="w-4 h-4" />
             </button>
@@ -370,7 +389,7 @@ export default function AdminPage() {
             <select
               value={paymentStatus}
               onChange={(e) => { setPaymentStatus(e.target.value); setPaymentPage(1); }}
-              className="px-4 py-2 border rounded-lg"
+              className="px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-400 transition-all"
             >
               <option value="">Todos status</option>
               <option value="pending">Pendente</option>
@@ -378,35 +397,35 @@ export default function AdminPage() {
             </select>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-lg shadow-gray-100/50 border border-gray-100 overflow-hidden">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usuario</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th>
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase">ID</th>
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Usuario</th>
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Tipo</th>
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Valor</th>
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Data</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-gray-100">
                 {payments.map((p) => (
-                  <tr key={p.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm">{p.id}</td>
-                    <td className="px-4 py-3 text-sm">{p.user_email}</td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs">{p.billing_type} - {p.payment_type}</span>
+                  <tr key={p.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-4 text-sm text-gray-700">{p.id}</td>
+                    <td className="px-4 py-4 text-sm text-gray-700">{p.user_email}</td>
+                    <td className="px-4 py-4">
+                      <span className="text-xs text-gray-600">{p.billing_type} - {p.payment_type}</span>
                     </td>
-                    <td className="px-4 py-3 font-medium">{formatPrice(p.amount * 100)}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        p.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                    <td className="px-4 py-4 font-semibold text-gray-900">{formatPrice(p.amount * 100)}</td>
+                    <td className="px-4 py-4">
+                      <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${
+                        p.status === 'confirmed' ? 'bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700' : 'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-700'
                       }`}>
                         {p.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{formatDate(p.created_at)}</td>
+                    <td className="px-4 py-4 text-sm text-gray-500">{formatDate(p.created_at)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -417,15 +436,15 @@ export default function AdminPage() {
             <button
               onClick={() => setPaymentPage(p => Math.max(1, p - 1))}
               disabled={paymentPage === 1}
-              className="flex items-center gap-1 px-3 py-1 border rounded disabled:opacity-50"
+              className="flex items-center gap-1 px-4 py-2 bg-white border-2 border-gray-100 rounded-xl disabled:opacity-50 hover:bg-gray-50 transition-all"
             >
               <ChevronLeft className="w-4 h-4" /> Anterior
             </button>
-            <span className="text-sm text-gray-500">Pagina {paymentPage} de {paymentPages}</span>
+            <span className="text-sm text-gray-500 font-medium">Pagina {paymentPage} de {paymentPages}</span>
             <button
               onClick={() => setPaymentPage(p => Math.min(paymentPages, p + 1))}
               disabled={paymentPage === paymentPages}
-              className="flex items-center gap-1 px-3 py-1 border rounded disabled:opacity-50"
+              className="flex items-center gap-1 px-4 py-2 bg-white border-2 border-gray-100 rounded-xl disabled:opacity-50 hover:bg-gray-50 transition-all"
             >
               Proxima <ChevronRight className="w-4 h-4" />
             </button>
@@ -434,75 +453,80 @@ export default function AdminPage() {
       )}
 
       {showUserModal && selectedUser && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">Detalhes do Usuario</h3>
-              <button onClick={() => setShowUserModal(false)} className="text-gray-400 hover:text-gray-600">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center">
+                  <Eye className="w-4 h-4 text-white" />
+                </div>
+                Detalhes do Usuario
+              </h3>
+              <button onClick={() => setShowUserModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-3">
                 <Mail className="w-4 h-4 text-gray-400" />
-                <span>{selectedUser.user.email}</span>
+                <span className="text-gray-700">{selectedUser.user.email}</span>
               </div>
               {selectedUser.user.cpf && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-3">
                   <Hash className="w-4 h-4 text-gray-400" />
-                  <span>{selectedUser.user.cpf}</span>
+                  <span className="text-gray-700">{selectedUser.user.cpf}</span>
                 </div>
               )}
               {selectedUser.user.phone && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-3">
                   <Phone className="w-4 h-4 text-gray-400" />
-                  <span>{selectedUser.user.phone}</span>
+                  <span className="text-gray-700">{selectedUser.user.phone}</span>
                 </div>
               )}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-3">
                 <Calendar className="w-4 h-4 text-gray-400" />
-                <span>Cadastro: {formatDate(selectedUser.user.created_at)}</span>
+                <span className="text-gray-700">Cadastro: {formatDate(selectedUser.user.created_at)}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="bg-gray-50 rounded-lg p-3 text-center">
-                <p className="text-2xl font-bold">{selectedUser.user.credit_balance}</p>
+              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 text-center border border-emerald-100">
+                <p className="text-2xl font-bold text-emerald-600">{selectedUser.user.credit_balance}</p>
                 <p className="text-xs text-gray-500">Creditos</p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-3 text-center">
-                <p className="text-2xl font-bold">{selectedUser.meals_count}</p>
+              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 text-center border border-blue-100">
+                <p className="text-2xl font-bold text-blue-600">{selectedUser.meals_count}</p>
                 <p className="text-xs text-gray-500">Analises</p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-3 text-center">
-                <p className="text-2xl font-bold">{selectedUser.referrals_count}</p>
+              <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-4 text-center border border-violet-100">
+                <p className="text-2xl font-bold text-violet-600">{selectedUser.referrals_count}</p>
                 <p className="text-xs text-gray-500">Indicacoes</p>
               </div>
             </div>
 
-            <h4 className="font-semibold mb-2">Pagamentos Recentes</h4>
+            <h4 className="font-semibold mb-2 text-gray-900">Pagamentos Recentes</h4>
             <div className="space-y-2 mb-4 max-h-40 overflow-y-auto">
               {selectedUser.payments.length === 0 ? (
-                <p className="text-sm text-gray-500">Nenhum pagamento</p>
+                <p className="text-sm text-gray-500 bg-gray-50 rounded-xl p-3">Nenhum pagamento</p>
               ) : selectedUser.payments.slice(0, 5).map((p) => (
-                <div key={p.id} className="flex justify-between items-center bg-gray-50 rounded-lg p-2 text-sm">
-                  <span>{p.description}</span>
-                  <span className={`px-2 py-0.5 rounded text-xs ${p.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                <div key={p.id} className="flex justify-between items-center bg-gray-50 rounded-xl p-3 text-sm">
+                  <span className="text-gray-700">{p.description}</span>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${p.status === 'confirmed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
                     {formatPrice(p.amount * 100)} - {p.status}
                   </span>
                 </div>
               ))}
             </div>
 
-            <h4 className="font-semibold mb-2">Transacoes de Creditos</h4>
+            <h4 className="font-semibold mb-2 text-gray-900">Transacoes de Creditos</h4>
             <div className="space-y-2 max-h-40 overflow-y-auto">
               {selectedUser.transactions.length === 0 ? (
-                <p className="text-sm text-gray-500">Nenhuma transacao</p>
+                <p className="text-sm text-gray-500 bg-gray-50 rounded-xl p-3">Nenhuma transacao</p>
               ) : selectedUser.transactions.slice(0, 5).map((t) => (
-                <div key={t.id} className="flex justify-between items-center bg-gray-50 rounded-lg p-2 text-sm">
-                  <span>{t.description}</span>
-                  <span className={t.credits_added > 0 ? 'text-green-600' : 'text-red-600'}>
+                <div key={t.id} className="flex justify-between items-center bg-gray-50 rounded-xl p-3 text-sm">
+                  <span className="text-gray-700">{t.description}</span>
+                  <span className={`font-semibold ${t.credits_added > 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                     {t.credits_added > 0 ? '+' : ''}{t.credits_added || -t.credits_used}
                   </span>
                 </div>
@@ -513,11 +537,16 @@ export default function AdminPage() {
       )}
 
       {showAddCreditsModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">Adicionar Creditos</h3>
-              <button onClick={() => setShowAddCreditsModal(false)} className="text-gray-400 hover:text-gray-600">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
+                  <Plus className="w-4 h-4 text-white" />
+                </div>
+                Adicionar Creditos
+              </h3>
+              <button onClick={() => setShowAddCreditsModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -530,7 +559,7 @@ export default function AdminPage() {
                   value={addCreditsAmount}
                   onChange={(e) => setAddCreditsAmount(e.target.value)}
                   placeholder="Ex: 10"
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
                 />
               </div>
               <div>
@@ -540,13 +569,13 @@ export default function AdminPage() {
                   value={addCreditsReason}
                   onChange={(e) => setAddCreditsReason(e.target.value)}
                   placeholder="Ex: Compensacao por erro"
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
                 />
               </div>
               <button
                 onClick={handleAddCredits}
                 disabled={!addCreditsAmount || !addCreditsReason}
-                className="w-full py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 disabled:opacity-50"
+                className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-emerald-200 hover:scale-[1.02] transition-all disabled:opacity-50"
               >
                 Adicionar Creditos
               </button>

@@ -117,8 +117,8 @@ function ProcessingContent() {
   if (phase === 'error') {
     return (
       <div className="max-w-lg mx-auto">
-        <div className="bg-white rounded-3xl shadow-xl p-8 text-center border border-amber-100">
-          <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="bg-white rounded-3xl shadow-2xl shadow-gray-200/50 p-8 text-center overflow-hidden">
+          <div className="w-16 h-16 bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-amber-100">
             <span className="text-3xl">🙏</span>
           </div>
           <h2 className="text-xl font-bold mb-2 text-gray-900">Ops! Tivemos um probleminha</h2>
@@ -127,7 +127,7 @@ function ProcessingContent() {
           </p>
           <button
             onClick={() => router.push('/home')}
-            className="gradient-fresh text-white px-8 py-3 rounded-full font-semibold hover:shadow-lg transition-all"
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-8 py-3 rounded-2xl font-semibold hover:shadow-lg hover:shadow-emerald-200 hover:scale-[1.02] transition-all"
           >
             Tentar Novamente
           </button>
@@ -141,76 +141,82 @@ function ProcessingContent() {
     
     return (
       <div className="max-w-lg mx-auto">
-        <div className="bg-white rounded-3xl shadow-xl p-6 border border-green-100">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
-              <span className="text-2xl">🤔</span>
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">Perguntas Rápidas</h2>
-              <p className="text-sm text-gray-500">Para uma análise mais precisa</p>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            {job.questions.map((q, idx) => (
-              <div key={q.id} className="bg-gray-50 rounded-2xl p-4">
-                <p className="font-medium text-gray-900 mb-3 flex items-start gap-2">
-                  <span className="bg-green-100 text-green-700 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">
-                    {idx + 1}
-                  </span>
-                  {q.question}
-                </p>
-                {q.options ? (
-                  <div className="grid grid-cols-2 gap-2">
-                    {q.options.map((opt) => (
-                      <button
-                        key={opt}
-                        onClick={() => setAnswers(prev => ({ ...prev, [q.id]: opt }))}
-                        className={`p-3 rounded-xl text-sm font-medium transition-all ${
-                          answers[q.id] === opt
-                            ? 'bg-green-500 text-white shadow-md'
-                            : 'bg-white border border-gray-200 text-gray-700 hover:border-green-300'
-                        }`}
-                      >
-                        {opt}
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <input
-                    type="text"
-                    value={answers[q.id] || ''}
-                    onChange={(e) => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
-                    className="w-full p-3 border border-gray-200 rounded-xl focus:border-green-400 focus:outline-none"
-                    placeholder="Digite sua resposta..."
-                  />
-                )}
+        <div className="bg-white rounded-3xl shadow-2xl shadow-gray-200/50 overflow-hidden">
+          <div className="relative bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 p-6 overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+            <div className="relative flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <span className="text-2xl">🤔</span>
               </div>
-            ))}
+              <div>
+                <h2 className="text-xl font-bold text-white">Perguntas Rapidas</h2>
+                <p className="text-sm text-white/90">Para uma analise mais precisa</p>
+              </div>
+            </div>
           </div>
 
-          <button
-            onClick={handleSubmitAnswers}
-            disabled={!allAnswered || submitting}
-            className={`w-full mt-6 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
-              allAnswered && !submitting
-                ? 'gradient-fresh text-white hover:shadow-xl'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-            }`}
-          >
-            {submitting ? (
-              <>
-                <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
-                Processando...
-              </>
-            ) : (
-              <>
-                Continuar Análise
-                <ArrowRight className="w-5 h-5" />
-              </>
-            )}
-          </button>
+          <div className="p-6">
+            <div className="space-y-6">
+              {job.questions.map((q, idx) => (
+                <div key={q.id} className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-4 border border-gray-100">
+                  <p className="font-medium text-gray-900 mb-3 flex items-start gap-2">
+                    <span className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                      {idx + 1}
+                    </span>
+                    {q.question}
+                  </p>
+                  {q.options ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      {q.options.map((opt) => (
+                        <button
+                          key={opt}
+                          onClick={() => setAnswers(prev => ({ ...prev, [q.id]: opt }))}
+                          className={`p-3 rounded-xl text-sm font-medium transition-all ${
+                            answers[q.id] === opt
+                              ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-200'
+                              : 'bg-white border border-gray-200 text-gray-700 hover:border-emerald-300 hover:bg-emerald-50'
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <input
+                      type="text"
+                      value={answers[q.id] || ''}
+                      onChange={(e) => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+                      className="w-full p-3 border-2 border-gray-100 rounded-xl focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all"
+                      placeholder="Digite sua resposta..."
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={handleSubmitAnswers}
+              disabled={!allAnswered || submitting}
+              className={`w-full mt-6 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
+                allAnswered && !submitting
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:shadow-xl hover:shadow-emerald-200 hover:scale-[1.02]'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              }`}
+            >
+              {submitting ? (
+                <>
+                  <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
+                  Processando...
+                </>
+              ) : (
+                <>
+                  Continuar Analise
+                  <ArrowRight className="w-5 h-5" />
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -220,25 +226,25 @@ function ProcessingContent() {
 
   return (
     <div className="max-w-lg mx-auto">
-      <div className="bg-white rounded-3xl shadow-xl p-8 text-center border border-green-100">
-        <div className="w-20 h-20 rounded-full gradient-fresh flex items-center justify-center mx-auto mb-6 animate-pulse">
+      <div className="bg-white rounded-3xl shadow-2xl shadow-gray-200/50 p-8 text-center overflow-hidden">
+        <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mx-auto mb-6 animate-pulse shadow-xl shadow-emerald-200">
           <Salad className="w-10 h-10 text-white" />
         </div>
         
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Analisando sua refeição...</h2>
-        <p className="text-gray-500 mb-6">Nossa IA está identificando os alimentos e calculando os nutrientes</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Analisando sua refeicao...</h2>
+        <p className="text-gray-500 mb-6">Nossa IA esta identificando os alimentos e calculando os nutrientes</p>
         
         <div className="flex justify-center gap-2 mb-8">
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="w-3 h-3 rounded-full bg-green-400 animate-bounce"
+              className="w-3 h-3 rounded-full bg-gradient-to-br from-emerald-400 to-teal-400 animate-bounce shadow-md"
               style={{ animationDelay: `${i * 0.15}s` }}
             />
           ))}
         </div>
 
-        <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl p-4 border border-green-100">
+        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100">
           <div className="flex items-center gap-3">
             <span className="text-2xl">{dica.emoji}</span>
             <p className="text-sm text-gray-700 text-left">{dica.texto}</p>
@@ -246,7 +252,7 @@ function ProcessingContent() {
         </div>
 
         {job?.etapa_atual && (
-          <div className="mt-6 text-sm text-gray-500">
+          <div className="mt-6 text-sm text-emerald-600 font-medium bg-emerald-50 px-4 py-2 rounded-full inline-block">
             {job.etapa_atual}
           </div>
         )}
@@ -259,8 +265,8 @@ export default function ProcessingPage() {
   return (
     <Suspense fallback={
       <div className="max-w-lg mx-auto">
-        <div className="bg-white rounded-3xl shadow-xl p-8 text-center">
-          <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-6 animate-pulse">
+        <div className="bg-white rounded-3xl shadow-2xl shadow-gray-200/50 p-8 text-center">
+          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center mx-auto mb-6 animate-pulse">
             <Salad className="w-10 h-10 text-gray-300" />
           </div>
           <p className="text-gray-500">Carregando...</p>

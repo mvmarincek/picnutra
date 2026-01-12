@@ -193,201 +193,229 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12">
-        <div className="w-16 h-16 rounded-2xl gradient-fresh flex items-center justify-center animate-pulse mb-4">
-          <Salad className="w-8 h-8 text-white" />
+      <div className="flex flex-col items-center justify-center py-16">
+        <div className="relative">
+          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center animate-pulse shadow-xl shadow-emerald-200">
+            <Salad className="w-10 h-10 text-white" />
+          </div>
+          <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full animate-bounce" />
         </div>
-        <p className="text-gray-600">Carregando perfil...</p>
+        <p className="text-emerald-700 font-medium mt-4">Carregando perfil...</p>
       </div>
     );
   }
 
   return (
     <div className="max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Meu Perfil</h1>
+      <div className="bg-white rounded-3xl shadow-2xl shadow-gray-200/50 overflow-hidden mb-6">
+        <div className="relative bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 p-6 overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+          <div className="relative flex items-center gap-4">
+            <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+              <User className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Meu Perfil</h1>
+              <p className="text-emerald-100">Configure suas preferencias</p>
+            </div>
+          </div>
+        </div>
 
-      <div className="bg-white rounded-3xl shadow-xl p-6 mb-6 border border-green-100">
-        <div className="flex items-center mb-6">
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleAvatarChange}
-            accept="image/*"
-            className="hidden"
-          />
-          <button
-            onClick={handleAvatarClick}
-            disabled={uploadingAvatar}
-            className="relative w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center group"
-          >
-            {avatarUrl ? (
-              <img
-                src={avatarUrl.startsWith('data:') ? avatarUrl : `${API_URL}${avatarUrl}`}
-                alt="Foto de perfil"
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  setAvatarUrl(null);
-                }}
-              />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-green-100 to-teal-100 flex items-center justify-center">
-                <User className="w-8 h-8 text-green-600" />
-              </div>
-            )}
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              {uploadingAvatar ? (
-                <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+        <div className="p-6">
+          <div className="flex items-center mb-6">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleAvatarChange}
+              accept="image/*"
+              className="hidden"
+            />
+            <button
+              onClick={handleAvatarClick}
+              disabled={uploadingAvatar}
+              className="relative w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center group shadow-lg"
+            >
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl.startsWith('data:') ? avatarUrl : `${API_URL}${avatarUrl}`}
+                  alt="Foto de perfil"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    setAvatarUrl(null);
+                  }}
+                />
               ) : (
-                <Camera className="w-5 h-5 text-white" />
+                <div className="w-full h-full bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center">
+                  <User className="w-8 h-8 text-emerald-600" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                {uploadingAvatar ? (
+                  <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                ) : (
+                  <Camera className="w-5 h-5 text-white" />
+                )}
+              </div>
+            </button>
+            <div className="ml-4 flex-1">
+              <p className="font-semibold text-gray-900">{user?.email}</p>
+              <p className="text-sm text-gray-500 capitalize">Plano {user?.plan || 'Free'}</p>
+              {user?.credit_balance !== undefined && user.credit_balance > 0 && (
+                <p className="text-xs text-emerald-600 font-medium">{user.credit_balance} creditos disponiveis</p>
               )}
             </div>
-          </button>
-          <div className="ml-4 flex-1">
-            <p className="font-semibold text-gray-900">{user?.email}</p>
-            <p className="text-sm text-gray-500 capitalize">Plano {user?.plan || 'Free'}</p>
-            {user?.credit_balance !== undefined && user.credit_balance > 0 && (
-              <p className="text-xs text-green-600 font-medium">{user.credit_balance} creditos disponiveis</p>
-            )}
           </div>
-        </div>
 
-        {stats && stats.total_meals > 0 && (
-          <div className="mb-6 p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl">
-            <div className="flex items-center gap-2 mb-4">
-              <Trophy className="w-5 h-5 text-amber-500" />
-              <h3 className="font-semibold text-gray-900">Suas Estatisticas</h3>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-                <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center mx-auto mb-2">
-                  <TrendingUp className="w-4 h-4 text-green-600" />
+          {stats && stats.total_meals > 0 && (
+            <div className="mb-6 p-4 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg flex items-center justify-center shadow-md">
+                  <Trophy className="w-4 h-4 text-white" />
                 </div>
-                <p className="text-lg font-bold text-gray-900">{stats.total_meals}</p>
-                <p className="text-xs text-gray-500">analises</p>
+                <h3 className="font-semibold text-gray-900">Suas Estatisticas</h3>
               </div>
-              <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-                <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center mx-auto mb-2">
-                  <Flame className="w-4 h-4 text-orange-500" />
+              <div className="grid grid-cols-3 gap-3">
+                <div className="bg-white rounded-xl p-3 text-center shadow-sm border border-gray-100">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center mx-auto mb-2">
+                    <TrendingUp className="w-4 h-4 text-emerald-600" />
+                  </div>
+                  <p className="text-lg font-bold text-gray-900">{stats.total_meals}</p>
+                  <p className="text-xs text-gray-500">analises</p>
                 </div>
-                <p className="text-lg font-bold text-gray-900">{stats.streak}</p>
-                <p className="text-xs text-gray-500">dias seguidos</p>
-              </div>
-              <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center mx-auto mb-2">
-                  <Calendar className="w-4 h-4 text-blue-500" />
+                <div className="bg-white rounded-xl p-3 text-center shadow-sm border border-gray-100">
+                  <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center mx-auto mb-2">
+                    <Flame className="w-4 h-4 text-orange-500" />
+                  </div>
+                  <p className="text-lg font-bold text-gray-900">{stats.streak}</p>
+                  <p className="text-xs text-gray-500">dias seguidos</p>
                 </div>
-                <p className="text-lg font-bold text-gray-900">{stats.days_using}</p>
-                <p className="text-xs text-gray-500">dias usando</p>
+                <div className="bg-white rounded-xl p-3 text-center shadow-sm border border-gray-100">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center mx-auto mb-2">
+                    <Calendar className="w-4 h-4 text-blue-500" />
+                  </div>
+                  <p className="text-lg font-bold text-gray-900">{stats.days_using}</p>
+                  <p className="text-xs text-gray-500">dias usando</p>
+                </div>
               </div>
-            </div>
-            <div className="mt-4 bg-white rounded-xl p-3 shadow-sm">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-600">Nivel: <span className="font-semibold text-gray-900">{stats.title}</span></span>
-                <span className="text-xs text-gray-500">{stats.total_meals}/{stats.next_level_at}</span>
-              </div>
-              <div className="bg-gray-100 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-green-400 to-teal-500 rounded-full h-2 transition-all duration-500" 
-                  style={{ width: `${stats.progress_to_next}%` }}
-                />
+              <div className="mt-4 bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-600">Nivel: <span className="font-semibold text-gray-900">{stats.title}</span></span>
+                  <span className="text-xs text-gray-500">{stats.total_meals}/{stats.next_level_at}</span>
+                </div>
+                <div className="bg-gray-100 rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full h-2 transition-all duration-500" 
+                    style={{ width: `${stats.progress_to_next}%` }}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        )}
-
-        <PageAds position="inline" />
-
-        <div className="mb-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-3">
-            Objetivo Nutricional
-          </label>
-          <div className="grid grid-cols-2 gap-3">
-            {objetivos.map((obj) => (
-              <button
-                key={obj.id}
-                onClick={() => setObjetivo(obj.id)}
-                className={`p-4 rounded-2xl border-2 text-left transition-all ${
-                  objetivo === obj.id
-                    ? 'border-green-400 bg-green-50'
-                    : 'border-gray-100 hover:border-gray-200'
-                }`}
-              >
-                <span className="text-xl mb-1 block">{obj.emoji}</span>
-                <span className={`text-sm font-medium ${objetivo === obj.id ? 'text-green-700' : 'text-gray-600'}`}>
-                  {obj.label}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-3">
-            Restrições Alimentares
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {restricoesOptions.map((rest) => (
-              <button
-                key={rest.id}
-                onClick={() => handleToggleRestricao(rest.id)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  restricoes.includes(rest.id)
-                    ? 'gradient-fresh text-white shadow-md'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                {rest.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-3">
-            Alergias (separadas por vírgula)
-          </label>
-          <input
-            type="text"
-            value={alergias}
-            onChange={(e) => setAlergias(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-green-500 focus:border-green-400 transition-all"
-            placeholder="Ex: amendoim, camarão, leite"
-          />
-        </div>
-
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
-            saving
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'gradient-fresh text-white hover:shadow-xl hover:shadow-green-200'
-          }`}
-        >
-          {saving ? (
-            <>
-              <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
-              Salvando...
-            </>
-          ) : (
-            <>
-              <Save className="w-5 h-5" />
-              Salvar e Continuar
-              <ArrowRight className="w-5 h-5" />
-            </>
           )}
-        </button>
+
+          <PageAds position="inline" />
+
+          <div className="mb-6">
+            <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <div className="w-6 h-6 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center">
+                <span className="text-xs">🎯</span>
+              </div>
+              Objetivo Nutricional
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              {objetivos.map((obj) => (
+                <button
+                  key={obj.id}
+                  onClick={() => setObjetivo(obj.id)}
+                  className={`p-4 rounded-2xl border-2 text-left transition-all ${
+                    objetivo === obj.id
+                      ? 'border-emerald-400 bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg shadow-emerald-100'
+                      : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <span className="text-xl mb-1 block">{obj.emoji}</span>
+                  <span className={`text-sm font-medium ${objetivo === obj.id ? 'text-emerald-700' : 'text-gray-600'}`}>
+                    {obj.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <div className="w-6 h-6 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg flex items-center justify-center">
+                <span className="text-xs">🍽️</span>
+              </div>
+              Restricoes Alimentares
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {restricoesOptions.map((rest) => (
+                <button
+                  key={rest.id}
+                  onClick={() => handleToggleRestricao(rest.id)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    restricoes.includes(rest.id)
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-200'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {rest.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <div className="w-6 h-6 bg-gradient-to-br from-red-100 to-rose-100 rounded-lg flex items-center justify-center">
+                <span className="text-xs">⚠️</span>
+              </div>
+              Alergias (separadas por virgula)
+            </label>
+            <input
+              type="text"
+              value={alergias}
+              onChange={(e) => setAlergias(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
+              placeholder="Ex: amendoim, camarao, leite"
+            />
+          </div>
+
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
+              saving
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:shadow-xl hover:shadow-emerald-200 hover:scale-[1.02]'
+            }`}
+          >
+            {saving ? (
+              <>
+                <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
+                Salvando...
+              </>
+            ) : (
+              <>
+                <Save className="w-5 h-5" />
+                Salvar e Continuar
+                <ArrowRight className="w-5 h-5" />
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       <p className="text-sm text-gray-500 text-center mb-6">
-        Essas informações ajudam a personalizar suas análises nutricionais.
+        Essas informacoes ajudam a personalizar suas analises nutricionais.
       </p>
 
       {user?.plan === 'pro' && (
-        <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-3xl shadow-xl p-6 mb-6 text-white">
+        <div className="bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 rounded-3xl shadow-xl shadow-purple-200/50 p-6 mb-6 text-white">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
               <Crown className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -397,7 +425,7 @@ export default function ProfilePage() {
           </div>
           
           {confirmingCancel ? (
-            <div className="bg-white/10 rounded-2xl p-4">
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
               <p className="text-sm mb-4">
                 Tem certeza? Ao cancelar, voce perdera acesso aos beneficios PRO e voltara ao plano Free.
               </p>
@@ -435,13 +463,13 @@ export default function ProfilePage() {
         </div>
       )}
 
-      <div className="bg-white rounded-3xl shadow-xl p-6 border border-amber-100">
+      <div className="bg-white rounded-3xl shadow-xl shadow-gray-100/50 p-6 border border-amber-100">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-100 to-yellow-100 flex items-center justify-center">
-            <Lightbulb className="w-6 h-6 text-amber-600" />
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-200">
+            <Lightbulb className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h3 className="font-bold text-gray-900">Tem uma sugestão?</h3>
+            <h3 className="font-bold text-gray-900">Tem uma sugestao?</h3>
             <p className="text-sm text-gray-500">Ajude-nos a melhorar o Nutri-Vision</p>
           </div>
         </div>
@@ -449,13 +477,13 @@ export default function ProfilePage() {
         <textarea
           value={sugestao}
           onChange={(e) => setSugestao(e.target.value)}
-          placeholder="Que funcionalidade você gostaria de ver? Como podemos melhorar sua experiência?"
+          placeholder="Que funcionalidade voce gostaria de ver? Como podemos melhorar sua experiencia?"
           className="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-amber-500 focus:border-amber-400 transition-all resize-none h-24"
         />
 
         {sugestaoEnviada ? (
-          <div className="mt-4 py-3 rounded-2xl bg-green-50 text-green-700 text-center font-medium flex items-center justify-center gap-2">
-            <span className="text-xl">🎉</span> Obrigado pela sugestão!
+          <div className="mt-4 py-3 rounded-2xl bg-emerald-50 text-emerald-700 text-center font-medium flex items-center justify-center gap-2 border border-emerald-100">
+            <span className="text-xl">🎉</span> Obrigado pela sugestao!
           </div>
         ) : (
           <button
@@ -464,7 +492,7 @@ export default function ProfilePage() {
             className={`w-full mt-4 py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-all ${
               enviandoSugestao || !sugestao.trim()
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:shadow-lg'
+                : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:shadow-lg hover:shadow-amber-200 hover:scale-[1.02]'
             }`}
           >
             {enviandoSugestao ? (
@@ -475,17 +503,17 @@ export default function ProfilePage() {
             ) : (
               <>
                 <Send className="w-4 h-4" />
-                Enviar Sugestão
+                Enviar Sugestao
               </>
             )}
           </button>
         )}
       </div>
 
-      <div className="bg-white rounded-3xl shadow-xl p-6 border border-purple-100 mt-6">
+      <div className="bg-white rounded-3xl shadow-xl shadow-gray-100/50 p-6 border border-purple-100 mt-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
-            <Gift className="w-6 h-6 text-purple-600" />
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-200">
+            <Gift className="w-6 h-6 text-white" />
           </div>
           <div>
             <h3 className="font-bold text-gray-900">Indique Amigos</h3>
@@ -499,7 +527,7 @@ export default function ProfilePage() {
 
         {user?.referral_code ? (
           <>
-            <div className="bg-gray-50 rounded-2xl p-3 mb-4">
+            <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-2xl p-3 mb-4 border border-purple-100">
               <p className="text-xs text-gray-500 mb-1">Seu link de indicacao:</p>
               <div className="flex items-center gap-2">
                 <input
@@ -512,8 +540,8 @@ export default function ProfilePage() {
                   onClick={handleCopyLink}
                   className={`px-4 py-2 rounded-xl font-medium flex items-center gap-2 transition-all ${
                     linkCopiado
-                      ? 'bg-green-500 text-white'
-                      : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-lg'
+                      ? 'bg-emerald-500 text-white'
+                      : 'bg-gradient-to-r from-violet-500 to-purple-500 text-white hover:shadow-lg hover:shadow-purple-200'
                   }`}
                 >
                   {linkCopiado ? (
@@ -532,7 +560,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="flex justify-center">
-              <div className="bg-white p-4 rounded-2xl border-2 border-purple-100 inline-block">
+              <div className="bg-white p-4 rounded-2xl border-2 border-purple-100 inline-block shadow-lg shadow-purple-50">
                 <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(referralLink)}`}
                   alt="QR Code de Indicacao"
@@ -549,9 +577,9 @@ export default function ProfilePage() {
         )}
       </div>
 
-      <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-3xl p-6 border border-green-100 mt-6">
+      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl p-6 border border-emerald-100 mt-6 shadow-lg shadow-emerald-50">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-2xl gradient-fresh flex items-center justify-center">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-200">
             <QrCode className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -561,7 +589,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="flex justify-center">
-          <div className="bg-white p-4 rounded-2xl border-2 border-green-100 inline-block">
+          <div className="bg-white p-4 rounded-2xl border-2 border-emerald-100 inline-block shadow-lg shadow-emerald-50">
             <img
               src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(appLink)}`}
               alt="QR Code do App"
