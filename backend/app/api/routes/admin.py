@@ -349,6 +349,35 @@ async def set_user_pro(
         "pro_expires_at": user.pro_expires_at.isoformat()
     }
 
+@router.post("/users/{user_id}/remove-pro")
+async def remove_user_pro(
+    user_id: int,
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario nao encontrado")
+    
+    user.plan = "free"
+    user.pro_started_at = None
+    user.pro_expires_at = None
+    user.pro_analyses_remaining = 0
+    user.asaas_subscription_id = None
+    
+    transaction = CreditTransaction(
+        user_id=user_id,
+        credits_added=0,
+        transaction_type="admin_pro",
+        description="Admin: PRO removido"
+    )
+    db.add(transaction)
+    await db.commit()
+    
+    return {"success": True, "plan": user.plan}
+
 @router.get("/email-logs")
 async def list_email_logs(
     email_type: Optional[str] = None,

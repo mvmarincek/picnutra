@@ -154,6 +154,17 @@ export default function AdminPage() {
     }
   };
 
+  const handleRemovePro = async (userId: number) => {
+    if (!confirm('Remover PRO deste usuario?')) return;
+    try {
+      await adminApi.removeUserPro(userId);
+      showSuccess('PRO removido!', 'Sucesso');
+      searchUsers();
+    } catch (err) {
+      showError('Erro ao remover PRO', 'Erro');
+    }
+  };
+
   if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -313,9 +324,15 @@ export default function AdminPage() {
                         <button onClick={() => { setAddCreditsUserId(u.id); setShowAddCreditsModal(true); }} className="p-1 hover:bg-gray-100 rounded" title="Adicionar creditos">
                           <Plus className="w-4 h-4 text-green-600" />
                         </button>
-                        <button onClick={() => handleSetPro(u.id)} className="p-1 hover:bg-gray-100 rounded" title="Ativar PRO">
-                          <Crown className="w-4 h-4 text-yellow-600" />
-                        </button>
+                        {u.plan === 'pro' ? (
+                          <button onClick={() => handleRemovePro(u.id)} className="p-1 hover:bg-red-100 rounded" title="Remover PRO">
+                            <Crown className="w-4 h-4 text-red-600" />
+                          </button>
+                        ) : (
+                          <button onClick={() => handleSetPro(u.id)} className="p-1 hover:bg-yellow-100 rounded" title="Ativar PRO">
+                            <Crown className="w-4 h-4 text-yellow-600" />
+                          </button>
+                        )}
                         <button onClick={() => handleToggleAdmin(u.id)} className="p-1 hover:bg-gray-100 rounded" title="Toggle Admin">
                           <Shield className="w-4 h-4 text-orange-600" />
                         </button>
