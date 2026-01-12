@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR">
       <head>
-        <link rel="apple-touch-icon" href="/icon-192.svg" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="google-adsense-account" content={ADSENSE_CLIENT_ID} />
       </head>
       <body className={inter.className}>
