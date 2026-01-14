@@ -757,3 +757,64 @@ async def test_confirm_payment(
     await db.commit()
     await flush_email_logs(db)
     return {"status": "success", "message": "Pagamento confirmado"}
+
+@router.get("/diagnose")
+async def diagnose_asaas(
+    current_user: User = Depends(get_current_user)
+):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin only")
+    
+    import httpx
+    result = {
+        "asaas_base_url": settings.ASAAS_BASE_URL,
+        "api_key_configured": bool(settings.ASAAS_API_KEY),
+        "api_key_prefix": settings.ASAAS_API_KEY[:20] + "..." if settings.ASAAS_API_KEY else None,
+        "tests": {}
+    }
+    
+    headers = {
+        "access_token": settings.ASAAS_API_KEY,
+        "Content-Type": "application/json"
+    }
+    
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        try:
+            response = await client.get(
+                f"{settings.ASAAS_BASE_URL}/customers?limit=1",
+                headers=headers
+            )
+            result["tests"]["list_customers"] = {
+                "status_code": response.status_code,
+                "success": response.status_code == 200,
+                "response": response.text[:500] if response.status_code != 200 else "OK"
+            }
+        except Exception as e:
+            result["tests"]["list_customers"] = {"error": str(e)}
+        
+        try:
+            response = await client.get(
+                f"{settings.ASAAS_BASE_URL}/pix/addressKeys",
+                headers=headers
+            )
+            result["tests"]["pix_keys"] = {
+                "status_code": response.status_code,
+                "success": response.status_code == 200,
+                "response": response.text[:500]
+            }
+        except Exception as e:
+            result["tests"]["pix_keys"] = {"error": str(e)}
+        
+        try:
+            response = await client.get(
+                f"{settings.ASAAS_BASE_URL}/myAccount/status",
+                headers=headers
+            )
+            result["tests"]["account_status"] = {
+                "status_code": response.status_code,
+                "response": response.text[:500]
+            }
+        except Exception as e:
+            result["tests"]["account_status"] = {"error": str(e)}
+    
+    return result
