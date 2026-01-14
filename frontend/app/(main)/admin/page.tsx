@@ -255,6 +255,7 @@ export default function AdminPage() {
       </div>
 
       {activeTab === 'dashboard' && stats && (
+        <>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-2xl p-5 shadow-lg shadow-gray-100/50 border border-gray-100">
             <div className="flex items-center gap-3">
@@ -443,6 +444,7 @@ export default function AdminPage() {
             </div>
           </>
         )}
+        </>
       )}
 
       {activeTab === 'users' && (
