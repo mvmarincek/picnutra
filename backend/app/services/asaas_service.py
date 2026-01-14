@@ -35,6 +35,8 @@ class AsaasService:
                 headers=self.headers,
                 params={"email": email}
             )
+            if response.status_code == 404:
+                return None
             response.raise_for_status()
             data = response.json()
             if data.get("data") and len(data["data"]) > 0:
