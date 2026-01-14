@@ -79,9 +79,15 @@ async def get_or_create_customer(user: User, db: AsyncSession, cpf: Optional[str
         user.cpf = cpf
     
     if user.asaas_customer_id:
-        if cpf:
-            await asaas_service.update_customer(user.asaas_customer_id, cpf)
-        return user.asaas_customer_id
+        try:
+            if cpf:
+                await asaas_service.update_customer(user.asaas_customer_id, cpf)
+            existing = await asaas_service.get_customer_by_email(user.email)
+            if existing and existing["id"] == user.asaas_customer_id:
+                return user.asaas_customer_id
+        except Exception:
+            pass
+        user.asaas_customer_id = None
     
     customer = await asaas_service.get_customer_by_email(user.email)
     if not customer:
