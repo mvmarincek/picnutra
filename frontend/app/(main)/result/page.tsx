@@ -11,9 +11,9 @@ import BowlLogo from '@/components/BowlLogo';
 
 const celebrationMessages = [
   "Excelente escolha! Continue assim!",
-  "Parabens por cuidar da sua alimentacao!",
-  "Voce esta no caminho certo!",
-  "Otimo trabalho em conhecer seus alimentos!"
+  "Parabéns por cuidar da sua alimentação!",
+  "Você está no caminho certo!",
+  "Ótimo trabalho em conhecer seus alimentos!"
 ];
 
 function ResultContent() {
@@ -68,12 +68,12 @@ function ResultContent() {
         <div className="w-20 h-20 bg-gradient-to-br from-rose-100 to-rose-200 rounded-full flex items-center justify-center mb-4 shadow-lg">
           <span className="text-4xl">😕</span>
         </div>
-        <p className="text-rose-600 font-medium mb-4 text-lg">{error || 'Refeicao nao encontrada'}</p>
+        <p className="text-rose-600 font-medium mb-4 text-lg">{error || 'Refeição não encontrada'}</p>
         <button 
           onClick={() => router.push('/home')} 
           className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-8 py-3 rounded-full font-semibold shadow-lg shadow-emerald-200 hover:shadow-xl transition-all"
         >
-          Voltar ao inicio
+          Voltar ao início
         </button>
       </div>
     );
@@ -83,12 +83,12 @@ function ResultContent() {
   if (!analysis) {
     return (
       <div className="flex flex-col items-center justify-center text-center py-16 px-4">
-        <p className="text-gray-600 mb-4">Analise nao disponivel</p>
+        <p className="text-gray-600 mb-4">Análise não disponível</p>
         <button 
           onClick={() => router.push('/home')} 
           className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-8 py-3 rounded-full font-semibold shadow-lg"
         >
-          Voltar ao inicio
+          Voltar ao início
         </button>
       </div>
     );
@@ -99,7 +99,7 @@ function ResultContent() {
   const getConfiancaInfo = (confianca: string) => {
     switch (confianca) {
       case 'alto': return { color: 'from-emerald-500 to-green-500', label: 'Alta', icon: Target };
-      case 'medio': return { color: 'from-amber-500 to-orange-500', label: 'Media', icon: TrendingUp };
+      case 'medio': return { color: 'from-amber-500 to-orange-500', label: 'Média', icon: TrendingUp };
       default: return { color: 'from-orange-500 to-rose-500', label: 'Aproximada', icon: Zap };
     }
   };
@@ -118,7 +118,7 @@ function ResultContent() {
             </div>
             <div>
               <p className="font-bold text-white text-lg">{celebration}</p>
-              <p className="text-emerald-100 text-sm">Analise concluida com sucesso</p>
+              <p className="text-emerald-100 text-sm">Análise concluída com sucesso</p>
             </div>
           </div>
         </div>
@@ -127,7 +127,7 @@ function ResultContent() {
           <div className="relative h-56">
             <Image
               src={`${apiUrl}${meal.image_url}`}
-              alt="Refeicao"
+              alt="Refeição"
               fill
               className="object-cover"
             />
@@ -135,7 +135,7 @@ function ResultContent() {
             <div className="absolute bottom-4 left-4 right-4">
               <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r ${confiancaInfo.color} text-white text-sm font-medium shadow-lg`}>
                 <confiancaInfo.icon className="w-4 h-4" />
-                Confianca {confiancaInfo.label}
+                Confiança {confiancaInfo.label}
               </div>
             </div>
           </div>
@@ -166,7 +166,7 @@ function ResultContent() {
                     <span className="text-lg">🥩</span>
                   </div>
                   <p className="font-bold text-white text-lg">{analysis.macros.proteina_g.toFixed(0)}g</p>
-                  <p className="text-emerald-100 text-xs">Proteina</p>
+                  <p className="text-emerald-100 text-xs">Proteína</p>
                 </div>
                 <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-3 text-center">
                   <div className="w-10 h-10 bg-amber-400/30 rounded-xl mx-auto mb-2 flex items-center justify-center">
@@ -197,7 +197,7 @@ function ResultContent() {
                 <div className="w-8 h-8 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center">
                   <span className="text-base">🍽️</span>
                 </div>
-                Alimentos e Porcoes
+                Alimentos e Porções
               </h3>
               <div className="space-y-2">
                 {analysis.porcoes_estimadas.map((porcao, idx) => (
@@ -300,8 +300,8 @@ function ResultContent() {
                   <Sparkles className="w-7 h-7 text-yellow-300" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">Versao Turbinada</h3>
-                  <p className="text-purple-100">Sugestao para melhorar seu prato</p>
+                  <h3 className="text-xl font-bold text-white">Versão Turbinada</h3>
+                  <p className="text-purple-100">Sugestão para melhorar seu prato</p>
                 </div>
               </div>
             </div>
@@ -313,7 +313,7 @@ function ResultContent() {
                 <div className="mb-5 bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl p-5 border border-purple-100">
                   <p className="font-bold text-purple-800 mb-3 flex items-center gap-2">
                     <BowlLogo className="w-5 h-5" />
-                    Mudancas sugeridas
+                    Mudanças sugeridas
                   </p>
                   <ul className="space-y-2">
                     {analysis.mudancas_sugeridas.map((m, idx) => (
@@ -343,7 +343,7 @@ function ResultContent() {
                       <>
                         <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 text-center">
                           <p className="font-bold text-white text-xl">{analysis.macros_nova_versao.proteina_g.toFixed(0)}g</p>
-                          <p className="text-purple-100 text-xs">Proteina</p>
+                          <p className="text-purple-100 text-xs">Proteína</p>
                         </div>
                         <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 text-center">
                           <p className="font-bold text-white text-xl">{analysis.macros_nova_versao.carbo_g.toFixed(0)}g</p>
@@ -363,7 +363,7 @@ function ResultContent() {
                 <div className="rounded-2xl overflow-hidden shadow-xl">
                   <img
                     src={analysis.sugestao_melhorada_imagem_url}
-                    alt="Versao melhorada"
+                    alt="Versão melhorada"
                     className="w-full h-auto"
                   />
                 </div>
@@ -375,13 +375,13 @@ function ResultContent() {
         <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-3xl p-5 mb-4 text-center shadow-lg shadow-emerald-200/50">
           <p className="text-white font-semibold flex items-center justify-center gap-2 text-lg">
             <Heart className="w-6 h-6 text-rose-300" />
-            Continue cuidando da sua saude!
+            Continue cuidando da sua saúde!
           </p>
-          <p className="text-emerald-100 text-sm mt-1">Cada refeicao conta na sua jornada</p>
+          <p className="text-emerald-100 text-sm mt-1">Cada refeição conta na sua jornada</p>
         </div>
 
         <p className="text-xs text-gray-400 text-center mb-4 px-4">
-          Esta analise e informativa e nao substitui orientacao de nutricionista ou medico.
+          Esta análise é informativa e não substitui orientação de nutricionista ou médico.
         </p>
 
         <PageAds position="bottom" />
@@ -390,7 +390,7 @@ function ResultContent() {
           onClick={() => router.push('/home')}
           className="w-full bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-emerald-200/50 hover:shadow-2xl hover:scale-[1.02] transition-all mt-4 text-lg"
         >
-          Nova analise <ArrowRight className="w-5 h-5" />
+          Nova análise <ArrowRight className="w-5 h-5" />
         </button>
       </div>
     </div>

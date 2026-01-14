@@ -180,10 +180,21 @@ export default function AdminPage() {
     if (!confirm('Resetar analises PRO para 90?')) return;
     try {
       const result = await adminApi.resetProAnalyses(userId);
-      showSuccess(`Analises resetadas para ${result.pro_analyses_remaining}!`, 'Sucesso');
+      showSuccess(`Análises resetadas para ${result.pro_analyses_remaining}!`, 'Sucesso');
       searchUsers();
     } catch (err) {
       showError('Erro ao resetar analises', 'Erro');
+    }
+  };
+
+  const handleDeleteUser = async (userId: number) => {
+    if (!confirm('Tem certeza que deseja EXCLUIR este usuário? Esta ação não pode ser desfeita!')) return;
+    try {
+      await adminApi.deleteUser(userId);
+      showSuccess('Usuário excluído com sucesso!', 'Sucesso');
+      searchUsers();
+    } catch (err: any) {
+      showError(err.message || 'Erro ao excluir usuário', 'Erro');
     }
   };
 
@@ -234,7 +245,7 @@ export default function AdminPage() {
                 : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
             }`}
           >
-            {tab === 'dashboard' ? 'Dashboard' : tab === 'users' ? 'Usuarios' : 'Pagamentos'}
+            {tab === 'dashboard' ? 'Dashboard' : tab === 'users' ? 'Usuários' : 'Pagamentos'}
           </button>
         ))}
       </div>
@@ -247,11 +258,11 @@ export default function AdminPage() {
                 <Users className="w-6 h-6 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Total Usuarios</p>
+                <p className="text-sm text-gray-500">Total Usuários</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.users.total}</p>
               </div>
             </div>
-            <p className="text-xs text-gray-400 mt-3">+{stats.users.new_today} hoje | +{stats.users.new_month} mes</p>
+            <p className="text-xs text-gray-400 mt-3">+{stats.users.new_today} hoje | +{stats.users.new_month} mês</p>
           </div>
           
           <div className="bg-white rounded-2xl p-5 shadow-lg shadow-gray-100/50 border border-gray-100">
@@ -260,7 +271,7 @@ export default function AdminPage() {
                 <Crown className="w-6 h-6 text-violet-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Usuarios PRO</p>
+                <p className="text-sm text-gray-500">Usuários PRO</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.users.pro}</p>
               </div>
             </div>
@@ -277,7 +288,7 @@ export default function AdminPage() {
                 <p className="text-2xl font-bold text-gray-900">{formatPrice(stats.revenue.total)}</p>
               </div>
             </div>
-            <p className="text-xs text-gray-400 mt-3">{formatPrice(stats.revenue.month)} este mes</p>
+            <p className="text-xs text-gray-400 mt-3">{formatPrice(stats.revenue.month)} este mês</p>
           </div>
           
           <div className="bg-white rounded-2xl p-5 shadow-lg shadow-gray-100/50 border border-gray-100">
@@ -286,7 +297,7 @@ export default function AdminPage() {
                 <Activity className="w-6 h-6 text-fuchsia-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Analises</p>
+                <p className="text-sm text-gray-500">Análises</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.meals.total}</p>
               </div>
             </div>
@@ -382,6 +393,9 @@ export default function AdminPage() {
                         <button onClick={() => handleToggleAdmin(u.id)} className="p-2 hover:bg-orange-100 rounded-lg transition-colors" title="Toggle Admin">
                           <Shield className="w-4 h-4 text-orange-600" />
                         </button>
+                        <button onClick={() => handleDeleteUser(u.id)} className="p-2 hover:bg-red-100 rounded-lg transition-colors" title="Excluir usuario">
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -398,13 +412,13 @@ export default function AdminPage() {
             >
               <ChevronLeft className="w-4 h-4" /> Anterior
             </button>
-            <span className="text-sm text-gray-500 font-medium">Pagina {userPage} de {userPages}</span>
+            <span className="text-sm text-gray-500 font-medium">Página {userPage} de {userPages}</span>
             <button
               onClick={() => setUserPage(p => Math.min(userPages, p + 1))}
               disabled={userPage === userPages}
               className="flex items-center gap-1 px-4 py-2 bg-white border-2 border-gray-100 rounded-xl disabled:opacity-50 hover:bg-gray-50 transition-all"
             >
-              Proxima <ChevronRight className="w-4 h-4" />
+              Próxima <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -477,13 +491,13 @@ export default function AdminPage() {
             >
               <ChevronLeft className="w-4 h-4" /> Anterior
             </button>
-            <span className="text-sm text-gray-500 font-medium">Pagina {paymentPage} de {paymentPages}</span>
+            <span className="text-sm text-gray-500 font-medium">Página {paymentPage} de {paymentPages}</span>
             <button
               onClick={() => setPaymentPage(p => Math.min(paymentPages, p + 1))}
               disabled={paymentPage === paymentPages}
               className="flex items-center gap-1 px-4 py-2 bg-white border-2 border-gray-100 rounded-xl disabled:opacity-50 hover:bg-gray-50 transition-all"
             >
-              Proxima <ChevronRight className="w-4 h-4" />
+              Próxima <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -534,7 +548,7 @@ export default function AdminPage() {
               </div>
               <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 text-center border border-blue-100">
                 <p className="text-2xl font-bold text-blue-600">{selectedUser.meals_count}</p>
-                <p className="text-xs text-gray-500">Analises</p>
+                <p className="text-xs text-gray-500">Análises</p>
               </div>
               <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-4 text-center border border-violet-100">
                 <p className="text-2xl font-bold text-violet-600">{selectedUser.referrals_count}</p>

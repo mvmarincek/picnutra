@@ -29,7 +29,7 @@ export default function LandingPage() {
               href="/register" 
               className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 sm:px-6 py-2 rounded-full font-medium text-sm sm:text-base hover:shadow-lg hover:shadow-emerald-200 transition-all"
             >
-              Comecar Gratis
+              Começar Grátis
             </Link>
           </div>
         </div>
@@ -48,11 +48,11 @@ export default function LandingPage() {
           </div>
           
           <h1 className="text-3xl sm:text-4xl font-black text-white mb-4 leading-tight">
-            Descubra os nutrientes da sua refeicao
+            Descubra os nutrientes da sua refeição
           </h1>
           
           <p className="text-emerald-100 text-base sm:text-lg mb-8 max-w-md mx-auto">
-            Tire uma foto e receba uma analise nutricional completa em segundos com inteligencia artificial
+            Tire uma foto e receba uma análise nutricional completa em segundos com inteligência artificial
           </p>
           
           <Link 
@@ -60,17 +60,17 @@ export default function LandingPage() {
             className="inline-flex items-center gap-3 bg-white text-emerald-600 px-8 py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all mb-6"
           >
             <Camera className="w-6 h-6" />
-            Comecar Gratis
+            Começar Grátis
           </Link>
           
           <div className="flex flex-wrap justify-center gap-4 text-sm text-emerald-100">
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4" />
-              <span>Analise gratis</span>
+              <span>Análise grátis</span>
             </div>
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4" />
-              <span>Sem cartao</span>
+              <span>Sem cartão</span>
             </div>
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4" />
@@ -81,6 +81,16 @@ export default function LandingPage() {
       </section>
 
       <div className="max-w-lg mx-auto px-4 py-8">
+        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-3xl p-6 mb-8 border border-emerald-200">
+          <p className="text-gray-700 text-center leading-relaxed">
+            O NutriVision é um assistente inteligente para o controle da sua alimentação. 
+            Através de fotos, você descobre os nutrientes e as calorias das suas refeições 
+            de forma simples e prática. Crie um histórico alimentar completo para acompanhar 
+            sua evolução e compartilhar com seu nutricionista ou nutrólogo, auxiliando em 
+            uma alimentação mais saudável e consciente.
+          </p>
+        </div>
+
         <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 p-6 mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-5 flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-200">
@@ -106,7 +116,7 @@ export default function LandingPage() {
               </div>
               <div>
                 <h3 className="font-bold text-gray-900">2. IA analisa</h3>
-                <p className="text-gray-500 text-sm">Nossa inteligencia artificial identifica os alimentos</p>
+                <p className="text-gray-500 text-sm">Nossa inteligência artificial identifica os alimentos</p>
               </div>
             </div>
             
@@ -116,7 +126,7 @@ export default function LandingPage() {
               </div>
               <div>
                 <h3 className="font-bold text-gray-900">3. Receba os resultados</h3>
-                <p className="text-gray-500 text-sm">Calorias, proteinas, carboidratos, gorduras e dicas</p>
+                <p className="text-gray-500 text-sm">Calorias, proteínas, carboidratos, gorduras e dicas</p>
               </div>
             </div>
           </div>
@@ -132,7 +142,7 @@ export default function LandingPage() {
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 text-sm">FREE</h3>
-                <p className="text-xs text-emerald-600 font-medium">Gratis</p>
+                <p className="text-xs text-emerald-600 font-medium">Grátis</p>
               </div>
             </div>
             
@@ -141,7 +151,7 @@ export default function LandingPage() {
                 <div className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
                   <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" />
                 </div>
-                Analise rapida
+                Análise rápida
               </li>
               <li className="flex items-center gap-2 text-xs text-gray-700">
                 <div className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
@@ -159,13 +169,13 @@ export default function LandingPage() {
                 <div className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
                   <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" />
                 </div>
-                Historico
+                Histórico
               </li>
               <li className="flex items-center gap-2 text-xs text-gray-700">
                 <div className="w-4 h-4 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
                   <CreditCard className="w-2.5 h-2.5 text-amber-600" />
                 </div>
-                Compre creditos extras
+                Compre créditos extras
               </li>
             </ul>
           </div>
@@ -181,7 +191,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-sm">PRO</h3>
-                  <p className="text-xs text-purple-200">R$ 49,90/mes</p>
+                  <p className="text-xs text-purple-200">R$ 49,90/mês</p>
                 </div>
               </div>
               
@@ -190,13 +200,13 @@ export default function LandingPage() {
                   <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                     <Zap className="w-2.5 h-2.5 text-white" />
                   </div>
-                  Analises simples ilimitadas
+                  Análises simples ilimitadas
                 </li>
                 <li className="flex items-center gap-2 text-xs">
                   <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                     <Star className="w-2.5 h-2.5 text-yellow-300" />
                   </div>
-                  90 analises PRO/mes
+                  90 análises PRO/mês
                 </li>
                 <li className="flex items-center gap-2 text-xs">
                   <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
@@ -208,13 +218,13 @@ export default function LandingPage() {
                   <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                     <ChefHat className="w-2.5 h-2.5 text-white" />
                   </div>
-                  Sugestoes de prato
+                  Sugestões de prato
                 </li>
                 <li className="flex items-center gap-2 text-xs">
                   <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                     <Ban className="w-2.5 h-2.5 text-white" />
                   </div>
-                  Sem anuncios
+                  Sem anúncios
                 </li>
               </ul>
             </div>
@@ -226,7 +236,7 @@ export default function LandingPage() {
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-200">
               <Star className="w-6 h-6 text-white" />
             </div>
-            O que voce recebe
+            O que você recebe
           </h2>
           
           <div className="grid grid-cols-3 gap-3">
@@ -241,7 +251,7 @@ export default function LandingPage() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-400 to-rose-400 flex items-center justify-center mx-auto mb-2 shadow-md">
                 <span className="text-white font-bold text-sm">P</span>
               </div>
-              <h3 className="font-bold text-gray-900 text-xs">Proteinas</h3>
+              <h3 className="font-bold text-gray-900 text-xs">Proteínas</h3>
             </div>
             
             <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-3 text-center border border-amber-100">
@@ -280,13 +290,13 @@ export default function LandingPage() {
               <ImageIcon className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-purple-900">Analise Completa</h3>
+              <h3 className="font-bold text-purple-900">Análise Completa</h3>
               <p className="text-sm text-purple-600">Exclusivo PRO</p>
             </div>
           </div>
           
           <p className="text-gray-700 text-sm mb-4">
-            Alem dos nutrientes, gera uma <strong>imagem do prato otimizado</strong> com sugestoes para tornar sua refeicao mais saudavel.
+            Além dos nutrientes, gera uma <strong>imagem do prato otimizado</strong> com sugestões para tornar sua refeição mais saudável.
           </p>
           
           <div className="bg-white rounded-2xl p-3 flex items-center gap-3 shadow-md">
@@ -304,7 +314,7 @@ export default function LandingPage() {
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center shadow-lg shadow-rose-200">
               <Heart className="w-6 h-6 text-white" />
             </div>
-            Por que cuidar da alimentacao?
+            Por que cuidar da alimentação?
           </h2>
           
           <div className="space-y-4">
@@ -314,7 +324,7 @@ export default function LandingPage() {
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 text-sm">Mais Energia</h3>
-                <p className="text-gray-500 text-xs">Alimentos nutritivos dao mais disposicao para o dia</p>
+                <p className="text-gray-500 text-xs">Alimentos nutritivos dão mais disposição para o dia</p>
               </div>
             </div>
             
@@ -323,8 +333,8 @@ export default function LandingPage() {
                 <Shield className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className="font-bold text-gray-900 text-sm">Saude Duradoura</h3>
-                <p className="text-gray-500 text-xs">Previna doencas e fortaleca seu sistema imunologico</p>
+                <h3 className="font-bold text-gray-900 text-sm">Saúde Duradoura</h3>
+                <p className="text-gray-500 text-xs">Previna doenças e fortaleça seu sistema imunológico</p>
               </div>
             </div>
             
@@ -334,7 +344,7 @@ export default function LandingPage() {
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 text-sm">Bem-estar Mental</h3>
-                <p className="text-gray-500 text-xs">Alimentacao impacta humor e clareza mental</p>
+                <p className="text-gray-500 text-xs">Alimentação impacta humor e clareza mental</p>
               </div>
             </div>
           </div>
@@ -342,7 +352,7 @@ export default function LandingPage() {
 
         <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-3xl p-6 mb-8 text-center shadow-xl shadow-emerald-200/50">
           <h2 className="text-xl font-bold text-white mb-2">
-            Pronto para transformar sua alimentacao?
+            Pronto para transformar sua alimentação?
           </h2>
           <p className="text-emerald-100 text-sm mb-4">
             Comece agora e descubra uma nova forma de se alimentar
@@ -382,7 +392,7 @@ export default function LandingPage() {
             <div className="text-center">
               <p className="text-gray-500 text-xs">
                 Estimativas aproximadas baseadas em imagem.
-                <br/>Nao substitui orientacao de nutricionista.
+                <br/>Não substitui orientação de nutricionista.
               </p>
               <p className="text-gray-600 text-xs mt-2">
                 © {new Date().getFullYear()} Nutrivision

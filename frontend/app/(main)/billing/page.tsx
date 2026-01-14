@@ -590,7 +590,7 @@ export default function BillingPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">{isPro ? 'Meu Plano' : 'Creditos'}</h1>
-              <p className="text-emerald-100">Gerencie seu plano e creditos</p>
+              <p className="text-emerald-100">Gerencie seu plano e créditos</p>
             </div>
           </div>
         </div>
@@ -603,14 +603,14 @@ export default function BillingPage() {
               <Crown className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold">Voce e PRO!</h2>
-              <p className="text-sm text-white/90">Aproveite todos os beneficios exclusivos</p>
+              <h2 className="text-2xl font-bold">Você é PRO!</h2>
+              <p className="text-sm text-white/90">Aproveite todos os benefícios exclusivos</p>
             </div>
           </div>
           
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm">Analises completas restantes</span>
+              <span className="text-sm">Análises completas restantes</span>
               <span className="font-bold text-lg">{Math.min(billingStatus.pro_analyses_remaining, 90)}/90</span>
             </div>
             <div className="w-full bg-white/20 rounded-full h-2">
@@ -619,19 +619,19 @@ export default function BillingPage() {
                 style={{ width: `${Math.min((billingStatus.pro_analyses_remaining / 90) * 100, 100)}%` }}
               />
             </div>
-            <p className="text-xs text-white/70 mt-2">Renova todo mes automaticamente</p>
+            <p className="text-xs text-white/70 mt-2">Renova todo mês automaticamente</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
               <Zap className="w-5 h-5 mx-auto mb-1" />
-              <p className="text-xs">Analises simples</p>
+              <p className="text-xs">Análises simples</p>
               <p className="font-bold">Ilimitadas</p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
               <Star className="w-5 h-5 mx-auto mb-1" />
               <p className="text-xs">Suporte</p>
-              <p className="font-bold">Prioritario</p>
+              <p className="font-bold">Prioritário</p>
             </div>
           </div>
           
@@ -653,7 +653,7 @@ export default function BillingPage() {
             </div>
             <div>
               <h3 className="text-xl font-bold text-gray-900">Assinante PRO</h3>
-              <p className="text-sm text-gray-600">Aproveite todos os beneficios exclusivos</p>
+              <p className="text-sm text-gray-600">Aproveite todos os benefícios exclusivos</p>
             </div>
           </div>
           
@@ -661,22 +661,22 @@ export default function BillingPage() {
             <div className="bg-white/80 rounded-xl p-4 border border-purple-100 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
                 <Zap className="w-5 h-5 text-emerald-500" />
-                <span className="font-semibold text-gray-800">Analises Simples</span>
+                <span className="font-semibold text-gray-800">Análises Simples</span>
               </div>
               <p className="text-2xl font-bold text-emerald-600">Ilimitadas</p>
             </div>
             <div className="bg-white/80 rounded-xl p-4 border border-purple-100 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
                 <Star className="w-5 h-5 text-amber-500" />
-                <span className="font-semibold text-gray-800">Analises PRO</span>
+                <span className="font-semibold text-gray-800">Análises PRO</span>
               </div>
-              <p className="text-2xl font-bold text-purple-600">{Math.min(billingStatus?.pro_analyses_remaining || 90, 90)}<span className="text-sm font-normal text-gray-500">/mes</span></p>
+              <p className="text-2xl font-bold text-purple-600">{Math.min(billingStatus?.pro_analyses_remaining || 90, 90)}<span className="text-sm font-normal text-gray-500">/mês</span></p>
             </div>
           </div>
           
           <div className="flex items-center gap-2 p-3 bg-emerald-50 rounded-xl border border-emerald-100">
             <Check className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-            <p className="text-sm text-emerald-800">Voce nao precisa comprar creditos! Tudo esta incluido no seu plano.</p>
+            <p className="text-sm text-emerald-800">Você não precisa comprar créditos! Tudo está incluído no seu plano.</p>
           </div>
         </div>
       )}
@@ -688,7 +688,7 @@ export default function BillingPage() {
               <div>
                 <p className="text-sm text-gray-600">Seu saldo</p>
                 <p className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">{billingStatus?.credit_balance || 0}</p>
-                <p className="text-sm text-gray-500">creditos</p>
+                <p className="text-sm text-gray-500">créditos</p>
               </div>
               <div className="text-right">
                 <p className="text-sm text-gray-600">Plano atual</p>
@@ -699,15 +699,15 @@ export default function BillingPage() {
             </div>
 
             <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
-              <p className="text-sm text-gray-600 mb-2">Custo por analise:</p>
+              <p className="text-sm text-gray-600 mb-2">Custo por análise:</p>
               <div className="flex gap-4">
                 <div className="flex items-center">
                   <Zap className="w-4 h-4 text-emerald-500 mr-1" />
-                  <span className="text-sm font-medium text-emerald-600">Simples: Gratis</span>
+                  <span className="text-sm font-medium text-emerald-600">Simples: Grátis</span>
                 </div>
                 <div className="flex items-center">
                   <Star className="w-4 h-4 text-amber-500 mr-1" />
-                  <span className="text-sm">Completa: 12 creditos</span>
+                  <span className="text-sm">Completa: 12 créditos</span>
                 </div>
               </div>
             </div>
@@ -722,14 +722,14 @@ export default function BillingPage() {
               </div>
               <div>
                 <h2 className="text-xl font-bold">Plano PRO</h2>
-                <p className="text-sm opacity-90">Analises simples ilimitadas</p>
+                <p className="text-sm opacity-90">Análises simples ilimitadas</p>
               </div>
             </div>
-            <p className="text-3xl font-bold mb-2">R$ 49,90<span className="text-lg font-normal">/mes</span></p>
+            <p className="text-3xl font-bold mb-2">R$ 49,90<span className="text-lg font-normal">/mês</span></p>
             <ul className="text-sm mb-4 space-y-1 text-white/90">
-              <li className="flex items-center gap-2"><Check className="w-4 h-4" /> Analises simples ilimitadas</li>
-              <li className="flex items-center gap-2"><Check className="w-4 h-4" /> 60 analises completas por mes</li>
-              <li className="flex items-center gap-2"><Check className="w-4 h-4" /> Suporte prioritario</li>
+              <li className="flex items-center gap-2"><Check className="w-4 h-4" /> Análises simples ilimitadas</li>
+              <li className="flex items-center gap-2"><Check className="w-4 h-4" /> 60 análises completas por mês</li>
+              <li className="flex items-center gap-2"><Check className="w-4 h-4" /> Suporte prioritário</li>
             </ul>
             <button
               onClick={() => setShowProModal(true)}
@@ -743,7 +743,7 @@ export default function BillingPage() {
             <div className="w-8 h-8 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg flex items-center justify-center">
               <Zap className="w-4 h-4 text-amber-600" />
             </div>
-            Comprar Creditos
+            Comprar Créditos
           </h2>
           <div className="grid grid-cols-2 gap-4 mb-8">
             {packageOrder.map((pkgId) => {
@@ -766,13 +766,13 @@ export default function BillingPage() {
                   )}
                   <div className="text-center mb-3">
                     <p className="text-2xl font-bold text-gray-900">{pkg.credits}</p>
-                    <p className="text-gray-500 text-sm">creditos</p>
+                    <p className="text-gray-500 text-sm">créditos</p>
                   </div>
                   <p className="text-center text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-1">
                     {formatPrice(pkg.price)}
                   </p>
                   <p className="text-center text-xs text-gray-500">
-                    {Math.floor(pkg.credits / 12)} analise(s) completa(s)
+                    {Math.floor(pkg.credits / 12)} análise(s) completa(s)
                   </p>
                 </button>
               );
@@ -792,7 +792,7 @@ export default function BillingPage() {
             </div>
             
             <p className="text-gray-600 mb-4">
-              Pacote: <strong className="text-emerald-600">{displayPackages[selectedPackage]?.credits} creditos</strong> - {formatPrice(displayPackages[selectedPackage]?.price || 0)}
+              Pacote: <strong className="text-emerald-600">{displayPackages[selectedPackage]?.credits} créditos</strong> - {formatPrice(displayPackages[selectedPackage]?.price || 0)}
             </p>
 
             {!showCardForm ? (
@@ -834,7 +834,7 @@ export default function BillingPage() {
                 </button>
                 
                 <p className="text-center text-xs text-gray-400">
-                  Pagamento seguro - creditos liberados na hora
+                  Pagamento seguro - créditos liberados na hora
                 </p>
               </div>
             ) : (

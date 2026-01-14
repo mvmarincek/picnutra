@@ -56,7 +56,7 @@ export default function HomePage() {
     } catch {
       setPhase('idle');
       showError(
-        'Nao foi possivel processar a imagem. O formato pode nao ser suportado. Tente outra foto.',
+        'Não foi possível processar a imagem. O formato pode não ser suportado. Tente outra foto.',
         'Erro ao processar imagem',
         {
           label: 'Tentar outra foto',
@@ -90,10 +90,10 @@ export default function HomePage() {
     
     if (!isFreeSimple && user && user.credit_balance < cost && user.pro_analyses_remaining <= 0) {
       showWarning(
-        `Voce precisa de ${cost} creditos para esta analise, mas possui apenas ${user.credit_balance}. Compre mais creditos para continuar.`,
-        'Creditos insuficientes',
+        `Você precisa de ${cost} créditos para esta análise, mas possui apenas ${user.credit_balance}. Compre mais créditos para continuar.`,
+        'Créditos insuficientes',
         {
-          label: 'Comprar creditos',
+          label: 'Comprar créditos',
           onClick: () => {
             clearFeedback();
             router.push('/billing');
@@ -121,12 +121,12 @@ export default function HomePage() {
       router.push(`/processing?jobId=${analyzeResult.job_id}&mealId=${uploadResult.meal_id}`);
     } catch (err: any) {
       setPhase('idle');
-      const errorMessage = err.message || 'Erro ao iniciar analise';
+      const errorMessage = err.message || 'Erro ao iniciar análise';
       
       if (errorMessage.toLowerCase().includes('network') || errorMessage.toLowerCase().includes('conexao') || errorMessage.toLowerCase().includes('fetch')) {
         showError(
-          'Nao foi possivel conectar ao servidor. Verifique sua conexao com a internet e tente novamente.',
-          'Erro de conexao',
+          'Não foi possível conectar ao servidor. Verifique sua conexão com a internet e tente novamente.',
+          'Erro de conexão',
           {
             label: 'Tentar novamente',
             onClick: () => {
@@ -137,10 +137,10 @@ export default function HomePage() {
         );
       } else if (errorMessage.toLowerCase().includes('credito') || errorMessage.toLowerCase().includes('credit') || errorMessage.toLowerCase().includes('402')) {
         showWarning(
-          'Voce nao possui creditos suficientes para esta analise. Compre mais creditos para continuar.',
-          'Creditos insuficientes',
+          'Você não possui créditos suficientes para esta análise. Compre mais créditos para continuar.',
+          'Créditos insuficientes',
           {
-            label: 'Comprar creditos',
+            label: 'Comprar créditos',
             onClick: () => {
               clearFeedback();
               router.push('/billing');
@@ -150,7 +150,7 @@ export default function HomePage() {
       } else {
         showError(
           errorMessage,
-          'Erro ao iniciar analise',
+          'Erro ao iniciar análise',
           {
             label: 'Tentar novamente',
             onClick: () => clearFeedback()
@@ -204,8 +204,8 @@ export default function HomePage() {
               <Target className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Nova Analise</h1>
-              <p className="text-emerald-100">Descubra os nutrientes da sua refeicao</p>
+              <h1 className="text-2xl font-bold text-white">Nova Análise</h1>
+              <p className="text-emerald-100">Descubra os nutrientes da sua refeição</p>
             </div>
           </div>
         </div>
@@ -216,7 +216,7 @@ export default function HomePage() {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <Crown className="w-5 h-5" />
-                  <span className="font-semibold">Analises PRO restantes</span>
+                  <span className="font-semibold">Análises PRO restantes</span>
                 </div>
                 <button 
                   onClick={() => refreshUser()}
@@ -239,7 +239,7 @@ export default function HomePage() {
               <div className="w-8 h-8 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center">
                 <UtensilsCrossed className="w-4 h-4 text-emerald-600" />
               </div>
-              O que voce vai analisar?
+              O que você vai analisar?
             </h3>
             <div className="grid grid-cols-3 gap-3">
               {mealTypes.map((type) => (
@@ -270,7 +270,7 @@ export default function HomePage() {
               <div className="w-8 h-8 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg flex items-center justify-center">
                 <Zap className="w-4 h-4 text-amber-600" />
               </div>
-              Tipo de analise
+              Tipo de análise
             </h3>
             <div className="space-y-3">
               {user?.plan !== 'pro' && (
@@ -291,13 +291,13 @@ export default function HomePage() {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <span className={`font-bold text-lg ${mode === 'simple' ? 'text-emerald-700' : 'text-gray-700'}`}>
-                          Analise Rapida
+                          Análise Rápida
                         </span>
                         <span className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-                          GRATIS
+                          GRÁTIS
                         </span>
                       </div>
-                      <p className="text-sm text-gray-500">Calorias, macros e observacoes nutricionais</p>
+                      <p className="text-sm text-gray-500">Calorias, macros e observações nutricionais</p>
                     </div>
                   </div>
                 </button>
@@ -320,15 +320,15 @@ export default function HomePage() {
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
                       <span className={`font-bold text-lg ${mode === 'full' ? 'text-purple-700' : 'text-gray-700'}`}>
-                        Analise Completa
+                        Análise Completa
                       </span>
                       {user?.plan !== 'pro' && (
                         <span className="bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
-                          12 creditos
+                          12 créditos
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-500">Tudo + sugestao visual de prato otimizado</p>
+                    <p className="text-sm text-gray-500">Tudo + sugestão visual de prato otimizado</p>
                   </div>
                 </div>
               </button>
@@ -340,12 +340,12 @@ export default function HomePage() {
               <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center">
                 <FileText className="w-4 h-4 text-blue-600" />
               </div>
-              Informacoes adicionais
+              Informações adicionais
             </h3>
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium text-gray-600 mb-2 block">
-                  Observacoes (opcional)
+                  Observações (opcional)
                 </label>
                 <textarea
                   value={userNotes}
@@ -364,7 +364,7 @@ export default function HomePage() {
                 <div>
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-600 mb-2">
                     <Droplet className="w-4 h-4 text-blue-400" />
-                    Volume maximo do copo (ml)
+                    Volume máximo do copo (ml)
                   </label>
                   <input
                     type="number"
@@ -397,7 +397,7 @@ export default function HomePage() {
               <div className="w-8 h-8 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center">
                 <Camera className="w-4 h-4 text-emerald-600" />
               </div>
-              Foto da refeicao
+              Foto da refeição
             </h3>
             {imagePreview ? (
               <div className="relative rounded-2xl overflow-hidden shadow-xl">
@@ -461,16 +461,16 @@ export default function HomePage() {
                 : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             }`}
           >
-            Analisar Refeicao
+            Analisar Refeição
             <ArrowRight className="w-5 h-5" />
           </button>
 
           <p className="text-center text-sm text-gray-400 mt-4">
             {user?.plan === 'pro' 
-              ? 'Analise PRO inclusa no seu plano'
+              ? 'Análise PRO inclusa no seu plano'
               : user?.plan === 'free' && mode === 'simple' 
-                ? 'Analise rapida gratuita' 
-                : `Custo: ${cost} creditos - Saldo: ${user?.credit_balance || 0} creditos`
+                ? 'Análise rápida gratuita' 
+                : `Custo: ${cost} créditos - Saldo: ${user?.credit_balance || 0} créditos`
             }
           </p>
         </div>
@@ -485,7 +485,7 @@ export default function HomePage() {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-white">Seja PRO</h3>
-                <p className="text-purple-100">90 analises completas por R$ 49,90/mes</p>
+                <p className="text-purple-100">90 análises completas por R$ 49,90/mês</p>
               </div>
             </div>
           </div>
@@ -496,13 +496,13 @@ export default function HomePage() {
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0">
                   <Infinity className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-medium text-gray-700">Analises ilimitadas todos os meses</span>
+                <span className="font-medium text-gray-700">Análises ilimitadas todos os meses</span>
               </div>
               <div className="flex items-center gap-3 bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl p-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center flex-shrink-0">
                   <ImageIcon className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-medium text-gray-700">Sugestao visual de prato otimizado</span>
+                <span className="font-medium text-gray-700">Sugestão visual de prato otimizado</span>
               </div>
               <div className="flex items-center gap-3 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl p-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center flex-shrink-0">
@@ -529,7 +529,7 @@ export default function HomePage() {
           className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-white font-bold text-lg flex items-center justify-center gap-2 shadow-xl shadow-amber-200/50 hover:shadow-2xl hover:scale-[1.02] transition-all mb-6"
         >
           <CreditCard className="w-5 h-5" />
-          Comprar Creditos
+          Comprar Créditos
         </button>
       )}
 

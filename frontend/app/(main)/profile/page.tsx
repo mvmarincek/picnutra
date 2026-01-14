@@ -421,14 +421,14 @@ export default function ProfilePage() {
             </div>
             <div>
               <h3 className="font-bold text-lg">Assinatura PRO Ativa</h3>
-              <p className="text-sm text-white/80">Analises ilimitadas e beneficios exclusivos</p>
+              <p className="text-sm text-white/80">Análises ilimitadas e benefícios exclusivos</p>
             </div>
           </div>
           
           {confirmingCancel ? (
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
               <p className="text-sm mb-4">
-                Tem certeza? Ao cancelar, voce perdera acesso aos beneficios PRO e voltara ao plano Free.
+                Tem certeza? Ao cancelar, você perderá acesso aos benefícios PRO e voltará ao plano Free.
               </p>
               <div className="flex gap-3">
                 <button
@@ -470,7 +470,7 @@ export default function ProfilePage() {
             <Lightbulb className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h3 className="font-bold text-gray-900">Tem uma sugestao?</h3>
+            <h3 className="font-bold text-gray-900">Tem uma sugestão?</h3>
             <p className="text-sm text-gray-500">Ajude-nos a melhorar o Nutrivision</p>
           </div>
         </div>
@@ -478,13 +478,13 @@ export default function ProfilePage() {
         <textarea
           value={sugestao}
           onChange={(e) => setSugestao(e.target.value)}
-          placeholder="Que funcionalidade voce gostaria de ver? Como podemos melhorar sua experiencia?"
+          placeholder="Que funcionalidade você gostaria de ver? Como podemos melhorar sua experiência?"
           className="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-amber-500 focus:border-amber-400 transition-all resize-none h-24"
         />
 
         {sugestaoEnviada ? (
           <div className="mt-4 py-3 rounded-2xl bg-emerald-50 text-emerald-700 text-center font-medium flex items-center justify-center gap-2 border border-emerald-100">
-            <span className="text-xl">🎉</span> Obrigado pela sugestao!
+            <span className="text-xl">🎉</span> Obrigado pela sugestão!
           </div>
         ) : (
           <button
@@ -504,7 +504,7 @@ export default function ProfilePage() {
             ) : (
               <>
                 <Send className="w-4 h-4" />
-                Enviar Sugestao
+                Enviar Sugestão
               </>
             )}
           </button>
@@ -518,18 +518,18 @@ export default function ProfilePage() {
           </div>
           <div>
             <h3 className="font-bold text-gray-900">Indique Amigos</h3>
-            <p className="text-sm text-gray-500">Ganhe 12 creditos por indicacao!</p>
+            <p className="text-sm text-gray-500">Ganhe 12 créditos por indicação!</p>
           </div>
         </div>
 
         <p className="text-sm text-gray-600 mb-4">
-          Compartilhe seu link ou QR Code. Quando seu amigo se cadastrar, voce ganha 12 creditos para analises PRO!
+          Compartilhe seu link ou QR Code. Quando seu amigo se cadastrar, você ganha 12 créditos para análises PRO!
         </p>
 
         {user?.referral_code ? (
           <>
             <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-2xl p-3 mb-4 border border-purple-100">
-              <p className="text-xs text-gray-500 mb-1">Seu link de indicacao:</p>
+              <p className="text-xs text-gray-500 mb-1">Seu link de indicação:</p>
               <div className="flex items-center gap-2">
                 <input
                   type="text"
@@ -564,7 +564,7 @@ export default function ProfilePage() {
               <div className="bg-white p-4 rounded-2xl border-2 border-purple-100 inline-block shadow-lg shadow-purple-50">
                 <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(referralLink)}`}
-                  alt="QR Code de Indicacao"
+                  alt="QR Code de Indicação"
                   className="w-36 h-36"
                 />
                 <p className="text-xs text-center text-gray-500 mt-2">Escaneie para se cadastrar</p>
@@ -573,7 +573,7 @@ export default function ProfilePage() {
           </>
         ) : (
           <div className="bg-gray-50 rounded-2xl p-4 text-center">
-            <p className="text-sm text-gray-500">Carregando seu codigo de indicacao...</p>
+            <p className="text-sm text-gray-500">Carregando seu código de indicação...</p>
           </div>
         )}
       </div>
@@ -585,7 +585,7 @@ export default function ProfilePage() {
           </div>
           <div>
             <h3 className="font-bold text-gray-900">Acesse o App</h3>
-            <p className="text-sm text-gray-500">QR Code para acesso rapido</p>
+            <p className="text-sm text-gray-500">QR Code para acesso rápido</p>
           </div>
         </div>
 

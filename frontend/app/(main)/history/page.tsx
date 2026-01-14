@@ -85,7 +85,7 @@ export default function HistoryPage() {
           </div>
           <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full animate-bounce" />
         </div>
-        <p className="text-emerald-700 font-medium mt-4">Carregando historico...</p>
+        <p className="text-emerald-700 font-medium mt-4">Carregando histórico...</p>
       </div>
     );
   }
@@ -101,7 +101,7 @@ export default function HistoryPage() {
               <Calendar className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Historico de Analises</h1>
+              <h1 className="text-2xl font-bold text-white">Histórico de Análises</h1>
               <p className="text-emerald-100">Acompanhe sua jornada nutricional</p>
             </div>
           </div>
@@ -117,13 +117,13 @@ export default function HistoryPage() {
                   <Trophy className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-sm opacity-90">Seu nivel</p>
+                  <p className="text-sm opacity-90">Seu nível</p>
                   <p className="text-xl font-bold">{stats.title}</p>
                 </div>
               </div>
               <div className="text-right">
                 <p className="text-3xl font-bold">{stats.total_meals}</p>
-                <p className="text-sm opacity-90">analises</p>
+                <p className="text-sm opacity-90">análises</p>
               </div>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-full h-2 mb-2">
@@ -133,7 +133,7 @@ export default function HistoryPage() {
               />
             </div>
             <p className="text-xs opacity-80">
-              {stats.level < 5 ? `${stats.next_level_at - stats.total_meals} analises para o proximo nivel` : 'Nivel maximo alcancado!'}
+              {stats.level < 5 ? `${stats.next_level_at - stats.total_meals} análises para o proximo nivel` : 'Nivel maximo alcancado!'}
             </p>
           </div>
 
@@ -157,7 +157,7 @@ export default function HistoryPage() {
                 <Target className="w-4 h-4 text-rose-500" />
               </div>
               <p className="text-xl font-bold text-gray-900">{stats.avg_calorias}</p>
-              <p className="text-xs text-gray-500">kcal media</p>
+              <p className="text-xs text-gray-500">kcal média</p>
             </div>
             <div className="bg-white rounded-xl p-3 shadow-lg shadow-gray-100/50 border border-gray-100 text-center">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center mx-auto mb-2">
@@ -173,7 +173,7 @@ export default function HistoryPage() {
               <div className="w-6 h-6 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center">
                 <span className="text-xs">📊</span>
               </div>
-              Medias nutricionais
+              Médias nutricionais
             </p>
             <div className="grid grid-cols-5 gap-2">
               <div className="text-center">
@@ -222,7 +222,7 @@ export default function HistoryPage() {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">Seu melhor dia</p>
-                  <p className="text-sm text-gray-600">{stats.best_day} e o dia que voce mais usa o app!</p>
+                  <p className="text-sm text-gray-600">{stats.best_day} é o dia que você mais usa o app!</p>
                 </div>
               </div>
               <ChevronRight className="w-5 h-5 text-gray-400" />
@@ -237,7 +237,7 @@ export default function HistoryPage() {
             <Camera className="w-10 h-10 text-white" />
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">Comece sua jornada nutricional</h2>
-          <p className="text-gray-600 mb-6">Voce ainda nao tem analises. Tire uma foto da sua refeicao e descubra informacoes nutricionais detalhadas!</p>
+          <p className="text-gray-600 mb-6">Voce ainda nao tem análises. Tire uma foto da sua refeicao e descubra informacoes nutricionais detalhadas!</p>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 text-left">
             <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
@@ -267,7 +267,7 @@ export default function HistoryPage() {
             onClick={() => router.push('/home')}
             className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-8 py-3 rounded-2xl font-semibold hover:shadow-lg hover:shadow-emerald-200 hover:scale-[1.02] transition-all"
           >
-            Fazer primeira analise
+            Fazer primeira análise
           </button>
         </div>
       ) : (

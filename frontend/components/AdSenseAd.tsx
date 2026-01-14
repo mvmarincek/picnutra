@@ -36,8 +36,8 @@ export default function AdSenseAd({ slot, className = '' }: AdSenseAdProps) {
     <div 
       className={`ad-container flex justify-center ${className}`} 
       style={{ 
-        minHeight: adLoaded ? '50px' : '0px',
-        maxHeight: '100px',
+        minHeight: adLoaded ? '90px' : '0px',
+        maxHeight: '120px',
         width: '100%',
         overflow: 'hidden',
         transition: 'min-height 0.3s'

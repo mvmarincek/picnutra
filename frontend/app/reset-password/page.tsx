@@ -22,7 +22,7 @@ function ResetPasswordContent() {
     setError('');
 
     if (password !== confirmPassword) {
-      setError('As senhas nao coincidem');
+      setError('As senhas não coincidem');
       return;
     }
 
@@ -32,7 +32,7 @@ function ResetPasswordContent() {
     }
 
     if (!token) {
-      setError('Token invalido');
+      setError('Token inválido');
       return;
     }
 
@@ -72,7 +72,7 @@ function ResetPasswordContent() {
             </div>
             <h2 className="text-xl font-bold text-gray-900 mb-2">Senha alterada!</h2>
             <p className="text-gray-500 mb-6">
-              Sua senha foi redefinida com sucesso. Agora voce pode fazer login com a nova senha.
+              Sua senha foi redefinida com sucesso. Agora você pode fazer login com a nova senha.
             </p>
             <button
               onClick={() => router.push('/login')}

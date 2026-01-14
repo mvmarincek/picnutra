@@ -26,14 +26,14 @@ function SuccessContent() {
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Pagamento Confirmado!</h1>
             <p className="text-gray-600">
-              Seus creditos foram adicionados a sua conta com sucesso.
+              Seus créditos foram adicionados à sua conta com sucesso.
             </p>
           </div>
 
           <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl p-6 mb-6">
             <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-amber-500" />
-              O que voce pode fazer agora:
+              O que você pode fazer agora:
             </h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
@@ -41,8 +41,8 @@ function SuccessContent() {
                   <Camera className="w-4 h-4 text-green-600" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Analises Completas</p>
-                  <p className="text-sm text-gray-600">Fotografe suas refeicoes e receba analises nutricionais detalhadas</p>
+                  <p className="font-medium text-gray-900">Análises Completas</p>
+                  <p className="text-sm text-gray-600">Fotografe suas refeições e receba análises nutricionais detalhadas</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
@@ -50,8 +50,8 @@ function SuccessContent() {
                   <TrendingUp className="w-4 h-4 text-teal-600" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Sugestoes de Melhoria</p>
-                  <p className="text-sm text-gray-600">Receba dicas personalizadas para melhorar sua alimentacao</p>
+                  <p className="font-medium text-gray-900">Sugestões de Melhoria</p>
+                  <p className="text-sm text-gray-600">Receba dicas personalizadas para melhorar sua alimentação</p>
                 </div>
               </li>
             </ul>
@@ -62,14 +62,14 @@ function SuccessContent() {
               onClick={() => router.push('/home')}
               className="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white px-6 py-3 rounded-2xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
             >
-              Fazer uma Analise
+              Fazer uma Análise
               <ArrowRight className="w-5 h-5" />
             </button>
             <button
               onClick={() => router.push('/billing')}
               className="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-2xl font-semibold hover:bg-gray-200 transition-all"
             >
-              Ver meus creditos
+              Ver meus créditos
             </button>
           </div>
           

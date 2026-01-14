@@ -78,7 +78,7 @@ export default function AboutPage() {
                 Dúvidas, sugestões ou problemas? Entre em contato conosco:
               </p>
               <p className="mt-2">
-                <strong>Email:</strong> contato@nutrivision.app
+                <strong>Email:</strong> nutrivision-contato@ai8hub.com
               </p>
             </section>
 

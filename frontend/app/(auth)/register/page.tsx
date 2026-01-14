@@ -137,7 +137,7 @@ function RegisterContent() {
             </div>
             <h2 className="text-xl font-bold text-gray-900 mb-2">Verifique seu email!</h2>
             <p className="text-gray-500 mb-4">
-              Enviamos um link de confirmacao para:
+              Enviamos um link de confirmação para:
             </p>
             <p className="font-semibold text-emerald-600 mb-6">{email}</p>
             <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-4 mb-6 border border-emerald-100">
@@ -147,7 +147,7 @@ function RegisterContent() {
               </div>
             </div>
             <p className="text-sm text-gray-400 mb-4">
-              Nao recebeu o email? Verifique a pasta de spam.
+              Não recebeu o email? Verifique a pasta de spam.
             </p>
             <button
               onClick={() => router.push('/login')}
@@ -177,7 +177,7 @@ function RegisterContent() {
               Nutrivision
             </span>
           </Link>
-          <p className="text-gray-500 mt-2">Crie sua conta gratis</p>
+          <p className="text-gray-500 mt-2">Crie sua conta grátis</p>
         </div>
 
         {referralCode && (
@@ -187,7 +187,7 @@ function RegisterContent() {
             </div>
             <div>
               <p className="font-semibold text-violet-800">Indicado por um amigo!</p>
-              <p className="text-sm text-violet-600">Seu amigo ganhara creditos quando voce se cadastrar</p>
+              <p className="text-sm text-violet-600">Seu amigo ganhará créditos quando você se cadastrar</p>
             </div>
           </div>
         )}
@@ -222,7 +222,7 @@ function RegisterContent() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all outline-none"
-                placeholder="Minimo 6 caracteres"
+                placeholder="Mínimo 6 caracteres"
                 required
                 disabled={loading}
               />

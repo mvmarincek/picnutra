@@ -415,6 +415,26 @@ async def remove_user_pro(
     
     return {"success": True, "plan": user.plan}
 
+@router.delete("/users/{user_id}")
+async def delete_user(
+    user_id: int,
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario nao encontrado")
+    
+    if user.is_admin:
+        raise HTTPException(status_code=400, detail="Nao e possivel excluir um administrador")
+    
+    await db.delete(user)
+    await db.commit()
+    
+    return {"success": True, "message": "Usuario excluido com sucesso"}
+
 @router.get("/email-logs")
 async def list_email_logs(
     email_type: Optional[str] = None,

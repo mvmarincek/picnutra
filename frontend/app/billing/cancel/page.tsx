@@ -16,7 +16,7 @@ export default function BillingCancelPage() {
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Pagamento Cancelado</h1>
             <p className="text-gray-600">
-              O pagamento foi cancelado e nenhuma cobranca foi realizada na sua conta.
+              O pagamento foi cancelado e nenhuma cobrança foi realizada na sua conta.
             </p>
           </div>
 
@@ -30,7 +30,7 @@ export default function BillingCancelPage() {
                 <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-blue-600 text-xs font-bold">1</span>
                 </div>
-                <p>Voce cancelou o pagamento antes de concluir</p>
+                <p>Você cancelou o pagamento antes de concluir</p>
               </li>
               <li className="flex items-start gap-3">
                 <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -42,7 +42,7 @@ export default function BillingCancelPage() {
                 <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-blue-600 text-xs font-bold">3</span>
                 </div>
-                <p>Houve um problema com o metodo de pagamento</p>
+                <p>Houve um problema com o método de pagamento</p>
               </li>
             </ul>
           </div>
@@ -51,8 +51,8 @@ export default function BillingCancelPage() {
             <div className="flex items-start gap-3">
               <Shield className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-green-800">Seus dados estao seguros</p>
-                <p className="text-sm text-green-700">Nenhuma informacao de pagamento foi salva ou compartilhada.</p>
+                <p className="font-medium text-green-800">Seus dados estão seguros</p>
+                <p className="text-sm text-green-700">Nenhuma informação de pagamento foi salva ou compartilhada.</p>
               </div>
             </div>
           </div>
@@ -69,13 +69,13 @@ export default function BillingCancelPage() {
               onClick={() => router.push('/home')}
               className="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-2xl font-semibold hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
             >
-              Voltar ao Inicio
+              Voltar ao Início
               <ArrowRight className="w-5 h-5" />
             </button>
           </div>
 
           <p className="text-xs text-gray-500 mt-6 text-center">
-            Precisa de ajuda? Entre em contato pelo email suporte@ai8hub.com
+            Precisa de ajuda? Entre em contato pelo email nutrivision-contato@ai8hub.com
           </p>
         </div>
       </div>

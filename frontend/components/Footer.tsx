@@ -15,12 +15,12 @@ export default function Footer() {
             <Link href="/about" className="text-gray-600 hover:text-green-600 transition-colors">
               Sobre
             </Link>
-            <a href="mailto:contato@nutrivision.app" className="text-gray-600 hover:text-green-600 transition-colors">
+            <a href="mailto:nutrivision-contato@ai8hub.com" className="text-gray-600 hover:text-green-600 transition-colors">
               Contato
             </a>
           </div>
           <p className="text-xs text-gray-400 text-center">
-            Nutri-Vision oferece estimativas aproximadas baseadas em imagem. Nao substitui orientacao profissional.
+            Nutri-Vision oferece estimativas aproximadas baseadas em imagem. Não substitui orientação profissional.
           </p>
           <p className="text-xs text-gray-400">
             © {new Date().getFullYear()} Nutri-Vision. Todos os direitos reservados.

@@ -151,8 +151,8 @@ function ProcessingContent() {
                 <span className="text-2xl">🤔</span>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-white">Perguntas Rapidas</h2>
-                <p className="text-sm text-white/90">Para uma analise mais precisa</p>
+                <h2 className="text-xl font-bold text-white">Perguntas Rápidas</h2>
+                <p className="text-sm text-white/90">Para uma análise mais precisa</p>
               </div>
             </div>
           </div>
@@ -212,7 +212,7 @@ function ProcessingContent() {
                 </>
               ) : (
                 <>
-                  Continuar Analise
+                  Continuar Análise
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
@@ -232,8 +232,8 @@ function ProcessingContent() {
           <BowlLogo className="w-10 h-10 text-white" />
         </div>
         
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Analisando sua refeicao...</h2>
-        <p className="text-gray-500 mb-6">Nossa IA esta identificando os alimentos e calculando os nutrientes</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Analisando sua refeição...</h2>
+        <p className="text-gray-500 mb-6">Nossa IA está identificando os alimentos e calculando os nutrientes</p>
         
         <div className="flex justify-center gap-2 mb-8">
           {[0, 1, 2].map((i) => (

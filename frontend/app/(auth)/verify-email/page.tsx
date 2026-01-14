@@ -18,7 +18,7 @@ function VerifyEmailContent() {
   useEffect(() => {
     if (!token) {
       setStatus('error');
-      setMessage('Token de verificacao nao encontrado');
+      setMessage('Token de verificação não encontrado');
       return;
     }
 
@@ -35,7 +35,7 @@ function VerifyEmailContent() {
         if (response.ok) {
           if (data.already_verified) {
             setStatus('already_verified');
-            setMessage('Seu email ja foi verificado anteriormente');
+            setMessage('Seu email já foi verificado anteriormente');
           } else {
             setStatus('success');
             setMessage('Email verificado com sucesso!');
@@ -46,7 +46,7 @@ function VerifyEmailContent() {
         }
       } catch (err) {
         setStatus('error');
-        setMessage('Erro de conexao. Tente novamente.');
+        setMessage('Erro de conexão. Tente novamente.');
       }
     };
 
@@ -90,7 +90,7 @@ function VerifyEmailContent() {
               <p className="text-gray-500 mb-4">{message}</p>
               <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-4 mb-6 border border-emerald-100">
                 <p className="text-emerald-700 font-semibold">
-                  Seus 36 creditos de bonus estao disponiveis!
+                  Seus 36 créditos de bônus estão disponíveis!
                 </p>
               </div>
               <button
