@@ -5,14 +5,38 @@ from pydantic import BaseModel
 from typing import Optional
 import json
 import httpx
+import logging
+import traceback
 
 from app.db.database import get_db
-from app.models.models import User, CreditTransaction, Payment
+from app.models.models import User, CreditTransaction, Payment, ErrorLog
 from app.core.security import get_current_user
 from app.core.config import settings
-from app.services.asaas_service import asaas_service
+from app.services.asaas_service import asaas_service, AsaasError
 from app.services.email_service import send_credits_purchased_email, send_upgraded_to_pro_email, send_subscription_cancelled_email, send_subscription_renewed_email, flush_email_logs
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
+
+async def log_billing_error(
+    db: AsyncSession,
+    error_type: str,
+    error_message: str,
+    user_id: Optional[int] = None,
+    extra_data: Optional[dict] = None
+):
+    try:
+        error_log = ErrorLog(
+            user_id=user_id,
+            error_type=f"billing_{error_type}",
+            error_message=error_message[:1000],
+            error_stack=traceback.format_exc()[:2000] if traceback.format_exc() else None,
+            extra_data=json.dumps(extra_data) if extra_data else None
+        )
+        db.add(error_log)
+        await db.commit()
+    except Exception as e:
+        logger.error(f"Failed to log billing error: {e}")
 
 router = APIRouter(prefix="/billing", tags=["billing"])
 
@@ -157,7 +181,23 @@ async def create_pix_payment(
             expiration_date=pix_data.get("expirationDate", "")
         )
     
+    except AsaasError as e:
+        await log_billing_error(
+            db=db,
+            error_type="pix_payment",
+            error_message=e.message,
+            user_id=current_user.id,
+            extra_data=e.to_dict()
+        )
+        raise HTTPException(status_code=400, detail=f"Erro ao criar pagamento: {e.message}")
     except Exception as e:
+        await log_billing_error(
+            db=db,
+            error_type="pix_payment",
+            error_message=str(e),
+            user_id=current_user.id,
+            extra_data={"package": request.package, "error_type": type(e).__name__}
+        )
         raise HTTPException(status_code=400, detail=f"Erro ao criar pagamento: {str(e)}")
 
 @router.post("/create-card-payment")
@@ -234,7 +274,23 @@ async def create_card_payment(
         await db.commit()
         return {"status": payment.get("status", "pending"), "payment_id": payment["id"]}
     
+    except AsaasError as e:
+        await log_billing_error(
+            db=db,
+            error_type="card_payment",
+            error_message=e.message,
+            user_id=current_user.id,
+            extra_data=e.to_dict()
+        )
+        raise HTTPException(status_code=400, detail=f"Erro ao processar pagamento: {e.message}")
     except Exception as e:
+        await log_billing_error(
+            db=db,
+            error_type="card_payment",
+            error_message=str(e),
+            user_id=current_user.id,
+            extra_data={"package": request.package, "error_type": type(e).__name__}
+        )
         raise HTTPException(status_code=400, detail=f"Erro ao processar pagamento: {str(e)}")
 
 @router.post("/create-pro-subscription")
@@ -331,7 +387,23 @@ async def create_pro_subscription(
         
         return {"status": "error", "message": "Tipo de pagamento nao suportado"}
     
+    except AsaasError as e:
+        await log_billing_error(
+            db=db,
+            error_type="pro_subscription",
+            error_message=e.message,
+            user_id=current_user.id,
+            extra_data=e.to_dict()
+        )
+        raise HTTPException(status_code=400, detail=f"Erro ao criar assinatura: {e.message}")
     except Exception as e:
+        await log_billing_error(
+            db=db,
+            error_type="pro_subscription",
+            error_message=str(e),
+            user_id=current_user.id,
+            extra_data={"billing_type": request.billing_type, "error_type": type(e).__name__}
+        )
         raise HTTPException(status_code=400, detail=f"Erro ao criar assinatura: {str(e)}")
 
 @router.post("/cancel-subscription")
@@ -355,7 +427,23 @@ async def cancel_subscription(
         
         return {"status": "cancelled", "message": "Assinatura cancelada com sucesso"}
     
+    except AsaasError as e:
+        await log_billing_error(
+            db=db,
+            error_type="cancel_subscription",
+            error_message=e.message,
+            user_id=current_user.id,
+            extra_data=e.to_dict()
+        )
+        raise HTTPException(status_code=400, detail=f"Erro ao cancelar assinatura: {e.message}")
     except Exception as e:
+        await log_billing_error(
+            db=db,
+            error_type="cancel_subscription",
+            error_message=str(e),
+            user_id=current_user.id,
+            extra_data={"subscription_id": current_user.asaas_subscription_id, "error_type": type(e).__name__}
+        )
         raise HTTPException(status_code=400, detail=f"Erro ao cancelar assinatura: {str(e)}")
 
 @router.get("/payment-status/{payment_id}", response_model=PaymentStatusResponse)
@@ -369,6 +457,8 @@ async def get_payment_status(
         confirmed = status in ["CONFIRMED", "RECEIVED"]
         
         return PaymentStatusResponse(status=status, confirmed=confirmed)
+    except AsaasError as e:
+        raise HTTPException(status_code=400, detail=f"Erro ao verificar status: {e.message}")
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Erro ao verificar status: {str(e)}")
 
