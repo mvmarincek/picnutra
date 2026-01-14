@@ -20,10 +20,10 @@ export default function Footer() {
             </a>
           </div>
           <p className="text-xs text-gray-400 text-center">
-            Nutri-Vision oferece estimativas aproximadas baseadas em imagem. Não substitui orientação profissional.
+            NutriVision oferece estimativas aproximadas baseadas em imagem. Não substitui orientação profissional.
           </p>
           <p className="text-xs text-gray-400">
-            © {new Date().getFullYear()} Nutri-Vision. Todos os direitos reservados.
+            © {new Date().getFullYear()} NutriVision. Todos os direitos reservados.
           </p>
         </div>
       </div>
