@@ -19,6 +19,7 @@ from app.schemas.schemas import (
 from app.core.security import get_current_user
 from app.core.config import settings
 from app.agents.orchestrator import NutriOrchestrator
+from app.services.cloudinary_service import upload_image_to_cloudinary, is_cloudinary_configured
 
 router = APIRouter(prefix="/meals", tags=["meals"])
 
@@ -115,16 +116,25 @@ async def upload_image(
     except Exception:
         pass
     
-    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
-    
     ext = file.filename.split(".")[-1] if "." in file.filename else "jpg"
     filename = f"{uuid.uuid4()}.{ext}"
-    filepath = os.path.join(settings.UPLOAD_DIR, filename)
     
-    async with aiofiles.open(filepath, "wb") as f:
-        await f.write(content)
-    
-    image_url = f"/uploads/{filename}"
+    if is_cloudinary_configured():
+        cloudinary_url = await upload_image_to_cloudinary(content, filename)
+        if cloudinary_url:
+            image_url = cloudinary_url
+        else:
+            os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+            filepath = os.path.join(settings.UPLOAD_DIR, filename)
+            async with aiofiles.open(filepath, "wb") as f:
+                await f.write(content)
+            image_url = f"/uploads/{filename}"
+    else:
+        os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+        filepath = os.path.join(settings.UPLOAD_DIR, filename)
+        async with aiofiles.open(filepath, "wb") as f:
+            await f.write(content)
+        image_url = f"/uploads/{filename}"
     
     meal = Meal(
         user_id=current_user.id,

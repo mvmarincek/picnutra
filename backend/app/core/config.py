@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     
     RESEND_API_KEY: str = ""
     
+    CLOUDINARY_CLOUD_NAME: str = ""
+    CLOUDINARY_API_KEY: str = ""
+    CLOUDINARY_API_SECRET: str = ""
+    
     CREDIT_COST_SIMPLE: int = 1
     CREDIT_COST_FULL: int = 12
     PRO_MONTHLY_ANALYSES: int = 90
