@@ -100,7 +100,7 @@ def send_email(to: str, subject: str, html_content: str, email_type: str = "gene
         print(f"[EMAIL] Subject: {subject}")
         log_entry["status"] = "failed"
         log_entry["error_message"] = "RESEND_API_KEY not configured"
-        _pending_emails.append(log_entry)
+        _save_email_log_sync(log_entry)
         return False
     
     try:
@@ -113,14 +113,60 @@ def send_email(to: str, subject: str, html_content: str, email_type: str = "gene
         print(f"[EMAIL] Sent successfully to {to}: {result}")
         log_entry["status"] = "sent"
         log_entry["resend_id"] = result.get("id") if isinstance(result, dict) else str(result)
-        _pending_emails.append(log_entry)
+        _save_email_log_sync(log_entry)
         return True
     except Exception as e:
         print(f"[EMAIL] Error sending to {to}: {e}")
         log_entry["status"] = "failed"
         log_entry["error_message"] = str(e)
-        _pending_emails.append(log_entry)
+        _save_email_log_sync(log_entry)
         return False
+
+def _save_email_log_sync(log_entry: dict):
+    import asyncio
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            asyncio.create_task(_save_email_log_async(log_entry))
+        else:
+            loop.run_until_complete(_save_email_log_async(log_entry))
+    except RuntimeError:
+        asyncio.run(_save_email_log_async(log_entry))
+
+async def _save_email_log_async(log_entry: dict):
+    from app.models.models import EmailLog, ErrorLog
+    from app.db.database import async_session
+    
+    try:
+        async with async_session() as db:
+            email_log = EmailLog(
+                user_id=log_entry.get("user_id"),
+                to_email=log_entry["to_email"],
+                subject=log_entry["subject"],
+                email_type=log_entry["email_type"],
+                status=log_entry["status"],
+                error_message=log_entry.get("error_message"),
+                resend_id=log_entry.get("resend_id")
+            )
+            db.add(email_log)
+            
+            if log_entry["status"] == "failed":
+                error_log = ErrorLog(
+                    user_id=log_entry.get("user_id"),
+                    error_type="email",
+                    error_message=f"Falha ao enviar email: {log_entry.get('error_message', 'Unknown error')}",
+                    extra_data={
+                        "to_email": log_entry["to_email"],
+                        "email_type": log_entry["email_type"],
+                        "subject": log_entry["subject"]
+                    }
+                )
+                db.add(error_log)
+            
+            await db.commit()
+    except Exception as e:
+        print(f"[EMAIL] Failed to save email log: {e}")
+        _pending_emails.append(log_entry)
 
 async def flush_email_logs(db: AsyncSession):
     from app.models.models import EmailLog

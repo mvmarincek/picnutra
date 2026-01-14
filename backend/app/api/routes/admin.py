@@ -870,6 +870,32 @@ async def delete_error(
     
     return {"success": True}
 
+@router.post("/users/{user_id}/resend-verification")
+async def admin_resend_verification(
+    user_id: int,
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    from app.services.email_service import send_email_verification
+    import secrets
+    
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario nao encontrado")
+    
+    if user.email_verified:
+        return {"success": True, "message": "Email ja verificado"}
+    
+    new_token = secrets.token_urlsafe(32)
+    user.email_verification_token = new_token
+    await db.commit()
+    
+    send_email_verification(user.email, new_token, user.id)
+    
+    return {"success": True, "message": f"Email de verificacao reenviado para {user.email}"}
+
 @router.get("/email-stats")
 async def get_email_stats(
     admin: User = Depends(get_admin_user),
@@ -1246,3 +1272,29 @@ async def delete_error(
     await db.commit()
     
     return {"success": True}
+
+@router.post("/users/{user_id}/resend-verification")
+async def admin_resend_verification(
+    user_id: int,
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    from app.services.email_service import send_email_verification
+    import secrets
+    
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario nao encontrado")
+    
+    if user.email_verified:
+        return {"success": True, "message": "Email ja verificado"}
+    
+    new_token = secrets.token_urlsafe(32)
+    user.email_verification_token = new_token
+    await db.commit()
+    
+    send_email_verification(user.email, new_token, user.id)
+    
+    return {"success": True, "message": f"Email de verificacao reenviado para {user.email}"}
