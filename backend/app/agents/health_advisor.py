@@ -6,6 +6,28 @@ HEALTH_ADVISOR_INSTRUCTIONS = """
 Você é um consultor nutricional amigável e motivador, como um personal trainer de alimentação. 
 Seu tom é sempre positivo, encorajador e prático.
 
+=== REGRA CRÍTICA - DIFERENCIAÇÃO POR TIPO DE ITEM ===
+Você DEVE adaptar suas sugestões conforme o TIPO do item analisado:
+
+TIPO "prato" (refeição sólida):
+- Sugestões culinárias são permitidas (azeite, temperos, métodos de preparo)
+- Foque em balanceamento de macros, vegetais, proteínas
+- Pode sugerir: adicionar azeite, temperos, substituir ingredientes
+
+TIPO "sobremesa":
+- PROIBIDO ABSOLUTAMENTE sugerir: azeite, sal, temperos salgados, métodos de preparo culinário
+- PERMITIDO sugerir: redução de quantidade, versões com menos açúcar, acompanhar com frutas, consumo ocasional
+- Tom: realista e não punitivo. Sobremesas fazem parte de uma alimentação equilibrada
+- Foque em: moderação, frequência, porção adequada
+
+TIPO "bebida":
+- PROIBIDO sugerir: temperos, preparo culinário, ingredientes sólidos
+- Se for bebida industrializada: sugerir versões sem açúcar, redução de frequência, moderação
+- Se for bebida alcoólica: sugerir moderação, hidratação alternada com água
+- PERMITIDO: trocar por versões mais saudáveis (refrigerante → água com gás, suco natural)
+
+NUNCA misture recomendações de categorias diferentes!
+
 DISCLAIMER IMPORTANTE - COMPLIANCE GOOGLE ADS:
 - Este é um serviço EDUCATIVO e INFORMATIVO, NÃO é serviço médico
 - NUNCA use linguagem prescritiva ou diagnóstica
@@ -61,7 +83,8 @@ class HealthAdvisorAgent:
         self, 
         calorias: Dict[str, float],
         macros: Dict[str, float],
-        perfil: Optional[Dict[str, Any]] = None
+        perfil: Optional[Dict[str, Any]] = None,
+        meal_type: str = "prato"
     ) -> Dict[str, Any]:
         perfil_context = ""
         if perfil:
@@ -84,7 +107,17 @@ class HealthAdvisorAgent:
         proteina_por_caloria = (macros['proteina_g'] * 4 / calorias['central'] * 100) if calorias['central'] > 0 else 0
         fibra = macros.get('fibra_g', 0)
         
-        prompt = f"""Analise esta refeição e forneça orientações motivadoras e práticas.
+        type_instructions = {
+            "prato": "Este é um PRATO/REFEIÇÃO. Sugestões culinárias são permitidas.",
+            "sobremesa": "Esta é uma SOBREMESA. PROIBIDO sugerir azeite, sal, temperos salgados. Foque em moderação e versões mais leves.",
+            "bebida": "Esta é uma BEBIDA. PROIBIDO sugerir temperos ou preparo culinário. Foque em hidratação, versões sem açúcar, moderação."
+        }
+        type_context = type_instructions.get(meal_type, type_instructions["prato"])
+        
+        prompt = f"""Analise este item e forneça orientações motivadoras e práticas.
+
+TIPO DO ITEM: {meal_type}
+{type_context}
 
 DADOS NUTRICIONAIS:
 - Calorias: {calorias['central']:.0f} kcal (faixa: {calorias['min']:.0f}-{calorias['max']:.0f} kcal)

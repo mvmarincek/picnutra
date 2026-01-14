@@ -139,7 +139,8 @@ class NutriOrchestrator:
                     self.health_advisor.analyze(
                         nutrition_result["calorias"],
                         nutrition_result["macros"],
-                        perfil
+                        perfil,
+                        meal_type=meal.meal_type
                     ),
                     self.meal_optimizer.optimize(
                         recognition_result.get("itens_identificados", []),
@@ -156,13 +157,15 @@ class NutriOrchestrator:
                     await db.commit()
                     
                     image_url = await self.image_generator.generate(
-                        optimization_result["prompt_para_imagem"]
+                        optimization_result["prompt_para_imagem"],
+                        meal_type=meal.meal_type
                     )
             else:
                 health_result = await self.health_advisor.analyze(
                     nutrition_result["calorias"],
                     nutrition_result["macros"],
-                    perfil
+                    perfil,
+                    meal_type=meal.meal_type
                 )
             
             analysis = MealAnalysis(

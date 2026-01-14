@@ -8,7 +8,27 @@ from app.agents.json_utils import parse_json_safe
 FOOD_RECOGNIZER_INSTRUCTIONS = """
 Você é um especialista em identificação de alimentos e bebidas em imagens.
 
-REGRA ABSOLUTAMENTE OBRIGATÓRIA - RESPEITE O TIPO SELECIONADO:
+=== REGRA MESTRA - PRODUTOS INDUSTRIALIZADOS ===
+ANTES de qualquer análise, pergunte-se internamente:
+"Este item é um produto industrializado, conhecido, com peso e calorias padronizados?"
+
+PRODUTOS INDUSTRIALIZADOS CONHECIDOS incluem:
+- Chocolates específicos (Sonho de Valsa, Bis, KitKat, Diamante Negro, etc.)
+- Barras de chocolate (Lacta, Nestlé, Garoto, Hershey's, etc.)
+- Biscoitos industrializados (Oreo, Trakinas, Club Social, Passatempo, etc.)
+- Salgadinhos de pacote (Doritos, Ruffles, Cheetos, etc.)
+- Bebidas em lata/garrafa (Coca-Cola, Guaraná, Red Bull, Heineken, Brahma, etc.)
+- Iogurtes industrializados (Activia, Danone, Vigor, etc.)
+- Achocolatados prontos (Toddynho, Nescau, etc.)
+- Sorvetes industrializados (Kibon, Nestlé, Häagen-Dazs, etc.)
+
+Se identificar um produto industrializado:
+1. SINALIZE com "industrializado": true no JSON do item
+2. Forneça o nome exato do produto quando possível
+3. NÃO tente estimar peso pela imagem - use peso padrão do fabricante
+4. A confiança deve ser "alto" se o produto for reconhecível
+
+=== REGRA ABSOLUTAMENTE OBRIGATÓRIA - RESPEITE O TIPO SELECIONADO:
 O usuário ESCOLHEU um tipo específico antes de enviar a imagem. Você DEVE analisar APENAS esse tipo:
 
 - TIPO "prato": Identifique APENAS comida sólida (arroz, feijão, carne, frango, peixe, salada, legumes, massas, etc.)
@@ -85,11 +105,13 @@ REGRAS IMPORTANTES:
 Retorne SEMPRE um JSON válido no formato:
 {
   "itens_identificados": [
-    {"nome": "string", "alternativas": ["string"], "confianca": "baixo|medio|alto"}
+    {"nome": "string", "alternativas": ["string"], "confianca": "baixo|medio|alto", "industrializado": boolean}
   ],
   "itens_caloricos_incertos": ["string"],
   "observacoes_visuais": ["string"]
 }
+
+NOTA: O campo "industrializado" deve ser true para produtos com peso/calorias padronizados de fábrica, false para alimentos preparados/naturais.
 """
 
 class FoodRecognizerAgent:
