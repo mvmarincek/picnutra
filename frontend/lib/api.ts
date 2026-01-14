@@ -563,7 +563,7 @@ export interface UserDetails {
 
 export interface ChartData {
   revenue_by_day: { date: string; credits: number; subscriptions: number }[];
-  users_by_day: { date: string; count: number }[];
+  users_by_day: { date: string; organic: number; referred: number }[];
   meals_by_day: { date: string; count: number }[];
   kpis: {
     total_credits_revenue: number;
@@ -572,6 +572,8 @@ export interface ChartData {
     avg_revenue_per_user: number;
     paying_users: number;
     active_subscriptions: number;
+    total_referrals: number;
+    referred_who_paid: number;
   };
 }
 
@@ -622,5 +624,12 @@ export const adminApi = {
     api<{ success: boolean; pro_analyses_remaining: number }>(`/admin/users/${userId}/reset-pro-analyses`, { method: 'POST' }),
   
   deleteUser: (userId: number) =>
-    api<{ success: boolean; message: string }>(`/admin/users/${userId}`, { method: 'DELETE' })
+    api<{ success: boolean; message: string }>(`/admin/users/${userId}`, { method: 'DELETE' }),
+  
+  getUserReferralsConverted: (userId: number) =>
+    api<{ total_referred: number; converted: number; conversion_rate: number }>(`/admin/users/${userId}/referrals-converted`),
+  
+  exportUsersCSV: () => `${API_URL}/admin/export/users`,
+  exportPaymentsCSV: () => `${API_URL}/admin/export/payments`,
+  exportKPIsCSV: () => `${API_URL}/admin/export/kpis`
 };

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, desc
 from sqlalchemy.orm import selectinload
@@ -7,6 +8,8 @@ from datetime import datetime, timedelta
 from app.db.database import get_db
 from app.core.security import get_current_user
 from app.models.models import User, Payment, CreditTransaction, Meal, Referral, EmailLog, EmailSettings
+import csv
+import io
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -107,10 +110,23 @@ async def get_chart_data(
             "subscriptions": float(subscription_revenue)
         })
         
-        new_users = await db.scalar(
-            select(func.count(User.id)).where(func.date(User.created_at) == day)
+        organic_users = await db.scalar(
+            select(func.count(User.id))
+            .where(func.date(User.created_at) == day)
+            .where(User.referred_by == None)
         ) or 0
-        users_by_day.append({"date": day_str, "count": new_users})
+        
+        referred_users = await db.scalar(
+            select(func.count(User.id))
+            .where(func.date(User.created_at) == day)
+            .where(User.referred_by != None)
+        ) or 0
+        
+        users_by_day.append({
+            "date": day_str, 
+            "organic": organic_users,
+            "referred": referred_users
+        })
         
         meals_count = await db.scalar(
             select(func.count(Meal.id)).where(func.date(Meal.created_at) == day)
@@ -151,6 +167,16 @@ async def get_chart_data(
         .where(User.asaas_subscription_id != None)
     )
     
+    total_referrals = await db.scalar(select(func.count(Referral.id))) or 0
+    
+    referred_who_paid = await db.scalar(
+        select(func.count(func.distinct(Payment.user_id)))
+        .where(Payment.status == "confirmed")
+        .where(Payment.user_id.in_(
+            select(Referral.referred_id)
+        ))
+    ) or 0
+    
     return {
         "revenue_by_day": revenue_by_day,
         "users_by_day": users_by_day,
@@ -161,7 +187,9 @@ async def get_chart_data(
             "conversion_rate": conversion_rate,
             "avg_revenue_per_user": avg_revenue_per_user,
             "paying_users": paying_users,
-            "active_subscriptions": active_subscriptions
+            "active_subscriptions": active_subscriptions,
+            "total_referrals": total_referrals,
+            "referred_who_paid": referred_who_paid
         }
     }
 
@@ -581,6 +609,141 @@ async def list_email_logs(
         "pages": ((total or 0) + limit - 1) // limit if total else 1
     }
 
+@router.get("/export/users")
+async def export_users_csv(
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(select(User).order_by(desc(User.created_at)))
+    users = result.scalars().all()
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['ID', 'Email', 'Nome', 'Telefone', 'CPF', 'Plano', 'Creditos', 'Analises PRO', 'Email Verificado', 'Admin', 'Indicado Por', 'Codigo Indicacao', 'Criado Em'])
+    
+    for u in users:
+        writer.writerow([
+            u.id, u.email, u.name or '', u.phone or '', u.cpf or '', u.plan,
+            u.credit_balance, u.pro_analyses_remaining, u.email_verified, u.is_admin,
+            u.referred_by or '', u.referral_code or '',
+            u.created_at.strftime('%Y-%m-%d %H:%M') if u.created_at else ''
+        ])
+    
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=usuarios_{datetime.utcnow().strftime('%Y%m%d')}.csv"}
+    )
+
+@router.get("/export/payments")
+async def export_payments_csv(
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+        select(Payment, User.email)
+        .join(User, Payment.user_id == User.id)
+        .order_by(desc(Payment.created_at))
+    )
+    rows = result.all()
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['ID', 'Usuario Email', 'Tipo Pagamento', 'Tipo Cobranca', 'Valor', 'Status', 'Descricao', 'Creditos', 'Pago Em', 'Criado Em'])
+    
+    for payment, email in rows:
+        writer.writerow([
+            payment.id, email, payment.payment_type, payment.billing_type or '',
+            payment.amount, payment.status, payment.description or '', payment.credits_purchased or '',
+            payment.paid_at.strftime('%Y-%m-%d %H:%M') if payment.paid_at else '',
+            payment.created_at.strftime('%Y-%m-%d %H:%M') if payment.created_at else ''
+        ])
+    
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=pagamentos_{datetime.utcnow().strftime('%Y%m%d')}.csv"}
+    )
+
+@router.get("/export/kpis")
+async def export_kpis_csv(
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    today = datetime.utcnow().date()
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Data', 'Receita Creditos', 'Receita Assinaturas', 'Usuarios Organicos', 'Usuarios Indicados', 'Analises'])
+    
+    for i in range(89, -1, -1):
+        day = today - timedelta(days=i)
+        
+        credits_rev = await db.scalar(
+            select(func.sum(Payment.amount))
+            .where(Payment.status == "confirmed")
+            .where(Payment.payment_type == "credits")
+            .where(func.date(Payment.paid_at) == day)
+        ) or 0
+        
+        subs_rev = await db.scalar(
+            select(func.sum(Payment.amount))
+            .where(Payment.status == "confirmed")
+            .where(Payment.payment_type == "subscription")
+            .where(func.date(Payment.paid_at) == day)
+        ) or 0
+        
+        organic = await db.scalar(
+            select(func.count(User.id))
+            .where(func.date(User.created_at) == day)
+            .where(User.referred_by == None)
+        ) or 0
+        
+        referred = await db.scalar(
+            select(func.count(User.id))
+            .where(func.date(User.created_at) == day)
+            .where(User.referred_by != None)
+        ) or 0
+        
+        meals = await db.scalar(
+            select(func.count(Meal.id)).where(func.date(Meal.created_at) == day)
+        ) or 0
+        
+        writer.writerow([day.strftime('%Y-%m-%d'), credits_rev, subs_rev, organic, referred, meals])
+    
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=kpis_{datetime.utcnow().strftime('%Y%m%d')}.csv"}
+    )
+
+@router.get("/users/{user_id}/referrals-converted")
+async def get_user_referrals_converted(
+    user_id: int,
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    total_referred = await db.scalar(
+        select(func.count(Referral.id)).where(Referral.referrer_id == user_id)
+    ) or 0
+    
+    referred_who_paid = await db.scalar(
+        select(func.count(func.distinct(Payment.user_id)))
+        .where(Payment.status == "confirmed")
+        .where(Payment.user_id.in_(
+            select(Referral.referred_id).where(Referral.referrer_id == user_id)
+        ))
+    ) or 0
+    
+    return {
+        "total_referred": total_referred,
+        "converted": referred_who_paid,
+        "conversion_rate": round((referred_who_paid / total_referred * 100), 1) if total_referred > 0 else 0
+    }
+
 @router.get("/email-stats")
 async def get_email_stats(
     admin: User = Depends(get_admin_user),
@@ -695,4 +858,139 @@ async def get_user_email_logs(
         "total": total or 0,
         "page": page,
         "pages": ((total or 0) + limit - 1) // limit if total else 1
+    }
+
+@router.get("/export/users")
+async def export_users_csv(
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(select(User).order_by(desc(User.created_at)))
+    users = result.scalars().all()
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['ID', 'Email', 'Nome', 'Telefone', 'CPF', 'Plano', 'Creditos', 'Analises PRO', 'Email Verificado', 'Admin', 'Indicado Por', 'Codigo Indicacao', 'Criado Em'])
+    
+    for u in users:
+        writer.writerow([
+            u.id, u.email, u.name or '', u.phone or '', u.cpf or '', u.plan,
+            u.credit_balance, u.pro_analyses_remaining, u.email_verified, u.is_admin,
+            u.referred_by or '', u.referral_code or '',
+            u.created_at.strftime('%Y-%m-%d %H:%M') if u.created_at else ''
+        ])
+    
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=usuarios_{datetime.utcnow().strftime('%Y%m%d')}.csv"}
+    )
+
+@router.get("/export/payments")
+async def export_payments_csv(
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+        select(Payment, User.email)
+        .join(User, Payment.user_id == User.id)
+        .order_by(desc(Payment.created_at))
+    )
+    rows = result.all()
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['ID', 'Usuario Email', 'Tipo Pagamento', 'Tipo Cobranca', 'Valor', 'Status', 'Descricao', 'Creditos', 'Pago Em', 'Criado Em'])
+    
+    for payment, email in rows:
+        writer.writerow([
+            payment.id, email, payment.payment_type, payment.billing_type or '',
+            payment.amount, payment.status, payment.description or '', payment.credits_purchased or '',
+            payment.paid_at.strftime('%Y-%m-%d %H:%M') if payment.paid_at else '',
+            payment.created_at.strftime('%Y-%m-%d %H:%M') if payment.created_at else ''
+        ])
+    
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=pagamentos_{datetime.utcnow().strftime('%Y%m%d')}.csv"}
+    )
+
+@router.get("/export/kpis")
+async def export_kpis_csv(
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    today = datetime.utcnow().date()
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Data', 'Receita Creditos', 'Receita Assinaturas', 'Usuarios Organicos', 'Usuarios Indicados', 'Analises'])
+    
+    for i in range(89, -1, -1):
+        day = today - timedelta(days=i)
+        
+        credits_rev = await db.scalar(
+            select(func.sum(Payment.amount))
+            .where(Payment.status == "confirmed")
+            .where(Payment.payment_type == "credits")
+            .where(func.date(Payment.paid_at) == day)
+        ) or 0
+        
+        subs_rev = await db.scalar(
+            select(func.sum(Payment.amount))
+            .where(Payment.status == "confirmed")
+            .where(Payment.payment_type == "subscription")
+            .where(func.date(Payment.paid_at) == day)
+        ) or 0
+        
+        organic = await db.scalar(
+            select(func.count(User.id))
+            .where(func.date(User.created_at) == day)
+            .where(User.referred_by == None)
+        ) or 0
+        
+        referred = await db.scalar(
+            select(func.count(User.id))
+            .where(func.date(User.created_at) == day)
+            .where(User.referred_by != None)
+        ) or 0
+        
+        meals = await db.scalar(
+            select(func.count(Meal.id)).where(func.date(Meal.created_at) == day)
+        ) or 0
+        
+        writer.writerow([day.strftime('%Y-%m-%d'), credits_rev, subs_rev, organic, referred, meals])
+    
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=kpis_{datetime.utcnow().strftime('%Y%m%d')}.csv"}
+    )
+
+@router.get("/users/{user_id}/referrals-converted")
+async def get_user_referrals_converted(
+    user_id: int,
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db)
+):
+    total_referred = await db.scalar(
+        select(func.count(Referral.id)).where(Referral.referrer_id == user_id)
+    ) or 0
+    
+    referred_who_paid = await db.scalar(
+        select(func.count(func.distinct(Payment.user_id)))
+        .where(Payment.status == "confirmed")
+        .where(Payment.user_id.in_(
+            select(Referral.referred_id).where(Referral.referrer_id == user_id)
+        ))
+    ) or 0
+    
+    return {
+        "total_referred": total_referred,
+        "converted": referred_who_paid,
+        "conversion_rate": round((referred_who_paid / total_referred * 100), 1) if total_referred > 0 else 0
     }

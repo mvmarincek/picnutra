@@ -8,7 +8,7 @@ import { useFeedback } from '@/lib/feedback';
 import { 
   Users, CreditCard, TrendingUp, Activity, Search, ChevronLeft, ChevronRight,
   Crown, Shield, Plus, Eye, X, Calendar, Mail, Phone, Hash, Trash2, RefreshCw,
-  MessageCircle, BarChart3, DollarSign, UserPlus, Zap
+  MessageCircle, BarChart3, DollarSign, UserPlus, Zap, Download, Gift
 } from 'lucide-react';
 
 function formatPrice(cents: number) {
@@ -364,6 +364,53 @@ export default function AdminPage() {
               </div>
             </div>
 
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+              <div className="bg-white rounded-2xl p-5 shadow-lg shadow-gray-100/50 border border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-gradient-to-br from-pink-100 to-rose-100 rounded-xl">
+                    <Gift className="w-6 h-6 text-pink-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Indicacoes</p>
+                    <p className="text-xl font-bold text-gray-900">{charts.kpis.total_referrals}</p>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-400 mt-2">{charts.kpis.referred_who_paid} convertidos em pagantes</p>
+              </div>
+              
+              <a 
+                href={adminApi.exportUsersCSV()}
+                target="_blank"
+                className="bg-white rounded-2xl p-5 shadow-lg shadow-gray-100/50 border border-gray-100 hover:shadow-xl hover:border-emerald-200 transition-all cursor-pointer group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-xl group-hover:scale-110 transition-transform">
+                    <Download className="w-6 h-6 text-emerald-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Exportar</p>
+                    <p className="text-lg font-bold text-gray-900">Usuarios CSV</p>
+                  </div>
+                </div>
+              </a>
+              
+              <a 
+                href={adminApi.exportKPIsCSV()}
+                target="_blank"
+                className="bg-white rounded-2xl p-5 shadow-lg shadow-gray-100/50 border border-gray-100 hover:shadow-xl hover:border-blue-200 transition-all cursor-pointer group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl group-hover:scale-110 transition-transform">
+                    <Download className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Exportar</p>
+                    <p className="text-lg font-bold text-gray-900">KPIs 90 dias</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
               <div className="bg-white rounded-2xl p-5 shadow-lg shadow-gray-100/50 border border-gray-100">
                 <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -408,15 +455,32 @@ export default function AdminPage() {
                 </h3>
                 <div className="h-48 flex items-end gap-1">
                   {charts.users_by_day.slice(-15).map((d, i) => {
-                    const maxVal = Math.max(...charts.users_by_day.map(x => x.count), 1);
-                    const height = d.count > 0 ? Math.max((d.count / maxVal) * 100, 5) : 2;
+                    const total = d.organic + d.referred;
+                    const maxVal = Math.max(...charts.users_by_day.map(x => x.organic + x.referred), 1);
+                    const height = total > 0 ? Math.max((total / maxVal) * 100, 5) : 2;
+                    const organicHeight = d.organic > 0 ? (d.organic / Math.max(total, 1)) * height : 0;
+                    const referredHeight = d.referred > 0 ? (d.referred / Math.max(total, 1)) * height : 0;
                     return (
-                      <div key={i} className="flex-1 flex flex-col justify-end items-center gap-0.5" title={`${d.date}: ${d.count} novos usuarios`}>
-                        <div className="w-full bg-gradient-to-t from-blue-500 to-cyan-400 rounded-t" style={{height: `${height}%`}} />
+                      <div key={i} className="flex-1 flex flex-col justify-end items-center gap-0.5" title={`${d.date}: ${d.organic} organicos, ${d.referred} indicados`}>
+                        <div className="w-full flex flex-col gap-0.5">
+                          {referredHeight > 0 && <div className="w-full bg-gradient-to-t from-violet-500 to-purple-400 rounded-t" style={{height: `${referredHeight}%`}} />}
+                          {organicHeight > 0 && <div className="w-full bg-gradient-to-t from-blue-500 to-cyan-400 rounded-t" style={{height: `${organicHeight}%`}} />}
+                          {total === 0 && <div className="w-full bg-gray-200 rounded-t" style={{height: '2%'}} />}
+                        </div>
                         <span className="text-[8px] text-gray-400 rotate-45 origin-left">{d.date.split('/')[0]}</span>
                       </div>
                     );
                   })}
+                </div>
+                <div className="flex gap-4 mt-3 text-xs">
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-cyan-400 rounded" />
+                    <span className="text-gray-500">Organicos</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-gradient-to-r from-violet-500 to-purple-400 rounded" />
+                    <span className="text-gray-500">Indicados</span>
+                  </div>
                 </div>
               </div>
             </div>
