@@ -99,7 +99,7 @@ export default function LandingPage() {
             <div className="relative group">
               <div className="aspect-square rounded-2xl overflow-hidden shadow-lg shadow-gray-200/50 border-2 border-white">
                 <img 
-                  src="/demo-meal-1.jpg" 
+                  src="/demo-meal-1.png" 
                   alt="Prato saudável analisado pelo NutriVision" 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -115,7 +115,7 @@ export default function LandingPage() {
             <div className="relative group">
               <div className="aspect-square rounded-2xl overflow-hidden shadow-lg shadow-gray-200/50 border-2 border-white">
                 <img 
-                  src="/demo-meal-2.jpg" 
+                  src="/demo-meal-2.png" 
                   alt="Refeição balanceada analisada pelo NutriVision" 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
