@@ -65,7 +65,15 @@ async def run_migrations(conn):
             print(f"Migration warning: {e}")
 
 async def init_db():
+    import asyncio
     from app.models import models
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-        await run_migrations(conn)
+    try:
+        async with asyncio.timeout(30):
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+                await run_migrations(conn)
+        print("[DB] Database initialized successfully")
+    except asyncio.TimeoutError:
+        print("[DB] Database connection timeout - continuing without migrations")
+    except Exception as e:
+        print(f"[DB] Database initialization error: {e} - continuing anyway")

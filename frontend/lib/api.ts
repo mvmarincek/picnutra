@@ -357,10 +357,7 @@ export const authApi = {
     api<User>('/auth/me'),
   
   getMyReferrals: () =>
-    api<{ total_referred: number }>('/auth/my-referrals'),
-  
-  resendVerification: (email: string) =>
-    api<{ message: string }>('/auth/resend-verification', { method: 'POST', body: { email }, skipAuth: true })
+    api<{ total_referred: number }>('/auth/my-referrals')
 };
 
 export const profileApi = {
