@@ -121,6 +121,7 @@
 | GitHub | Repositório + CI/CD |
 | ASAAS | Gateway de pagamento (PIX/Cartão) |
 | Resend | Serviço de email transacional |
+| Cloudinary | Armazenamento de imagens (upload usuários) |
 | Google AdSense | Monetização (usuários free) |
 
 ---
@@ -161,6 +162,7 @@ SistemaNutri/
 │   │   │   └── schemas.py          # Schemas Pydantic
 │   │   ├── services/
 │   │   │   ├── asaas_service.py    # Integração ASAAS
+│   │   │   ├── cloudinary_service.py # Upload de imagens Cloudinary
 │   │   │   └── email_service.py    # Envio de emails
 │   │   ├── utils/
 │   │   │   ├── nutrition_database.json # Base nutricional
@@ -667,6 +669,47 @@ resend.Emails.send({
 })
 ```
 
+### Cloudinary (Armazenamento de Imagens)
+
+**Por que Cloudinary?**
+O Render usa sistema de arquivos efêmero - uploads locais são apagados a cada deploy/reinício.
+Cloudinary persiste as imagens dos usuários permanentemente.
+
+```python
+# Arquivo: backend/app/services/cloudinary_service.py
+
+# Configuração (variáveis de ambiente no Render)
+CLOUDINARY_CLOUD_NAME=seu_cloud_name
+CLOUDINARY_API_KEY=sua_api_key
+CLOUDINARY_API_SECRET=seu_api_secret
+
+# Uso no upload de refeições
+from app.services.cloudinary_service import upload_image_to_cloudinary, is_cloudinary_configured
+
+if is_cloudinary_configured():
+    cloudinary_url = await upload_image_to_cloudinary(content, filename)
+    image_url = cloudinary_url  # URL externa do Cloudinary
+else:
+    image_url = f"/uploads/{filename}"  # Fallback local
+
+# Plano Gratuito Cloudinary
+- 25GB de armazenamento
+- 25GB de bandwidth/mês
+- Transformações automáticas (resize, otimização)
+```
+
+**Fluxo de Upload:**
+```
+1. Usuário envia imagem (celular/PC)
+2. Backend recebe e redimensiona (max 2048x2048)
+3. Se Cloudinary configurado:
+   └─ Upload para Cloudinary → retorna URL https://res.cloudinary.com/...
+4. Se não configurado:
+   └─ Salva localmente em ./uploads/
+5. URL é salva no campo Meal.image_url
+6. Agentes de IA recebem URL direta do Cloudinary
+```
+
 ---
 
 ## Autenticação e Segurança
@@ -865,6 +908,11 @@ ASAAS_BASE_URL=https://api.asaas.com/v3
 # Email (Resend)
 RESEND_API_KEY=re_...
 
+# Cloudinary (Armazenamento de Imagens)
+CLOUDINARY_CLOUD_NAME=seu_cloud_name
+CLOUDINARY_API_KEY=sua_api_key
+CLOUDINARY_API_SECRET=seu_api_secret
+
 # OPCIONAIS (têm defaults)
 UPLOAD_DIR=./uploads
 ACCESS_TOKEN_EXPIRE_MINUTES=43200
@@ -942,7 +990,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 5. POST /meals/upload (multipart)
 6. Backend:
    ├─ Valida créditos (se full)
-   ├─ Salva imagem
+   ├─ Upload imagem para Cloudinary (ou local)
    ├─ Cria Meal e Job
    ├─ Desconta créditos
    └─ Inicia análise async
@@ -1096,6 +1144,23 @@ Verificar:
 - Saldo na OpenAI
 ```
 
+### Erro: "Imagens não aparecem no histórico"
+```
+Causas possíveis:
+1. Cloudinary não configurado (imagens salvas localmente são apagadas no redeploy)
+2. URL da imagem inválida ou expirada
+
+Solução:
+- Configurar variáveis Cloudinary no Render:
+  CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+- Imagens antigas (pré-Cloudinary) foram perdidas
+
+Diagnóstico:
+- Verificar Meal.image_url no banco
+- URLs Cloudinary começam com https://res.cloudinary.com/
+- URLs locais começam com /uploads/ (não persistem)
+```
+
 ### Deploy não atualiza
 ```
 Render:
@@ -1130,8 +1195,9 @@ git tag
 git tag -a v1.0.0 -m "Descrição da versão"
 git push origin v1.0.0
 
-# Versão atual
-v1.0.0-release  # Versão de lançamento estável
+# Versões existentes
+v1.0.0-release          # Versão inicial de lançamento
+v1.0.1-pre-cloudinary   # Antes da integração Cloudinary
 ```
 
 ### Rollback
@@ -1186,8 +1252,10 @@ git push -f origin main
 - [ ] Configurar ASAAS (produção)
 - [ ] Configurar webhook ASAAS
 - [ ] Configurar Resend
+- [ ] Configurar Cloudinary (criar conta gratuita)
 - [ ] Testar fluxo de pagamento
 - [ ] Testar envio de emails
+- [ ] Testar upload de imagens (celular)
 
 ### 6. Produção
 - [ ] Configurar domínio customizado
