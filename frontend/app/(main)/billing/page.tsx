@@ -17,8 +17,7 @@ interface PixPaymentData {
 interface CardFormData {
   card_holder_name: string;
   card_number: string;
-  expiry_month: string;
-  expiry_year: string;
+  expiry: string;
   cvv: string;
   holder_cpf: string;
   holder_phone: string;
@@ -29,8 +28,7 @@ interface CardFormData {
 const initialCardForm: CardFormData = {
   card_holder_name: '',
   card_number: '',
-  expiry_month: '',
-  expiry_year: '',
+  expiry: '',
   cvv: '',
   holder_cpf: '',
   holder_phone: '',
@@ -163,8 +161,12 @@ export default function BillingPage() {
   const handleCardPayment = async () => {
     if (!selectedPackage) return;
     
-    if (!cardForm.card_holder_name || !cardForm.card_number || !cardForm.expiry_month || 
-        !cardForm.expiry_year || !cardForm.cvv || !cardForm.holder_cpf || 
+    const expiryParts = cardForm.expiry.split('/');
+    const expiry_month = expiryParts[0] || '';
+    const expiry_year = expiryParts[1] ? '20' + expiryParts[1] : '';
+    
+    if (!cardForm.card_holder_name || !cardForm.card_number || !expiry_month || 
+        !expiry_year || !cardForm.cvv || !cardForm.holder_cpf || 
         !cardForm.holder_phone || !cardForm.postal_code || !cardForm.address_number) {
       showWarning(
         'Por favor, preencha todos os campos obrigatórios do cartão.',
@@ -178,7 +180,15 @@ export default function BillingPage() {
     try {
       await billingApi.createCardPayment({
         package: selectedPackage,
-        ...cardForm
+        card_holder_name: cardForm.card_holder_name,
+        card_number: cardForm.card_number,
+        expiry_month,
+        expiry_year,
+        cvv: cardForm.cvv,
+        holder_cpf: cardForm.holder_cpf,
+        holder_phone: cardForm.holder_phone,
+        postal_code: cardForm.postal_code,
+        address_number: cardForm.address_number
       });
       await refreshUser();
       const newStatus = await billingApi.getStatus();
@@ -203,9 +213,13 @@ export default function BillingPage() {
   };
 
   const handleProSubscription = async (billingType: 'PIX' | 'CREDIT_CARD') => {
+    const expiryParts = cardForm.expiry.split('/');
+    const expiry_month = expiryParts[0] || '';
+    const expiry_year = expiryParts[1] ? '20' + expiryParts[1] : '';
+    
     if (billingType === 'CREDIT_CARD') {
-      if (!cardForm.card_holder_name || !cardForm.card_number || !cardForm.expiry_month || 
-          !cardForm.expiry_year || !cardForm.cvv || !cardForm.holder_cpf || 
+      if (!cardForm.card_holder_name || !cardForm.card_number || !expiry_month || 
+          !expiry_year || !cardForm.cvv || !cardForm.holder_cpf || 
           !cardForm.holder_phone || !cardForm.postal_code || !cardForm.address_number) {
         showWarning(
           'Por favor, preencha todos os campos obrigatórios do cartão.',
@@ -221,7 +235,17 @@ export default function BillingPage() {
       const request: any = { billing_type: billingType };
       
       if (billingType === 'CREDIT_CARD') {
-        Object.assign(request, cardForm);
+        Object.assign(request, {
+          card_holder_name: cardForm.card_holder_name,
+          card_number: cardForm.card_number,
+          expiry_month,
+          expiry_year,
+          cvv: cardForm.cvv,
+          holder_cpf: cardForm.holder_cpf,
+          holder_phone: cardForm.holder_phone,
+          postal_code: cardForm.postal_code,
+          address_number: cardForm.address_number
+        });
       }
 
       const result = await billingApi.createProSubscription(request);
@@ -395,11 +419,12 @@ export default function BillingPage() {
       case 'card_number':
         value = formatCardNumber(value);
         break;
-      case 'expiry_month':
-        value = value.replace(/\D/g, '').slice(0, 2);
-        break;
-      case 'expiry_year':
-        value = value.replace(/\D/g, '').slice(0, 4);
+      case 'expiry':
+        value = value.replace(/\D/g, '');
+        if (value.length >= 2) {
+          value = value.slice(0, 2) + '/' + value.slice(2, 4);
+        }
+        value = value.slice(0, 5);
         break;
       case 'cvv':
         value = value.replace(/\D/g, '').slice(0, 4);
@@ -433,19 +458,12 @@ export default function BillingPage() {
         onChange={handleCardInputChange('card_number')}
         className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
       />
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         <input
           type="text"
-          placeholder="Mes (MM)"
-          value={cardForm.expiry_month}
-          onChange={handleCardInputChange('expiry_month')}
-          className="px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
-        />
-        <input
-          type="text"
-          placeholder="Ano (YYYY)"
-          value={cardForm.expiry_year}
-          onChange={handleCardInputChange('expiry_year')}
+          placeholder="Validade (MM/AA)"
+          value={cardForm.expiry}
+          onChange={handleCardInputChange('expiry')}
           className="px-4 py-3 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all"
         />
         <input
