@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { 
   Sparkles, Heart, TrendingUp, Shield, Apple, Flame, Star, ArrowRight, 
   CheckCircle2, Camera, Brain, BarChart3, Zap, Crown, Infinity, Ban, ChefHat,
-  Image as ImageIcon, Target, Award, Users, CreditCard
+  Image as ImageIcon, Target, Award, Users, CreditCard, UserCircle, Gift, Share2, QrCode
 } from 'lucide-react';
 import BowlLogo from '@/components/BowlLogo';
 
@@ -202,6 +202,67 @@ export default function LandingPage() {
                 <span className="text-xs font-bold text-gray-800">Para profissionais</span>
               </div>
               <p className="text-[10px] text-gray-500">Print e envie ao seu nutricionista</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 p-6 mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center shadow-lg shadow-violet-200">
+              <UserCircle className="w-6 h-6 text-white" />
+            </div>
+            Complete seu perfil
+          </h2>
+          <p className="text-gray-500 text-sm mb-4">
+            Após o cadastro, preencha seu perfil com seus objetivos, restrições alimentares e alergias. 
+            Assim o PicNutra faz sugestões personalizadas que atendem suas necessidades!
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl p-3 text-center border border-violet-100">
+              <Target className="w-5 h-5 text-violet-600 mx-auto mb-1" />
+              <p className="text-[10px] text-gray-600 font-medium">Objetivos</p>
+            </div>
+            <div className="bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl p-3 text-center border border-rose-100">
+              <Ban className="w-5 h-5 text-rose-600 mx-auto mb-1" />
+              <p className="text-[10px] text-gray-600 font-medium">Restrições</p>
+            </div>
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 text-center border border-amber-100">
+              <Shield className="w-5 h-5 text-amber-600 mx-auto mb-1" />
+              <p className="text-[10px] text-gray-600 font-medium">Alergias</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-3xl shadow-xl p-6 mb-8 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+          
+          <div className="relative">
+            <h2 className="text-xl font-bold mb-3 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <Gift className="w-6 h-6 text-yellow-300" />
+              </div>
+              Indique amigos e ganhe!
+            </h2>
+            <p className="text-emerald-100 text-sm mb-4">
+              Compartilhe seu link ou QR Code de afiliado (disponível na aba Perfil) e ganhe créditos 
+              para análises completas quando seus amigos se cadastrarem!
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 text-center">
+                <Share2 className="w-5 h-5 text-white mx-auto mb-1" />
+                <p className="text-xs font-medium">Link de indicação</p>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 text-center">
+                <QrCode className="w-5 h-5 text-white mx-auto mb-1" />
+                <p className="text-xs font-medium">QR Code</p>
+              </div>
+            </div>
+            <div className="mt-4 bg-white/20 backdrop-blur-sm rounded-xl p-3 flex items-center gap-3">
+              <Award className="w-8 h-8 text-yellow-300 flex-shrink-0" />
+              <p className="text-sm">
+                <span className="font-bold">+12 créditos</span> para você a cada amigo que se cadastrar!
+              </p>
             </div>
           </div>
         </div>
