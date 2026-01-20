@@ -103,6 +103,12 @@ export default function LandingPage() {
             </p>
           </div>
           
+          <div className="mb-4 animate-pulse">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-500 px-5 py-2.5 rounded-full shadow-lg">
+              <span className="text-white text-sm sm:text-base font-black uppercase tracking-wide">Agora você não tem mais desculpas</span>
+            </div>
+          </div>
+          
           <Link 
             href="/register"
             className="inline-flex items-center gap-3 bg-white text-emerald-600 px-8 py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all mb-6"
