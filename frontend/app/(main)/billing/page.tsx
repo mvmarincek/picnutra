@@ -88,6 +88,7 @@ export default function BillingPage() {
           setCheckingPayment(true);
           const status = await billingApi.getPaymentStatus(paymentData.payment_id);
           if (status.confirmed) {
+            clearInterval(interval);
             await refreshUser();
             const newStatus = await billingApi.getStatus();
             setBillingStatus(newStatus);
@@ -106,7 +107,7 @@ export default function BillingPage() {
         } finally {
           setCheckingPayment(false);
         }
-      }, 5000);
+      }, 3000);
     }
     
     return () => {
