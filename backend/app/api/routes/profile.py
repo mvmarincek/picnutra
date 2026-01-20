@@ -150,17 +150,29 @@ async def get_public_history(
         analysis = analysis_result.scalar_one_or_none()
         
         if analysis:
-            history.append({
-                "id": meal.id,
-                "meal_type": meal.meal_type,
-                "image_url": meal.image_url,
-                "created_at": meal.created_at.isoformat(),
-                "calorias": analysis.calorias.get("central", 0) if analysis.calorias else 0,
-                "proteina": analysis.macros.get("proteina_g", 0) if analysis.macros else 0,
-                "carboidrato": analysis.macros.get("carboidrato_g", 0) if analysis.macros else 0,
-                "gordura": analysis.macros.get("gordura_g", 0) if analysis.macros else 0,
-                "fibra": analysis.macros.get("fibra_g", 0) if analysis.macros else 0,
-            })
+            try:
+                calorias = 0
+                if analysis.calorias:
+                    if isinstance(analysis.calorias, dict):
+                        calorias = analysis.calorias.get("central", 0)
+                    else:
+                        calorias = float(analysis.calorias) if analysis.calorias else 0
+                
+                macros = analysis.macros if isinstance(analysis.macros, dict) else {}
+                
+                history.append({
+                    "id": meal.id,
+                    "meal_type": meal.meal_type,
+                    "image_url": meal.image_url,
+                    "created_at": meal.created_at.isoformat(),
+                    "calorias": calorias,
+                    "proteina": macros.get("proteina_g", 0) or 0,
+                    "carboidrato": macros.get("carboidrato_g", 0) or 0,
+                    "gordura": macros.get("gordura_g", 0) or 0,
+                    "fibra": macros.get("fibra_g", 0) or 0,
+                })
+            except Exception:
+                continue
     
     total_meals = len(history)
     avg_calorias = sum(m["calorias"] for m in history) / total_meals if total_meals > 0 else 0
