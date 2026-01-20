@@ -109,15 +109,19 @@ async def test_login():
 async def test_db():
     from sqlalchemy import text
     from app.core.security import get_password_hash
-    result = {"database": "unknown"}
+    result = {"database": "unknown", "deleted": []}
     try:
         async with async_session() as db:
-            tables = ["jobs", "meal_analysis", "meals", "credit_transactions", "payments", "referrals", "profiles", "feedback", "error_logs", "users"]
+            tables = ["jobs", "meal_analysis", "meals", "credit_transactions", "payments", "referrals", "profiles", "error_logs"]
             for table in tables:
                 try:
                     await db.execute(text(f"DELETE FROM {table}"))
-                except:
-                    pass
+                    result["deleted"].append(table)
+                except Exception as e:
+                    result["deleted"].append(f"{table}: skip")
+            
+            await db.execute(text("DELETE FROM users"))
+            result["deleted"].append("users")
             await db.commit()
             
             hashed = get_password_hash("Teste123!")
