@@ -42,13 +42,21 @@ export default function LandingPage() {
         <div className="absolute top-1/3 right-1/4 w-40 h-40 bg-white/5 rounded-full" />
         
         <div className="relative max-w-lg mx-auto px-4 pt-10 pb-8 text-center">
+          <div className="mb-4 animate-pulse">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-500 px-5 py-2.5 rounded-full shadow-lg">
+              <span className="text-2xl">🔥</span>
+              <span className="text-white text-sm sm:text-base font-black uppercase tracking-wide">A Nova Onda Fit</span>
+              <span className="text-2xl">💪</span>
+            </div>
+          </div>
+          
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
             <Sparkles className="w-4 h-4 text-yellow-300" />
             <span className="text-white text-sm font-medium">Powered by AI</span>
           </div>
           
           <h1 className="text-3xl sm:text-4xl font-black text-white mb-4 leading-tight">
-            Controle sua alimentação de forma simples e inteligente
+            Acelere seus resultados com controle nutricional inteligente
           </h1>
           
           <p className="text-emerald-100 text-base sm:text-lg mb-6 max-w-md mx-auto">
