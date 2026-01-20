@@ -558,23 +558,6 @@ export default function BillingPage() {
         )}
       </div>
 
-      <div className="mt-4 pt-4 border-t border-dashed border-gray-200">
-        <p className="text-xs text-gray-400 text-center mb-2">Modo de teste (apenas para desenvolvimento)</p>
-        <button
-          onClick={() => handleTestConfirmPayment(data.payment_id)}
-          disabled={testingPayment}
-          className="w-full bg-gradient-to-r from-violet-600 to-purple-600 text-white py-2 rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-        >
-          {testingPayment ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Simulando...
-            </>
-          ) : (
-            'Simular Pagamento Confirmado'
-          )}
-        </button>
-      </div>
     </>
   );
 

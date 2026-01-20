@@ -59,3 +59,32 @@ async def delete_image_from_cloudinary(public_id: str) -> bool:
     except Exception as e:
         logger.error(f"Error deleting from Cloudinary: {e}")
         return False
+
+async def upload_image_from_url(image_url: str, filename: str, folder: str = "picnutra/generated") -> str:
+    if not is_cloudinary_configured():
+        logger.warning("Cloudinary not configured, returning original URL")
+        return image_url
+    
+    try:
+        configure_cloudinary()
+        
+        result = cloudinary.uploader.upload(
+            image_url,
+            folder=folder,
+            public_id=filename,
+            resource_type="image",
+            overwrite=True,
+            transformation=[
+                {"width": 1024, "height": 1024, "crop": "limit"},
+                {"quality": "auto:good"},
+                {"fetch_format": "auto"}
+            ]
+        )
+        
+        secure_url = result.get("secure_url")
+        logger.info(f"Image from URL uploaded to Cloudinary: {secure_url}")
+        return secure_url
+        
+    except Exception as e:
+        logger.error(f"Error uploading URL to Cloudinary: {e}")
+        return image_url

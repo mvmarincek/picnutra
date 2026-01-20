@@ -1,5 +1,7 @@
 import openai
 from typing import Optional
+import uuid
+from app.services.cloudinary_service import upload_image_from_url
 
 class ImageGenerationManager:
     def __init__(self, openai_api_key: str):
@@ -35,7 +37,13 @@ IMPORTANT RULES:
                 quality="standard",
                 n=1
             )
-            return response.data[0].url
+            
+            openai_url = response.data[0].url
+            
+            filename = f"suggestion_{uuid.uuid4().hex[:12]}"
+            cloudinary_url = await upload_image_from_url(openai_url, filename)
+            
+            return cloudinary_url
         except Exception as e:
             print(f"Erro ao gerar imagem: {e}")
             return None

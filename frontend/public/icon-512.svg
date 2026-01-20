@@ -5,34 +5,24 @@
       <stop offset="50%" style="stop-color:#14b8a6"/>
       <stop offset="100%" style="stop-color:#06b6d4"/>
     </linearGradient>
+    <linearGradient id="plateGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="100%" style="stop-color:#f0fdfa"/>
+    </linearGradient>
   </defs>
-  <rect width="512" height="512" rx="100" fill="url(#bgGrad)"/>
-  <!-- Camera body -->
-  <rect x="56" y="130" width="400" height="310" rx="60" fill="white"/>
-  <!-- Camera bump -->
-  <rect x="120" y="66" width="130" height="72" rx="24" fill="white"/>
-  <!-- Camera button -->
-  <circle cx="390" cy="175" r="32" fill="white"/>
-  <circle cx="390" cy="175" r="20" fill="#e5e7eb"/>
-  <!-- Lens outer -->
-  <circle cx="256" cy="290" r="130" fill="white"/>
-  <circle cx="256" cy="290" r="115" fill="#e5e7eb" opacity="0.5"/>
-  <circle cx="256" cy="290" r="105" fill="white"/>
-  <!-- Bowl colorido -->
-  <circle cx="256" cy="290" r="92" fill="#faf5ff"/>
-  <!-- Secao salmao -->
-  <path d="M256 290L256 198A92 92 0 0 1 334 249Z" fill="#fb923c"/>
-  <!-- Secao abacate -->
-  <path d="M256 290L334 249A92 92 0 0 1 348 290L348 322A92 92 0 0 1 308 363Z" fill="#22c55e"/>
-  <!-- Secao arroz -->
-  <path d="M256 290L308 363A92 92 0 0 1 204 363Z" fill="#fef3c7"/>
-  <!-- Secao beterraba -->
-  <path d="M256 290L204 363A92 92 0 0 1 164 322L164 290A92 92 0 0 1 180 249Z" fill="#c084fc"/>
-  <!-- Secao pepino -->
-  <path d="M256 290L180 249A92 92 0 0 1 256 198Z" fill="#86efac"/>
-  <!-- Centro ovo -->
-  <circle cx="256" cy="290" r="32" fill="#fef3c7"/>
-  <circle cx="256" cy="290" r="16" fill="#fb923c"/>
-  <!-- Brilho -->
-  <ellipse cx="200" cy="225" rx="32" ry="16" fill="white" opacity="0.5" transform="rotate(-40 200 225)"/>
+  <rect width="512" height="512" rx="115" fill="url(#bgGrad)"/>
+  <circle cx="256" cy="268" r="155" fill="url(#plateGrad)" opacity="0.95"/>
+  <circle cx="256" cy="268" r="128" fill="none" stroke="#e2e8f0" stroke-width="4"/>
+  <ellipse cx="213" cy="236" rx="48" ry="32" fill="#22c55e" transform="rotate(-15 213 236)"/>
+  <ellipse cx="307" cy="248" rx="43" ry="27" fill="#f97316" transform="rotate(20 307 248)"/>
+  <ellipse cx="240" cy="308" rx="54" ry="22" fill="#fbbf24" transform="rotate(-5 240 308)"/>
+  <ellipse cx="280" cy="288" rx="27" ry="22" fill="#ef4444" transform="rotate(10 280 288)"/>
+  <circle cx="256" cy="268" r="16" fill="#fef3c7"/>
+  <circle cx="256" cy="268" r="8" fill="#fb923c"/>
+  <rect x="335" y="80" width="110" height="75" rx="20" fill="white" opacity="0.9"/>
+  <circle cx="390" cy="118" r="28" fill="#10b981"/>
+  <circle cx="390" cy="118" r="17" fill="white"/>
+  <circle cx="390" cy="118" r="8" fill="#10b981"/>
+  <path d="M72 148 L104 116 L136 148" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.7"/>
+  <path d="M376 400 L408 432 L440 400" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.7"/>
 </svg>
