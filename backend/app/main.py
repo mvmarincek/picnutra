@@ -69,6 +69,42 @@ async def root():
 async def health_check():
     return {"status": "healthy"}
 
+@app.get("/test-login")
+async def test_login():
+    from sqlalchemy import text
+    from app.core.security import verify_password, create_access_token, create_refresh_token
+    result = {}
+    try:
+        async with async_session() as db:
+            r = await db.execute(text("SELECT id, email, password_hash FROM users WHERE email = 'teste@picnutra.com'"))
+            row = r.fetchone()
+            if not row:
+                result["error"] = "User not found"
+                return result
+            
+            user_id, email, password_hash = row
+            result["user_found"] = True
+            result["user_id"] = user_id
+            result["email"] = email
+            result["hash_length"] = len(password_hash) if password_hash else 0
+            
+            try:
+                valid = verify_password("Teste123!", password_hash)
+                result["password_valid"] = valid
+            except Exception as e:
+                result["password_error"] = str(e)
+            
+            try:
+                token = create_access_token(data={"sub": str(user_id)})
+                result["token_created"] = True
+                result["token_preview"] = token[:20] + "..."
+            except Exception as e:
+                result["token_error"] = str(e)
+                
+    except Exception as e:
+        result["db_error"] = str(e)
+    return result
+
 @app.get("/test-db")
 async def test_db():
     from sqlalchemy import text
