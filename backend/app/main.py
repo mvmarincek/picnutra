@@ -236,6 +236,8 @@ async def run_migration():
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER",
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE",
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verification_token VARCHAR(64)",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS public_share_token VARCHAR(64)",
+        "CREATE UNIQUE INDEX IF NOT EXISTS ix_users_public_share_token ON users(public_share_token)",
         "CREATE UNIQUE INDEX IF NOT EXISTS ix_users_referral_code ON users(referral_code)",
         "ALTER TABLE profiles ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(500)",
         "ALTER TABLE profiles ALTER COLUMN avatar_url TYPE TEXT",

@@ -1,14 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, desc
 from app.db.database import get_db
-from app.models.models import User, Profile
+from app.models.models import User, Profile, Meal, MealAnalysis
 from app.schemas.schemas import ProfileCreate, ProfileResponse
 from app.core.security import get_current_user
 from app.core.config import settings
 from PIL import Image
 from io import BytesIO
 import base64
+import secrets
 
 router = APIRouter(prefix="/profile", tags=["profile"])
 
@@ -104,3 +105,79 @@ async def upload_avatar(
     await db.refresh(profile)
     
     return ProfileResponse.model_validate(profile)
+
+@router.post("/generate-share-token")
+async def generate_share_token(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    if not current_user.public_share_token:
+        current_user.public_share_token = secrets.token_urlsafe(16)
+        await db.commit()
+        await db.refresh(current_user)
+    
+    return {
+        "share_token": current_user.public_share_token,
+        "share_url": f"https://picnutra.vercel.app/historico/{current_user.public_share_token}"
+    }
+
+@router.get("/public/{share_token}")
+async def get_public_history(
+    share_token: str,
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+        select(User).where(User.public_share_token == share_token)
+    )
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="Histórico não encontrado")
+    
+    meals_result = await db.execute(
+        select(Meal)
+        .where(Meal.user_id == user.id, Meal.status == "completed")
+        .order_by(desc(Meal.created_at))
+        .limit(50)
+    )
+    meals = meals_result.scalars().all()
+    
+    history = []
+    for meal in meals:
+        analysis_result = await db.execute(
+            select(MealAnalysis).where(MealAnalysis.meal_id == meal.id)
+        )
+        analysis = analysis_result.scalar_one_or_none()
+        
+        if analysis:
+            history.append({
+                "id": meal.id,
+                "meal_type": meal.meal_type,
+                "image_url": meal.image_url,
+                "created_at": meal.created_at.isoformat(),
+                "calorias": analysis.calorias.get("central", 0) if analysis.calorias else 0,
+                "proteina": analysis.macros.get("proteina_g", 0) if analysis.macros else 0,
+                "carboidrato": analysis.macros.get("carboidrato_g", 0) if analysis.macros else 0,
+                "gordura": analysis.macros.get("gordura_g", 0) if analysis.macros else 0,
+                "fibra": analysis.macros.get("fibra_g", 0) if analysis.macros else 0,
+            })
+    
+    total_meals = len(history)
+    avg_calorias = sum(m["calorias"] for m in history) / total_meals if total_meals > 0 else 0
+    avg_proteina = sum(m["proteina"] for m in history) / total_meals if total_meals > 0 else 0
+    avg_carboidrato = sum(m["carboidrato"] for m in history) / total_meals if total_meals > 0 else 0
+    avg_gordura = sum(m["gordura"] for m in history) / total_meals if total_meals > 0 else 0
+    avg_fibra = sum(m["fibra"] for m in history) / total_meals if total_meals > 0 else 0
+    
+    return {
+        "user_name": user.name or "Usuário",
+        "total_meals": total_meals,
+        "averages": {
+            "calorias": round(avg_calorias, 1),
+            "proteina": round(avg_proteina, 1),
+            "carboidrato": round(avg_carboidrato, 1),
+            "gordura": round(avg_gordura, 1),
+            "fibra": round(avg_fibra, 1),
+        },
+        "meals": history
+    }

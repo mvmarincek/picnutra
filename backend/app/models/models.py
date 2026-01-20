@@ -46,6 +46,7 @@ class User(Base):
     referred_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     email_verified = Column(Boolean, default=False)
     email_verification_token = Column(String(64), nullable=True)
+    public_share_token = Column(String(64), unique=True, nullable=True, index=True)
     is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

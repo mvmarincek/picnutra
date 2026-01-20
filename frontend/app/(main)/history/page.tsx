@@ -3,15 +3,20 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
-import { mealsApi, MealListItem, MealStats } from '@/lib/api';
+import { mealsApi, MealListItem, MealStats, profileApi } from '@/lib/api';
 import Image from 'next/image';
-import { Calendar, Trash2, Camera, TrendingUp, Award, Flame, Target, Zap, Trophy, Star, ChevronRight } from 'lucide-react';
+import { Calendar, Trash2, Camera, TrendingUp, Award, Flame, Target, Zap, Trophy, Star, ChevronRight, Share2, Copy, Check, QrCode } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import PageAds from '@/components/PageAds';
 
 export default function HistoryPage() {
   const [meals, setMeals] = useState<MealListItem[]>([]);
   const [stats, setStats] = useState<MealStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [generatingLink, setGeneratingLink] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
 
@@ -42,6 +47,27 @@ export default function HistoryPage() {
       setMeals(meals.filter(m => m.id !== mealId));
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleGenerateShareLink = async () => {
+    setGeneratingLink(true);
+    try {
+      const result = await profileApi.generateShareToken();
+      setShareUrl(result.share_url);
+      setShowShareModal(true);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setGeneratingLink(false);
+    }
+  };
+
+  const handleCopyLink = () => {
+    if (shareUrl) {
+      navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -96,17 +122,78 @@ export default function HistoryPage() {
         <div className="relative bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 p-6 overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
-          <div className="relative flex items-center gap-4">
-            <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-              <Calendar className="w-7 h-7 text-white" />
+          <div className="relative flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                <Calendar className="w-7 h-7 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">Histórico de Análises</h1>
+                <p className="text-emerald-100">Acompanhe sua jornada nutricional</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white">Histórico de Análises</h1>
-              <p className="text-emerald-100">Acompanhe sua jornada nutricional</p>
-            </div>
+            <button
+              onClick={handleGenerateShareLink}
+              disabled={generatingLink}
+              className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center hover:bg-white/30 transition-colors"
+              title="Compartilhar histórico"
+            >
+              {generatingLink ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <Share2 className="w-6 h-6 text-white" />
+              )}
+            </button>
           </div>
         </div>
       </div>
+
+      {showShareModal && shareUrl && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowShareModal(false)}>
+          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="text-center mb-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <QrCode className="w-7 h-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">Compartilhar Histórico</h3>
+              <p className="text-gray-500 text-sm mt-1">Envie para seu nutricionista visualizar suas análises</p>
+            </div>
+
+            <div className="bg-gray-50 rounded-2xl p-4 flex justify-center mb-4">
+              <QRCodeSVG value={shareUrl} size={160} level="M" />
+            </div>
+
+            <div className="bg-gray-100 rounded-xl p-3 mb-4">
+              <p className="text-xs text-gray-500 mb-1">Link público:</p>
+              <p className="text-sm text-gray-700 break-all font-mono">{shareUrl}</p>
+            </div>
+
+            <button
+              onClick={handleCopyLink}
+              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-all"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-5 h-5" />
+                  Link copiado!
+                </>
+              ) : (
+                <>
+                  <Copy className="w-5 h-5" />
+                  Copiar link
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={() => setShowShareModal(false)}
+              className="w-full py-3 mt-2 text-gray-500 font-medium"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
 
       {stats && stats.total_meals > 0 && (
         <div className="mb-6">

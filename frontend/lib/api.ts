@@ -371,7 +371,10 @@ export const profileApi = {
     const formData = new FormData();
     formData.append('file', file);
     return api<Profile>('/profile/avatar', { method: 'POST', body: formData, isFormData: true });
-  }
+  },
+
+  generateShareToken: () =>
+    api<{ share_token: string; share_url: string }>('/profile/generate-share-token', { method: 'POST' })
 };
 
 export interface MealUploadOptions {
