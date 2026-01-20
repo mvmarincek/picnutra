@@ -12,11 +12,11 @@ _settings_loaded = False
 
 DEFAULT_SETTINGS = {
     "admin_email": "mvmarincek@gmail.com",
-    "support_email": "suporte@ai8hub.com",
+    "support_email": "suporte@picnutra.com",
     "app_url": "https://picnutra.vercel.app",
     "frontend_url": "https://picnutra.vercel.app",
     "from_name": "PicNutra",
-    "from_email": "picnutra-noreply@ai8hub.com",
+    "from_email": "picnutra-noreply@picnutra.com",
     "welcome_credits": "36",
     "referral_credits": "12"
 }

@@ -102,7 +102,7 @@ async def test_email(email: str):
     try:
         resend.api_key = api_key
         response = resend.Emails.send({
-            "from": "PicNutra <picnutra-noreply@ai8hub.com>",
+            "from": "PicNutra <picnutra-noreply@picnutra.com>",
             "to": email,
             "subject": "Teste PicNutra - Email funcionando!",
             "html": "<h1>Teste OK!</h1><p>Se voce recebeu este email, o Resend esta funcionando corretamente.</p>"
@@ -180,11 +180,11 @@ async def run_migration():
         )""",
         "CREATE UNIQUE INDEX IF NOT EXISTS ix_email_settings_key ON email_settings(key)",
         "INSERT INTO email_settings (key, value, description) VALUES ('admin_email', 'mvmarincek@gmail.com', 'Email do administrador') ON CONFLICT (key) DO NOTHING",
-        "INSERT INTO email_settings (key, value, description) VALUES ('support_email', 'suporte@ai8hub.com', 'Email de suporte') ON CONFLICT (key) DO NOTHING",
+        "INSERT INTO email_settings (key, value, description) VALUES ('support_email', 'suporte@picnutra.com', 'Email de suporte') ON CONFLICT (key) DO NOTHING",
         "INSERT INTO email_settings (key, value, description) VALUES ('app_url', 'https://picnutra.vercel.app', 'URL base da aplicacao') ON CONFLICT (key) DO NOTHING",
         "INSERT INTO email_settings (key, value, description) VALUES ('frontend_url', 'https://picnutra.vercel.app', 'URL do frontend') ON CONFLICT (key) DO NOTHING",
         "INSERT INTO email_settings (key, value, description) VALUES ('from_name', 'PicNutra', 'Nome do remetente') ON CONFLICT (key) DO NOTHING",
-        "INSERT INTO email_settings (key, value, description) VALUES ('from_email', 'picnutra-noreply@ai8hub.com', 'Email do remetente') ON CONFLICT (key) DO NOTHING",
+        "INSERT INTO email_settings (key, value, description) VALUES ('from_email', 'picnutra-noreply@picnutra.com', 'Email do remetente') ON CONFLICT (key) DO NOTHING",
         "INSERT INTO email_settings (key, value, description) VALUES ('welcome_credits', '36', 'Creditos de bonus para novos usuarios') ON CONFLICT (key) DO NOTHING",
         "INSERT INTO email_settings (key, value, description) VALUES ('referral_credits', '12', 'Creditos por indicacao') ON CONFLICT (key) DO NOTHING",
         "ALTER TABLE meal_analysis DROP COLUMN IF EXISTS receita",

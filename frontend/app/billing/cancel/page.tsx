@@ -75,7 +75,7 @@ export default function BillingCancelPage() {
           </div>
 
           <p className="text-xs text-gray-500 mt-6 text-center">
-            Precisa de ajuda? Entre em contato pelo email picnutra-contato@ai8hub.com
+            Precisa de ajuda? Entre em contato pelo email picnutra-contato@picnutra.com
           </p>
         </div>
       </div>

@@ -78,7 +78,7 @@ export default function AboutPage() {
                 Dúvidas, sugestões ou problemas? Entre em contato conosco:
               </p>
               <p className="mt-2">
-                <strong>Email:</strong> picnutra-contato@ai8hub.com
+                <strong>Email:</strong> picnutra-contato@picnutra.com
               </p>
             </section>
 
