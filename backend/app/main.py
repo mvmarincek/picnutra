@@ -112,13 +112,15 @@ async def test_db():
     result = {"database": "unknown"}
     try:
         async with async_session() as db:
+            await db.execute(text("DELETE FROM jobs"))
             await db.execute(text("DELETE FROM meal_analysis"))
             await db.execute(text("DELETE FROM meals"))
-            await db.execute(text("DELETE FROM jobs"))
             await db.execute(text("DELETE FROM credit_transactions"))
             await db.execute(text("DELETE FROM payments"))
             await db.execute(text("DELETE FROM referrals"))
             await db.execute(text("DELETE FROM profiles"))
+            await db.execute(text("DELETE FROM feedback"))
+            await db.execute(text("DELETE FROM error_logs"))
             await db.execute(text("DELETE FROM users"))
             await db.commit()
             
