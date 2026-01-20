@@ -36,7 +36,7 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(
-    title="Nutri-Vision API",
+    title="PicNutra API",
     description="API para análise nutricional de refeições com IA",
     version="1.0.0",
     lifespan=lifespan

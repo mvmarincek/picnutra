@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 43200
     OPENAI_API_KEY: str = ""
     FRONTEND_URL: str = "http://localhost:3000"
-    BACKEND_URL: str = "https://nutrivision-api-dcr0.onrender.com"
+    BACKEND_URL: str = "https://picnutra-api.onrender.com"
     UPLOAD_DIR: str = "./uploads"
     
     ASAAS_API_KEY: str = ""

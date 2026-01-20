@@ -1,6 +1,6 @@
 {
-  "name": "Nutrivision",
-  "short_name": "Nutrivision",
+  "name": "PicNutra",
+  "short_name": "PicNutra",
   "description": "Analise suas refeicoes com IA e receba sugestoes nutricionais personalizadas",
   "start_url": "/home",
   "display": "standalone",

@@ -13,10 +13,10 @@ _settings_loaded = False
 DEFAULT_SETTINGS = {
     "admin_email": "mvmarincek@gmail.com",
     "support_email": "suporte@ai8hub.com",
-    "app_url": "https://nutrivision.ai8hub.com",
-    "frontend_url": "https://nutrivision-drab.vercel.app",
-    "from_name": "Nutri-Vision",
-    "from_email": "nutrivision-noreply@ai8hub.com",
+    "app_url": "https://picnutra.vercel.app",
+    "frontend_url": "https://picnutra.vercel.app",
+    "from_name": "PicNutra",
+    "from_email": "picnutra-noreply@ai8hub.com",
     "welcome_credits": "36",
     "referral_credits": "12"
 }
