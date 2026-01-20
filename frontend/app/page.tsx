@@ -178,8 +178,8 @@ export default function LandingPage() {
             </div>
             Histórico completo
           </h2>
-          <p className="text-gray-500 text-sm mb-4">
-            Acompanhe sua jornada nutricional com estatísticas detalhadas. Ideal para compartilhar com seu nutricionista ou nutrólogo!
+          <p className="text-gray-700 text-base font-bold mb-4">
+            Compartilhe sua jornada nutricional com estatísticas detalhadas com seu nutricionista ou nutrólogo via QRCode!
           </p>
           <div className="rounded-2xl overflow-hidden shadow-lg border-2 border-emerald-100">
             <img 
