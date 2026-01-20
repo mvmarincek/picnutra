@@ -8,6 +8,7 @@ import { Home, History, Sparkles, User, LogOut, Crown } from 'lucide-react';
 import Footer from '@/components/Footer';
 import BowlLogo from '@/components/BowlLogo';
 import InstallPWAButton from '@/components/InstallPWAButton';
+import LanguageSelector from '@/components/LanguageSelector';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading, logout } = useAuth();
@@ -80,6 +81,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             </Link>
           )}
           <div className="flex items-center gap-3">
+            <LanguageSelector />
             {user.plan !== 'pro' && (
               <div className="flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-teal-50 px-3 py-1.5 rounded-full border border-emerald-100">
                 <Sparkles className="w-4 h-4 text-amber-500" />
