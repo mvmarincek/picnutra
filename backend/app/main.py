@@ -79,6 +79,10 @@ async def test_db():
             count = r.scalar()
             result["database"] = "connected"
             result["user_count"] = count
+            
+            users_r = await db.execute(text("SELECT id, email FROM users LIMIT 10"))
+            users = [{"id": row[0], "email": row[1]} for row in users_r.fetchall()]
+            result["users"] = users
     except Exception as e:
         result["database"] = "error"
         result["error"] = str(e)
