@@ -9,11 +9,13 @@ import Footer from '@/components/Footer';
 import BowlLogo from '@/components/BowlLogo';
 import InstallPWAButton from '@/components/InstallPWAButton';
 import LanguageSelector from '@/components/LanguageSelector';
+import { useLanguage } from '@/lib/i18n';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -39,10 +41,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   }
 
   const navItems = [
-    { href: '/home', icon: Home, label: 'Analisar' },
-    { href: '/history', icon: History, label: 'Historico' },
-    { href: '/billing', icon: Sparkles, label: 'Creditos' },
-    { href: '/profile', icon: User, label: 'Perfil' },
+    { href: '/home', icon: Home, label: t('nav.analyze') },
+    { href: '/history', icon: History, label: t('nav.history') },
+    { href: '/billing', icon: Sparkles, label: t('nav.credits') },
+    { href: '/profile', icon: User, label: t('nav.profile') },
   ];
 
   return (
