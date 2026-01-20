@@ -175,6 +175,41 @@ export default function LandingPage() {
           </div>
         </div>
 
+        <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 p-6 mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-teal-200">
+              <BarChart3 className="w-6 h-6 text-white" />
+            </div>
+            Histórico completo
+          </h2>
+          <p className="text-gray-500 text-sm mb-4">
+            Acompanhe sua jornada nutricional com estatísticas detalhadas. Ideal para compartilhar com seu nutricionista ou nutrólogo!
+          </p>
+          <div className="rounded-2xl overflow-hidden shadow-lg border-2 border-emerald-100">
+            <img 
+              src="/demo-history.png" 
+              alt="Histórico de análises nutricionais do PicNutra" 
+              className="w-full h-auto"
+            />
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-3 border border-emerald-100">
+              <div className="flex items-center gap-2 mb-1">
+                <TrendingUp className="w-4 h-4 text-emerald-600" />
+                <span className="text-xs font-bold text-gray-800">Médias nutricionais</span>
+              </div>
+              <p className="text-[10px] text-gray-500">Proteínas, carboidratos, gorduras e fibras</p>
+            </div>
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-100">
+              <div className="flex items-center gap-2 mb-1">
+                <Users className="w-4 h-4 text-blue-600" />
+                <span className="text-xs font-bold text-gray-800">Para profissionais</span>
+              </div>
+              <p className="text-[10px] text-gray-500">Print e envie ao seu nutricionista</p>
+            </div>
+          </div>
+        </div>
+
         <h2 className="text-lg font-bold text-gray-900 mb-4 text-center">Escolha seu plano</h2>
         
         <div className="grid grid-cols-2 gap-4 mb-8">
