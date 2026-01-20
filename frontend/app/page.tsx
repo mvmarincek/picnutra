@@ -52,7 +52,7 @@ export default function LandingPage() {
           </h1>
           
           <p className="text-emerald-100 text-base sm:text-lg mb-8 max-w-md mx-auto">
-            Descubra os nutrientes e as calorias das suas refeições apenas tirando uma foto
+            Descubra os nutrientes e as calorias estimadas das suas refeições com seu celular
           </p>
           
           <Link 
