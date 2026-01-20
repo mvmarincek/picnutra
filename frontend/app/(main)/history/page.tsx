@@ -291,7 +291,7 @@ export default function HistoryPage() {
                       onClick={() => meal.status === 'completed' && router.push(`/result?mealId=${meal.id}`)}
                     >
                       <Image
-                        src={`${apiUrl}${meal.image_url}`}
+                        src={meal.image_url?.startsWith('http') ? meal.image_url : `${apiUrl}${meal.image_url}`}
                         alt="Refeicao"
                         fill
                         className="object-cover"

@@ -5,21 +5,19 @@ interface BowlLogoProps {
 export default function BowlLogo({ className = "w-8 h-8" }: BowlLogoProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>
-      <rect x="2" y="5" width="20" height="15.5" rx="3.5" fill="currentColor"/>
-      <rect x="5.5" y="2.5" width="6" height="3" rx="1.2" fill="currentColor"/>
-      <circle cx="18" cy="7.5" r="1.6" fill="currentColor"/>
-      <circle cx="18" cy="7.5" r="1" fill="currentColor" opacity="0.3"/>
-      <circle cx="11.5" cy="13" r="6" fill="currentColor"/>
-      <circle cx="11.5" cy="13" r="5.4" fill="currentColor" opacity="0.8"/>
-      <circle cx="11.5" cy="13" r="4.9" fill="currentColor"/>
-      <circle cx="11.5" cy="13" r="4.3" fill="#faf5ff"/>
-      <path d="M11.5 13L11.5 8.7A4.3 4.3 0 0 1 15.2 11.2Z" fill="#fb923c"/>
-      <path d="M11.5 13L15.2 11.2A4.3 4.3 0 0 1 15.8 13L15.8 14.5A4.3 4.3 0 0 1 14 16Z" fill="#22c55e"/>
-      <path d="M11.5 13L14 16A4.3 4.3 0 0 1 9 16Z" fill="#fef3c7"/>
-      <path d="M11.5 13L9 16A4.3 4.3 0 0 1 7.2 14.5L7.2 13A4.3 4.3 0 0 1 8 11Z" fill="#c084fc"/>
-      <path d="M11.5 13L8 11A4.3 4.3 0 0 1 11.5 8.7Z" fill="#86efac"/>
-      <circle cx="11.5" cy="13" r="1.3" fill="#fef3c7"/>
-      <circle cx="11.5" cy="13" r="0.7" fill="#fb923c"/>
+      <circle cx="12" cy="12" r="9" fill="currentColor" opacity="0.15"/>
+      <circle cx="12" cy="12" r="6.5" stroke="currentColor" strokeWidth="2"/>
+      <circle cx="12" cy="12" r="2.5" fill="currentColor"/>
+      <path d="M12 3V5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M12 18.5V21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M3 12H5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M18.5 12H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="8.5" cy="10" r="1" fill="#22c55e"/>
+      <circle cx="15" cy="9.5" r="0.8" fill="#fb923c"/>
+      <circle cx="14" cy="14" r="1.2" fill="#ef4444"/>
+      <circle cx="9" cy="14.5" r="0.9" fill="#eab308"/>
+      <rect x="17" y="2" width="5" height="4" rx="1" fill="currentColor"/>
+      <circle cx="19.5" cy="4" r="1" fill="currentColor" opacity="0.4"/>
     </svg>
   );
 }

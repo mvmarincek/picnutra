@@ -126,7 +126,7 @@ function ResultContent() {
         <div className="bg-white rounded-3xl shadow-2xl shadow-gray-200/50 overflow-hidden mb-6">
           <div className="relative h-56">
             <Image
-              src={`${apiUrl}${meal.image_url}`}
+              src={meal.image_url?.startsWith('http') ? meal.image_url : `${apiUrl}${meal.image_url}`}
               alt="Refeição"
               fill
               className="object-cover"
