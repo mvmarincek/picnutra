@@ -12,7 +12,7 @@ _settings_loaded = False
 
 DEFAULT_SETTINGS = {
     "admin_email": "mvmarincek@gmail.com",
-    "support_email": "suporte@picnutra.com",
+    "support_email": "picnutra-contato@picnutra.com",
     "app_url": "https://picnutra.vercel.app",
     "frontend_url": "https://picnutra.vercel.app",
     "from_name": "PicNutra",

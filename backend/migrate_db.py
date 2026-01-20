@@ -84,7 +84,7 @@ async def migrate():
             "CREATE UNIQUE INDEX IF NOT EXISTS ix_email_settings_key ON email_settings(key)",
             """INSERT INTO email_settings (key, value, description) VALUES 
                 ('admin_email', 'mvmarincek@gmail.com', 'Email do administrador para receber notificacoes'),
-                ('support_email', 'suporte@picnutra.com', 'Email de suporte exibido nos emails'),
+                ('support_email', 'picnutra-contato@picnutra.com', 'Email de suporte exibido nos emails'),
                 ('app_url', 'https://picnutra.vercel.app', 'URL base da aplicacao'),
                 ('frontend_url', 'https://picnutra.vercel.app', 'URL do frontend para links nos emails'),
                 ('from_name', 'PicNutra', 'Nome do remetente nos emails'),
