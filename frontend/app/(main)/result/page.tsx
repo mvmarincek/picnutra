@@ -4,8 +4,9 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { mealsApi, MealDetail } from '@/lib/api';
-import { CheckCircle, AlertTriangle, Lightbulb, ArrowRight, Sparkles, Trophy, Heart, Flame, Zap, Target, TrendingUp } from 'lucide-react';
+import { CheckCircle, AlertTriangle, Lightbulb, ArrowRight, Sparkles, Trophy, Heart, Flame, Zap, Target, TrendingUp, Gift, Share2, Copy, Check } from 'lucide-react';
 import Image from 'next/image';
+import { QRCodeSVG } from 'qrcode.react';
 import PageAds from '@/components/PageAds';
 import BowlLogo from '@/components/BowlLogo';
 
@@ -383,6 +384,42 @@ function ResultContent() {
         <p className="text-xs text-gray-400 text-center mb-4 px-4">
           Esta análise é informativa e não substitui orientação de nutricionista ou médico.
         </p>
+
+        {user?.referral_code && (
+          <div className="bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-3xl p-5 mb-4 text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-14 h-14 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+            
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-3">
+                <Gift className="w-6 h-6 text-yellow-300" />
+                <h3 className="font-bold text-lg">Indique amigos e ganhe!</h3>
+              </div>
+              <p className="text-emerald-100 text-sm mb-4">
+                Compartilhe seu código e ganhe +12 créditos por cada amigo que se cadastrar!
+              </p>
+              
+              <div className="bg-white rounded-2xl p-4 flex flex-col items-center">
+                <QRCodeSVG 
+                  value={`https://picnutra.vercel.app/register?ref=${user.referral_code}`}
+                  size={120}
+                  level="M"
+                  includeMargin={false}
+                />
+                <p className="text-gray-600 text-xs mt-2 font-medium">Código: {user.referral_code}</p>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(`https://picnutra.vercel.app/register?ref=${user.referral_code}`);
+                  }}
+                  className="mt-2 flex items-center gap-1 text-emerald-600 text-xs font-medium hover:text-emerald-700"
+                >
+                  <Copy className="w-3 h-3" />
+                  Copiar link
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <PageAds position="bottom" />
 
