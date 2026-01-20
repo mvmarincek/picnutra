@@ -117,19 +117,16 @@ async def test_db():
             result["database"] = "connected"
             result["user_count"] = count
             
-            check = await db.execute(text("SELECT id FROM users WHERE email = 'teste@picnutra.com'"))
-            exists = check.scalar()
+            await db.execute(text("DELETE FROM users WHERE email = 'teste@picnutra.com'"))
+            await db.commit()
             
-            if not exists:
-                hashed = get_password_hash("Teste123!")
-                await db.execute(text(
-                    "INSERT INTO users (email, password_hash, name, credit_balance, email_verified, referral_code) "
-                    "VALUES ('teste@picnutra.com', :pwd, 'Usuario Teste', 36, true, 'TESTE123')"
-                ), {"pwd": hashed})
-                await db.commit()
-                result["test_user"] = "created"
-            else:
-                result["test_user"] = "already exists"
+            hashed = get_password_hash("Teste123!")
+            await db.execute(text(
+                "INSERT INTO users (email, password_hash, name, credit_balance, email_verified, referral_code, plan, pro_analyses_remaining, created_at) "
+                "VALUES ('teste@picnutra.com', :pwd, 'Usuario Teste', 36, true, 'TESTE123', 'free', 0, NOW())"
+            ), {"pwd": hashed})
+            await db.commit()
+            result["test_user"] = "created"
             
             result["login"] = {"email": "teste@picnutra.com", "password": "Teste123!"}
     except Exception as e:
